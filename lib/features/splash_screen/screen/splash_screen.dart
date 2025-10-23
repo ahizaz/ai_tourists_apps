@@ -69,7 +69,11 @@ class SplashScreen extends StatelessWidget {
               )
               ),
               child: Center(
-                child: Text(""),
+                child: Text("Next",style: GoogleFonts.inter( 
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xffFFFFFF)
+                ),),
               ),
             ),
             
