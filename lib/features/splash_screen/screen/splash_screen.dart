@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen_second.dart';
+import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF9F9F9),
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 14.w),
@@ -107,7 +108,7 @@ class SplashScreen extends StatelessWidget {
                           Shadow(
                             offset: const Offset(0, 1),
                             blurRadius: 4,
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: .4),
                           ),
                         ],
                       ),

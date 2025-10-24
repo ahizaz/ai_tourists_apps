@@ -3,7 +3,7 @@ import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreenSecond extends StatelessWidget {
@@ -70,7 +70,7 @@ class SplashScreenSecond extends StatelessWidget {
                           Shadow(
                             offset: const Offset(0, 1),
                             blurRadius: 4,
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: .4),
                           ),
                         ],
                       ),

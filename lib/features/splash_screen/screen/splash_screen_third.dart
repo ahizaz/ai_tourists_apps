@@ -1,6 +1,9 @@
+import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/screen/sign_in.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 
 class SplashScreenThird extends StatelessWidget {
@@ -41,7 +44,7 @@ class SplashScreenThird extends StatelessWidget {
              Spacer(),
               InkWell(
                 onTap: () {
-          
+                Get.to(()=>SignIn());
                 },
                 child: Container(
                   width: double.infinity,
@@ -64,7 +67,7 @@ class SplashScreenThird extends StatelessWidget {
                           Shadow(
                             offset: const Offset(0, 1),
                             blurRadius: 4,
-                            color: Colors.black.withOpacity(0.4),
+                            color: Colors.black.withValues(alpha: .4),
                           ),
                         ],
                       ),
