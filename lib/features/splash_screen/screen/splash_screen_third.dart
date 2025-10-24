@@ -1,53 +1,47 @@
-import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen_third.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SplashScreenSecond extends StatelessWidget {
-  const SplashScreenSecond({super.key});
+class SplashScreenThird extends StatelessWidget {
+  const SplashScreenThird({super.key});
 
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
-      body: Container(
+      body:Container(
         decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage(ImagePath.splashsecond,),fit: BoxFit.cover,)
+            image: DecorationImage(image: AssetImage(ImagePath.splashscreenthird,),fit: BoxFit.cover,),
         ),
-        child: Padding(
-          padding:  EdgeInsets.symmetric(horizontal: 12.w),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+        child: Padding(padding:  EdgeInsets.symmetric(horizontal: 12.w),
+        child: Column(
+             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
-          
             children: [
-              SizedBox(height: 130.h,),
-             Center(
-                 child: Text("Explore Without Limits",style: GoogleFonts.inter( 
+               SizedBox(height: 130.h,),
+                   Center(
+                 child: Text("Your AI Travel Companion ",style: GoogleFonts.inter( 
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xffFFFFFF)
+                  color: Color(0xff252525)
                  ),),
              ),
-             SizedBox(height: 6.h,),
-             Center(
-              child: Text("Enjoy offline access and smart recommendations,",style: GoogleFonts.inter( 
-                fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xffFFFFFF)
+               SizedBox(height: 6.h,),
+                  Center(
+              child: Text("Receive real-time navigation, personalized ",style: GoogleFonts.inter( 
+                fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xff505050)
               ),),
              ),
-             SizedBox(height: 4.h,),
-        
-                    Center(
-              child: Text("anytime, anywhere",style: GoogleFonts.inter( 
-                fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xffFFFFFF)
+                   SizedBox(height: 4.h,),
+                          Center(
+              child: Text("tips, and multi-language support",style: GoogleFonts.inter( 
+                fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xff505050)
               ),),
              ),
              Spacer(),
-                InkWell(
+              InkWell(
                 onTap: () {
-              Get.to(()=>SplashScreenThird());
+          
                 },
                 child: Container(
                   width: double.infinity,
@@ -61,7 +55,7 @@ class SplashScreenSecond extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      "Get Start",
+                      "Go To Home",
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,
@@ -78,11 +72,13 @@ class SplashScreenSecond extends StatelessWidget {
                   ),
                 ),
               ),
-                            SizedBox(height: 40.h),
+              SizedBox(height: 40.h,)
+                                 
             ],
-          ),
         ),
-      ),
+        
+        ),
+      ) ,
     );
   }
 }
