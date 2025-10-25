@@ -1,3 +1,4 @@
+import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/ai_assistant.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/verification_code/controller/verification_controller.dart';
 
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
@@ -186,7 +187,7 @@ class Verification extends StatelessWidget {
                   () => controller.pin.value.trim().length == 4
                       ? InkWell(
                           onTap: () {
-
+                           Get.to(()=>AiAssistant());
                           },
                           child: Container(
                             width: double.infinity,

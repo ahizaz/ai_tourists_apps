@@ -1,58 +1,48 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class VerificationController extends GetxController{
+class VerificationController extends GetxController {
   final TextEditingController pinputController = TextEditingController();
-  final RxString pin = "".obs;
-  final RxInt secondsRemaining = 30.obs;
+  var pin = ''.obs;
+
+  // start at 0 so "Resend" is shown until user taps it
+  var secondsRemaining = 0.obs;
   Timer? _timer;
+  final int _startSeconds = 10;
+
   @override
-  void onInit() {
-   
-    super.onInit();
-    startTimer();
-  }
-
-  void startTimer({int seconds =10}){
-    _timer?.cancel();
-    secondsRemaining.value =seconds;
-    _timer =Timer.periodic(Duration(seconds: 1),(timer){
-     if(secondsRemaining.value>0){
-      secondsRemaining.value--;
-
-     }else{
-      timer.cancel();
-     }
-    });
-  }
-  void resendCode(){
-    if(secondsRemaining.value==0){
-          startTimer();
-
-    }else{
-    
-    }
-  }
-
-  void onChanged(String value){
-    pin.value = value;
-  }
-    void onCompleted(String value) {
-    pin.value = value;
-    verifyPin();
-  }
-   Future<void> verifyPin() async {
-
-  
-  }
-
-    @override
   void onClose() {
-    _timer?.cancel();
     pinputController.dispose();
+    _timer?.cancel();
     super.onClose();
   }
 
+  // Start the countdown — call this only when user clicks "Resend"
+  void startTimer() {
+    _timer?.cancel();
+    secondsRemaining.value = _startSeconds;
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (secondsRemaining.value <= 1) {
+        timer.cancel();
+        secondsRemaining.value = 0;
+      } else {
+        secondsRemaining.value--;
+      }
+    });
+  }
+
+  // Called when user taps "Resend" in the UI
+  void resendCode() {
+ 
+
+   
+    startTimer();
+  }
+
+  void onChanged(String value) => pin.value = value;
+  void onCompleted(String value) {
+    // handle completed pin entry
+  }
 }
