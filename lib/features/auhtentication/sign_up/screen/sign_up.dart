@@ -2,6 +2,7 @@ import 'package:ai_powered_tourists_app/core/common/widgets/custom_password_fiel
 import 'package:ai_powered_tourists_app/core/common/widgets/custom_textField.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/screen/sign_in.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_up/controller/sign_up_controller.dart';
+import 'package:ai_powered_tourists_app/features/verification_code/screen/verification.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,7 @@ class SignUp extends StatelessWidget {
                 
                        InkWell(
                   onTap: () {
-
+                  Get.to(()=>Verification());
                   },
                   child: Container(
                     width: double.infinity,
