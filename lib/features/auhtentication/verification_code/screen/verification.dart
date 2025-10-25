@@ -1,11 +1,12 @@
-import 'package:ai_powered_tourists_app/features/verification_code/controller/verification_controller.dart';
+import 'package:ai_powered_tourists_app/features/auhtentication/verification_code/controller/verification_controller.dart';
+
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
+import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
-
 
 class Verification extends StatelessWidget {
   const Verification({super.key});
@@ -66,6 +67,7 @@ class Verification extends StatelessWidget {
     );
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Padding(
@@ -163,6 +165,9 @@ class Verification extends StatelessWidget {
                                 child: Text(
                                   'Resend',
                                   style: GoogleFonts.inter(
+                                    decoration: TextDecoration.underline,
+                                       decorationColor: AppColors.orangeEnd, 
+                                        decorationThickness: 1.5, 
                                     
                                     fontSize: 12.sp,
                                     color: const Color(0xffF5461B),
@@ -177,20 +182,56 @@ class Verification extends StatelessWidget {
                 ), 
            
                 Spacer(),
-                Container(
-                width: double.infinity,
-                height: 48.h,
-                decoration: BoxDecoration(
-                  color: Color(0xffE1E1E1),
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: Center(
-                  child: Text("Next",style: GoogleFonts.inter( 
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xff878787)
-                  ),),
-                ),
+                Obx(
+                  () => controller.pin.value.trim().length == 4
+                      ? InkWell(
+                          onTap: () {
+
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            height: 48.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.r),
+                              image: const DecorationImage(
+                                image: AssetImage(ImagePath.button),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Next",
+                                style: GoogleFonts.inter(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 4,
+                                      color: Colors.black.withValues(alpha: 0.4),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: 48.h,
+                          decoration: BoxDecoration(
+                            color: Color(0xffE1E1E1),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: Center(
+                            child: Text("Next",style: GoogleFonts.inter( 
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xff878787)
+                            ),),
+                          ),
+                        ),
                 ),
                 SizedBox(height: 20.h,)
           

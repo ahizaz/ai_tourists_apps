@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class VerificationController extends GetxController{
   final TextEditingController pinputController = TextEditingController();
-  final RxString pin = " ".obs;
+  final RxString pin = "".obs;
   final RxInt secondsRemaining = 30.obs;
   Timer? _timer;
   @override
@@ -15,7 +15,7 @@ class VerificationController extends GetxController{
     startTimer();
   }
 
-  void startTimer({int seconds =30}){
+  void startTimer({int seconds =10}){
     _timer?.cancel();
     secondsRemaining.value =seconds;
     _timer =Timer.periodic(Duration(seconds: 1),(timer){
@@ -30,10 +30,9 @@ class VerificationController extends GetxController{
   void resendCode(){
     if(secondsRemaining.value==0){
           startTimer();
-      Get.snackbar('OTP', 'A new code was requested', snackPosition: SnackPosition.BOTTOM);
+
     }else{
-       Get.snackbar('Please wait', 'You can resend after ${secondsRemaining.value}s',
-          snackPosition: SnackPosition.BOTTOM);
+    
     }
   }
 
@@ -46,8 +45,7 @@ class VerificationController extends GetxController{
   }
    Future<void> verifyPin() async {
 
-    Get.snackbar('Verifying', 'Verifying code: ${pin.value}', snackPosition: SnackPosition.BOTTOM);
-   
+  
   }
 
     @override
