@@ -1,3 +1,4 @@
+// ...existing code...
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -7,13 +8,25 @@ class VerificationController extends GetxController {
   final TextEditingController pinputController = TextEditingController();
   var pin = ''.obs;
 
-  // start at 0 so "Resend" is shown until user taps it
+  
   var secondsRemaining = 0.obs;
   Timer? _timer;
   final int _startSeconds = 10;
 
   @override
+  void onInit() {
+    super.onInit();
+ 
+    pinputController.addListener(_onPinChanged);
+  }
+
+  void _onPinChanged() {
+    pin.value = pinputController.text;
+  }
+
+  @override
   void onClose() {
+    pinputController.removeListener(_onPinChanged);
     pinputController.dispose();
     _timer?.cancel();
     super.onClose();
@@ -35,9 +48,6 @@ class VerificationController extends GetxController {
 
   // Called when user taps "Resend" in the UI
   void resendCode() {
- 
-
-   
     startTimer();
   }
 
@@ -46,3 +56,4 @@ class VerificationController extends GetxController {
     // handle completed pin entry
   }
 }
+// ...existing code...
