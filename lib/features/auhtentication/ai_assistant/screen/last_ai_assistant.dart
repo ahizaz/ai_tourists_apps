@@ -50,7 +50,7 @@ class LastAiAssistant extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 75.h,),
+                SizedBox(height: 65.h,),
                 Center(child: Text("Your intelligent companion for exploring and",   style: GoogleFonts.inter(
                       fontWeight: FontWeight.w500,
                       fontSize: 16.sp,
@@ -132,7 +132,7 @@ class LastAiAssistant extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(height: 20.h,),
+                SizedBox(height: 40.h,),
 
              
           ],
