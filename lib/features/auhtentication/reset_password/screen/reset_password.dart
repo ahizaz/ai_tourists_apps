@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/core/common/widgets/custom_password_field.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/reset_password/controller/reset_password_controller.dart';
+import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/screen/sign_in.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -85,8 +86,8 @@ class ResetPassword extends StatelessWidget {
                           controller.confirmPassword.clear();
                           controller.isButtonEnabled.value = false;
 
-                         
-                          Get.to(() => const SplashScreenSecond());
+                         Get.to(()=>SignIn());
+                       
                         }
                       : null,
                   child: controller.isButtonEnabled.value

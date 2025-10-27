@@ -12,22 +12,23 @@ class ForgetPasswordController extends GetxController {
     super.onInit();
     forgetpassword.addListener(() {
       final text = forgetpassword.text.trim();
-      // চেক করবো text ফাঁকা না আর '@' আছে কিনা
-      isEmailValid.value = text.isNotEmpty && text.contains('@');
+      // এখন শুধু ফাঁকা না থাকলেই valid ধরা হবে
+      isEmailValid.value = text.isNotEmpty;
     });
   }
 
   void onNextPressed() {
-    final email = forgetpassword.text.trim();
-    if (!email.contains('@')) {
-      Get.snackbar('Error', 'Please enter a valid email address',
+    final input = forgetpassword.text.trim();
+    if (input.isEmpty) {
+      Get.snackbar('Error', 'Please enter your email or phone number',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
 
-    Get.snackbar('Success', 'Reset link sent to $email',
-        snackPosition: SnackPosition.BOTTOM);
-         Future.delayed(const Duration(milliseconds: 100), () {
+    // Snackbar না দেখিয়ে সরাসরি অন্য পেজে যাওয়ার আগে TextField clear করে দিচ্ছি
+    forgetpassword.clear();
+
+    Future.delayed(const Duration(milliseconds: 100), () {
       Get.to(() => ForgetVerification());
     });
   }
