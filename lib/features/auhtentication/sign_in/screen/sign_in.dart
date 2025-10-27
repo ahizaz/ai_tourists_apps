@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/core/common/widgets/custom_password_field.dart';
 import 'package:ai_powered_tourists_app/core/common/widgets/custom_textField.dart';
+import 'package:ai_powered_tourists_app/features/auhtentication/forget_password/screen/forget_password.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/controller/sign_in_controller.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_up/screen/sign_up.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
@@ -70,7 +71,9 @@ class SignIn extends StatelessWidget {
                       ],
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Get.to(()=>ForgetPassword());
+                      },
                       child: Text(
                         "Forget password?",
                         style: GoogleFonts.inter(

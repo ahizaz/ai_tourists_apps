@@ -1,22 +1,19 @@
-import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/ai_assistant.dart';
-import 'package:ai_powered_tourists_app/features/auhtentication/verification_code/controller/verification_controller.dart';
-
+import 'package:ai_powered_tourists_app/features/auhtentication/forget_verification/controller/forget_verification_controller.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
-class Verification extends StatelessWidget {
-  const Verification({super.key});
+class ForgetVerification extends StatelessWidget {
+  const ForgetVerification({super.key});
 
   @override
   Widget build(BuildContext context) {
-  
-    final VerificationController controller = Get.put(VerificationController());
-
+      final ForgetVerificationController controller = Get.put(ForgetVerificationController());
+      
     final defaultPinTheme = PinTheme(
       width: 54.w,
       height: 60.h,
@@ -68,14 +65,12 @@ class Verification extends StatelessWidget {
     );
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: SafeArea(child: Padding(padding:  EdgeInsets.symmetric(horizontal: 12.w),
+      child: Column(
+           crossAxisAlignment: CrossAxisAlignment.start,
+           children: [
               SizedBox(height: 105.h),
               Center(
                 child: Text(
@@ -87,8 +82,8 @@ class Verification extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 6.h),
-              Center(
+               SizedBox(height: 6.h),
+                Center(
                 child: Text(
                   "We have sent the OTP code to example@gmail.com",
                   style: GoogleFonts.inter(
@@ -98,8 +93,8 @@ class Verification extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 1.h),
-              Center(
+               SizedBox(height: 1.h),
+                Center(
                 child: Text(
                   "the process",
                   style: GoogleFonts.inter(
@@ -109,10 +104,8 @@ class Verification extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 32.h),
-        
-              // Pinput (centered) - rebuild when controller.pin changes so we can switch theme when filled
-              Center(
+                 SizedBox(height: 32.h),
+                 Center(
                 child: Obx(
                   () => Pinput(
                     length: 4,
@@ -139,11 +132,8 @@ class Verification extends StatelessWidget {
                   ),
                 ),
               ),
-        
-              SizedBox(height: 20.h),
-        
-              // resend / timer row
-              Center(
+          SizedBox(height: 20.h),
+           Center(
                 child: Obx(
                   () => Row(
                     mainAxisSize: MainAxisSize.min,
@@ -179,13 +169,12 @@ class Verification extends StatelessWidget {
                   ),
                 ),
               ), 
-         
-              Spacer(),
-              Obx(
+                 Spacer(),
+                    Obx(
                 () => controller.pin.value.trim().length == 4
                     ? InkWell(
                         onTap: () {
-                         Get.to(()=>AiAssistant());
+                        
                         },
                         child: Container(
                           width: double.infinity,
@@ -232,12 +221,13 @@ class Verification extends StatelessWidget {
                         ),
                       ),
               ),
-              SizedBox(height: 20.h,)
-        
-            ],
-          ),
-        ),
+                 SizedBox(height: 20.h,)
+
+           ],
+
       ),
+      
+      )),
     );
   }
 }
