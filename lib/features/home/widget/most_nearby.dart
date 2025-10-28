@@ -45,17 +45,17 @@ class MostNearbySection extends StatelessWidget {
                   padding:
                       EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                   decoration: BoxDecoration(
-                    color: selected ? Colors.green[100] : Colors.grey[100],
+                    color: selected ? Color(0xffBDE446): Colors.grey[100],
                     borderRadius: BorderRadius.circular(24.r),
                     border: selected
-                        ? Border.all(color: Colors.green.shade400, width: 1.4)
+                        ? Border.all(color: Color(0xffE5F5B4), width: 1.4)
                         : null,
                   ),
                   child: Text(
                     cat,
                     style: GoogleFonts.dmSans(
                       fontSize: 13.sp,
-                      color: selected ? Colors.green[800] : Colors.grey[700],
+                      color: selected ? Color(0xff252525) : Colors.grey[700],
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                     ),
                   ),

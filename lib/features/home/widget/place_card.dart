@@ -1,25 +1,28 @@
+import 'package:ai_powered_tourists_app/features/home/screen/place_details.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:get/get.dart';
 
 class PlaceCard extends StatelessWidget {
   final Place place;
-  final VoidCallback? onTap;
   final VoidCallback? onBookmark;
 
   const PlaceCard({
     super.key,
     required this.place,
-    this.onTap,
-    this.onBookmark,
+    this.onBookmark, required Null Function() onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        // Navigate to details page with Hero animation
+        Get.to(() => PlaceDetails(place: place));
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 16.h),
         decoration: BoxDecoration(
@@ -35,7 +38,7 @@ class PlaceCard extends StatelessWidget {
         ),
         child: Column(
           children: [
-            // Image
+            // Image with Hero
             ClipRRect(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(12.r),
@@ -44,26 +47,29 @@ class PlaceCard extends StatelessWidget {
               child: SizedBox(
                 height: 140.h,
                 width: double.infinity,
-                child: Image.network(
-                  place.imageUrl,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (ctx, child, progress) {
-                    if (progress == null) return child;
-                    return Container(
-                      color: Colors.grey[200],
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value: progress.expectedTotalBytes != null
-                              ? progress.cumulativeBytesLoaded /
-                                  progress.expectedTotalBytes!
-                              : null,
+                child: Hero(
+                  tag: 'place-${place.id}',
+                  child: Image.network(
+                    place.imageUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (ctx, child, progress) {
+                      if (progress == null) return child;
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: progress.expectedTotalBytes != null
+                                ? progress.cumulativeBytesLoaded /
+                                    progress.expectedTotalBytes!
+                                : null,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  errorBuilder: (ctx, err, stack) => Container(
-                    color: Colors.grey[200],
-                    child: Icon(Icons.photo, size: 40.w, color: Colors.grey),
+                      );
+                    },
+                    errorBuilder: (ctx, err, stack) => Container(
+                      color: Colors.grey[200],
+                      child: Icon(Icons.photo, size: 40.w, color: Colors.grey),
+                    ),
                   ),
                 ),
               ),
