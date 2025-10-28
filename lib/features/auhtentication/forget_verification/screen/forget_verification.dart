@@ -29,7 +29,7 @@ class ForgetVerification extends StatelessWidget {
         border: Border.all(color: const Color(0xFFE6E6E6)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: .04),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +52,7 @@ class ForgetVerification extends StatelessWidget {
         border: Border.all(color: Colors.transparent),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: .06),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

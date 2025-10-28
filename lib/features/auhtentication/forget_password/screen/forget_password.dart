@@ -86,7 +86,7 @@ class ForgetPassword extends StatelessWidget {
                     Shadow(
                       offset: const Offset(0, 1),
                       blurRadius: 4,
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: .4),
                     ),
                   ],
                 ),

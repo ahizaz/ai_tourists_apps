@@ -9,12 +9,12 @@ class OptionTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const OptionTile({
-    Key? key,
+    super.key,
     required this.label,
     this.selected = false,
     this.isCheckbox = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

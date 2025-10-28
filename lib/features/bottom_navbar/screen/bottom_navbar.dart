@@ -57,6 +57,7 @@ class BottomNavbar extends StatelessWidget {
             onDestinationSelected: (int index) {
               controller.changeIndex(index);
             },
+            // 🔹 শুধু আইকন, কোনো label নেই
             destinations: List.generate(5, (index) {
               return NavigationDestination(
                 icon: Image.asset(
@@ -65,7 +66,7 @@ class BottomNavbar extends StatelessWidget {
                       : inactiveIcons[index],
                   width: 64.w,
                 ),
-                label: ['home', 'map', 'ai', 'booking', 'profile'][index],
+                label: '', 
               );
             }),
           ),
