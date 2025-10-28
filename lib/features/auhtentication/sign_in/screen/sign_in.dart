@@ -3,6 +3,7 @@ import 'package:ai_powered_tourists_app/core/common/widgets/custom_textField.dar
 import 'package:ai_powered_tourists_app/features/auhtentication/forget_password/screen/forget_password.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/controller/sign_in_controller.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_up/screen/sign_up.dart';
+import 'package:ai_powered_tourists_app/features/bottom_navbar/screen/bottom_navbar.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,7 @@ class SignIn extends StatelessWidget {
                 SizedBox(height: 24.h),
                 InkWell(
                   onTap: () {
-
+                 Get.to(()=>BottomNavbar());
                   },
                   child: Container(
                     width: double.infinity,
