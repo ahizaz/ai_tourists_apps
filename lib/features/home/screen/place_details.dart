@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
+import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -154,18 +155,13 @@ class PlaceDetails extends StatelessWidget {
 
             // map button
             Container(
-              width: 44.w,
-              height: 44.w,
+              width: 40.w,
+              height: 40.w,
               decoration: BoxDecoration(
                 color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(12.r),
               ),
-              child: IconButton(
-                icon: Icon(Icons.map_outlined, color: Colors.grey[800]),
-                onPressed: () {
-                  // map action
-                },
-              ),
+              child: Image.asset( IconPath.mapinactive,height: 30.h,width: 30.w,fit: BoxFit.cover,)
             ),
             SizedBox(width: 8.w),
 
@@ -178,12 +174,7 @@ class PlaceDetails extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(color: Colors.grey[200]!),
               ),
-              child: IconButton(
-                icon: Icon(Icons.more_horiz, color: Colors.grey[800]),
-                onPressed: () {
-                  // more action
-                },
-              ),
+              child:Image.asset(IconPath.aiactive)
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/features/home/screen/place_details.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
+import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -172,7 +173,7 @@ class PlaceCard extends StatelessWidget {
 
                       Spacer(),
 
-                      // action icons (map / details)
+                      // action icons (map / details)////map ar
                       Container(
                         width: 36.w,
                         height: 36.w,
@@ -180,21 +181,19 @@ class PlaceCard extends StatelessWidget {
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(8.r),
                         ),
-                        child: Icon(Icons.map_outlined,
-                            size: 18.w, color: Colors.grey[700]),
+                        child: Image.asset(IconPath.mapinactive,width: 30.w,height: 30.w,fit: BoxFit.cover,),
                       ),
                       SizedBox(width: 8.w),
-                      Container(
-                        width: 36.w,
-                        height: 36.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.r),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Icon(Icons.more_horiz,
-                            size: 18.w, color: Colors.grey[700]),
-                      ),
+                       Container(
+              width: 44.w,
+              height: 44.w,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child:Image.asset(IconPath.aiactive)
+            ),
                     ],
                   )
                 ],

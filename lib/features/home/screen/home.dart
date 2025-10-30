@@ -57,7 +57,7 @@ class Home extends StatelessWidget {
                 CurrentLocationCard(),
                 SizedBox(height: 18.h),
                  MostNearbySection(),
-                // removed extra bottom spacing that was reserved for bottom nav
+               
               ],
             ),
           ),
