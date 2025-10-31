@@ -103,7 +103,7 @@ class PlaceDetails extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: .06),
               blurRadius: 10.r,
               offset: Offset(0, -4.r),
             ),

@@ -29,12 +29,12 @@ class CurrentLocationCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Color(0xFF45C5FF).withOpacity(0.3),
+            color: Color(0xFF45C5FF).withValues(alpha: .3),
             blurRadius: 20.r,
             offset: Offset(0, 8.r),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: .05),
             blurRadius: 10.r,
             offset: Offset(0, 4.r),
           ),
