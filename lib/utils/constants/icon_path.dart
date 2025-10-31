@@ -16,5 +16,12 @@ class IconPath{
    static const notificationicon = "assets/icons/notification_ic.png";
    static const location = "assets/icons/location.png";
    static const sun = "assets/icons/sun.png";
+   static const account = "assets/icons/account.png";
+   static const subscription = "assets/icons/subscription.png";
+   static const playquize = "assets/icons/playquize.png";
+   static const aisetup = "assets/icons/aisetup.png";
+   static const saveplace = "assets/icons/saveplace.png";
+   static const offilinemapdownload = "assets/icons/Offline-Map-Download.png";
+   static const termscondition = "assets/icons/termsandcondition.png";
 
 }
