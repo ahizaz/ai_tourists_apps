@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -255,18 +256,16 @@ class SavePlace extends StatelessWidget {
                     Spacer(),
 
                     // Direction Icon
-                    Container(
-                      padding: EdgeInsets.all(8.w),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Icon(
-                        Icons.directions,
-                        color: Colors.blue,
-                        size: 20.sp,
-                      ),
-                    ),
+                            Container(
+              width: 44.w,
+              height: 44.w,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12.r),
+                border: Border.all(color: Colors.grey[200]!),
+              ),
+              child:Image.asset(IconPath.aiactive)
+            ),
                   ],
                 ),
               ],
