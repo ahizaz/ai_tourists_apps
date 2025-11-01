@@ -1,27 +1,31 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ProfileController extends GetxController{
+class ProfileController extends GetxController {
   var profileImage = Rx<File?>(null);
   var userName = "Brooklyn Simmons".obs;
   var userEmail = "brooklyn.sim@example.com".obs;
   var phoneNumber = "+880 10-46-828200".obs;
   var selectedPlan = RxnString();
-  
+
   // Quiz options
   var selectedQuantity = RxnInt();
   var selectedSubject = RxnString();
-  
+
   // Computed property to check if quiz can start
-  bool get canStartQuiz => selectedQuantity.value != null && selectedSubject.value != null;
-  
-  Future<void>pickImage()async{
-     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-     if(pickedFile!=null){
+  bool get canStartQuiz =>
+      selectedQuantity.value != null && selectedSubject.value != null;
+
+  Future<void> pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
       profileImage.value = File(pickedFile.path);
-     }
+    }
   }
 
   void selectSubscriptionPlan(String plan) {
@@ -32,11 +36,8 @@ class ProfileController extends GetxController{
     }
   }
 
-
   void subscribeNow() {
-    if (selectedPlan.value != null) {
-  
-    }
+    if (selectedPlan.value != null) {}
   }
 
   // Quiz selection methods
@@ -62,8 +63,9 @@ class ProfileController extends GetxController{
   }
 
   // Q&A List functionality
-  var qaAnswers = <int, String>{}.obs; // Map of question index to selected answer
-  
+  var qaAnswers =
+      <int, String>{}.obs; // Map of question index to selected answer
+
   final List<Map<String, dynamic>> qaQuestions = [
     {
       'question': 'Q1: Which ancient wonder was located in Babylon?',
@@ -71,9 +73,9 @@ class ProfileController extends GetxController{
         'A) The Great Pyramid of Giza',
         'B) Hanging Gardens',
         'C) Temple of Artemis',
-        'D) Colossus of Rhodes'
+        'D) Colossus of Rhodes',
       ],
-      'correctAnswer': 'B) Hanging Gardens'
+      'correctAnswer': 'B) Hanging Gardens',
     },
     {
       'question': 'Q1: Who was the first emperor of Rome?',
@@ -81,9 +83,9 @@ class ProfileController extends GetxController{
         'A) Julius Caesar',
         'B) Augustus',
         'C) Nero',
-        'D) Constantine'
+        'D) Constantine',
       ],
-      'correctAnswer': 'B) Augustus'
+      'correctAnswer': 'B) Augustus',
     },
     {
       'question': 'Q1: Which ancient wonder was located in Babylon?',
@@ -91,9 +93,9 @@ class ProfileController extends GetxController{
         'A) The Great Pyramid of Giza',
         'B) Hanging Gardens',
         'C) Temple of Artemis',
-        'D) Colossus of Rhodes'
+        'D) Colossus of Rhodes',
       ],
-      'correctAnswer': 'C) Temple of Artemis'
+      'correctAnswer': 'C) Temple of Artemis',
     },
   ];
 
@@ -127,5 +129,85 @@ class ProfileController extends GetxController{
 
   void resetQAAnswers() {
     qaAnswers.clear();
+  }
+
+  // Saved Places functionality
+  var savedPlaces = <Map<String, dynamic>>[
+    {
+      'name': 'Great Wall of China',
+      'description':
+          'The Great Wall of China (traditional Chinese: 萬里長城; simplified Chine...',
+      'rating': 4.3,
+      'distance': '2.5km',
+      'image':
+          'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=500',
+    },
+    {
+      'name': 'Great Wall of China',
+      'description':
+          'The Great Wall of China (traditional Chinese: 萬里長城; simplified Chine...',
+      'rating': 4.3,
+      'distance': '2.5km',
+      'image':
+          'https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=500',
+    },
+    {
+      'name': 'Taj Mahal',
+      'description':
+          'An ivory-white marble mausoleum on the right bank of the river Yamuna...',
+      'rating': 4.8,
+      'distance': '3.2km',
+      'image':
+          'https://images.unsplash.com/photo-1564507592333-c60657eea523?w=500',
+    },
+    {
+      'name': 'Eiffel Tower',
+      'description':
+          'A wrought-iron lattice tower on the Champ de Mars in Paris, France...',
+      'rating': 4.6,
+      'distance': '1.8km',
+      'image':
+          'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=500',
+    },
+  ].obs;
+
+  // Remove place from saved list
+  void unsavePlace(int index) {
+    if (index >= 0 && index < savedPlaces.length) {
+      final placeName = savedPlaces[index]['name'];
+      savedPlaces.removeAt(index);
+      Get.snackbar(
+        'Removed',
+        '$placeName has been removed from saved places',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        margin: EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    }
+  }
+
+  // Add place to saved list
+  void savePlace(Map<String, dynamic> place) {
+    if (!savedPlaces.any((p) => p['name'] == place['name'])) {
+      savedPlaces.add(place);
+      Get.snackbar(
+        'Saved',
+        '${place['name']} has been saved',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.primaryColor,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        margin: EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    }
+  }
+
+  // Check if place is saved
+  bool isPlaceSaved(String placeName) {
+    return savedPlaces.any((place) => place['name'] == placeName);
   }
 }

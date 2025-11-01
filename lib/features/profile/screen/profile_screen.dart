@@ -1,6 +1,7 @@
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/account_screen.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
 import 'package:ai_powered_tourists_app/features/profile/widget/profile_option.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
@@ -120,7 +121,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.saveplace,
                 title: "Save Place",
                 onTap: () {
-               
+                Get.to(()=>SavePlace());
                 },
               ),
              
