@@ -1,4 +1,7 @@
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/account_screen.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
 import 'package:ai_powered_tourists_app/features/profile/widget/profile_option.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
@@ -63,27 +66,29 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4.h,),
-              Center(
-                child: Text("Brooklyn Simmons",style: GoogleFonts.inter(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xff2A222C)
-                ),),
-              ),
+            Center(
+              child: Obx(()=>Text(controller.userName.value,
+              style: GoogleFonts.inter(fontSize: 20.sp,fontWeight: FontWeight.w600,
+              color: Color(0xff2A222C)),
+              )),
+            ),
               SizedBox(height: 4.h,),
-              Center(
-                child: Text("brooklyn.sim@example.com",style: GoogleFonts.inter(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff878787)
-                )),
-              ),
+             Center(
+  child: Obx(() => Text(
+        controller.userEmail.value,
+        style: GoogleFonts.inter(
+          fontSize: 16.sp,
+          fontWeight: FontWeight.w400,
+          color: Color(0xff878787),
+        ),
+      )),
+),
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.account,
                 title: "Account",
                 onTap: () {
-              
+                    Get.to(()=>AccountScreen());
                 },
               ),
               SizedBox(height: 32.h,),
@@ -91,7 +96,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.subscription,
                 title: "Subscription",
                 onTap: () {
-                 
+                 Get.to(()=>SubscriptionScreen());
                 },
               ),
               SizedBox(height: 32.h,),
@@ -107,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.aisetup,
                 title: "AI Setup",
                 onTap: () {
-  
+               Get.to(()=>PlayAiQuize());
                 },
               ),
               SizedBox(height: 32.h,),
@@ -115,17 +120,10 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.saveplace,
                 title: "Save Place",
                 onTap: () {
-            
+               
                 },
               ),
-              SizedBox(height: 32.h,),
-              ProfileOptionItem(
-                iconPath: IconPath.saveplace,
-                title: "Save Place",
-                onTap: () {
-                
-                },
-              ),
+             
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.offilinemapdownload,
@@ -134,14 +132,8 @@ class ProfileScreen extends StatelessWidget {
                 
                 },
               ),
-              SizedBox(height: 32.h,),
-              ProfileOptionItem(
-                iconPath: IconPath.offilinemapdownload,
-                title: "Download Offline Map",
-                onTap: () {
+             
            
-                },
-              ),
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.termscondition,
