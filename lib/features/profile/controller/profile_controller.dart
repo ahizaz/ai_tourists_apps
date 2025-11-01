@@ -253,8 +253,8 @@ class ProfileController extends GetxController {
           TextButton(
             onPressed: () {
               if (nameController.text.isNotEmpty) {
-                renameMap(index, nameController.text);
-                Get.back();
+                Get.back(); // Close dialog first
+                renameMap(index, nameController.text); // Then rename
               }
             },
             child: Text('Save'),
@@ -267,17 +267,11 @@ class ProfileController extends GetxController {
   // Rename map
   void renameMap(int index, String newName) {
     if (index >= 0 && index < downloadedMaps.length) {
-      downloadedMaps[index]['name'] = newName;
-      Get.snackbar(
-        'Renamed',
-        'Map has been renamed to $newName',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Get.theme.primaryColor,
-        colorText: Colors.white,
-        duration: Duration(seconds: 2),
-        margin: EdgeInsets.all(16),
-        borderRadius: 12,
-      );
+      // Create a new map with updated name to trigger reactivity
+      final updatedMap = Map<String, dynamic>.from(downloadedMaps[index]);
+      updatedMap['name'] = newName;
+      downloadedMaps[index] = updatedMap;
+      downloadedMaps.refresh(); // Force update the observable list
     }
   }
 
