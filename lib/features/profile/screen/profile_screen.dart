@@ -104,7 +104,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.playquize,
                 title: "Play Quiz",
                 onTap: () {
-                  
+                      Get.to(()=>PlayAiQuize());
                 },
               ),
               SizedBox(height: 32.h,),
@@ -112,7 +112,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.aisetup,
                 title: "AI Setup",
                 onTap: () {
-               Get.to(()=>PlayAiQuize());
+           
                 },
               ),
               SizedBox(height: 32.h,),

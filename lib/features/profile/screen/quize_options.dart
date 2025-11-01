@@ -1,5 +1,8 @@
+import 'package:ai_powered_tourists_app/features/profile/screen/select_qa.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../controller/profile_controller.dart';
 
 class QuizeOptions extends StatelessWidget {
@@ -24,13 +27,13 @@ class QuizeOptions extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+             Text(
               'Select Question Quantity',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-              ),
+          style: GoogleFonts.inter( 
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w400,
+            color: Color(0xff252525)
+          ),
             ),
             const SizedBox(height: 16),
             Obx(() => Row(
@@ -88,8 +91,8 @@ class QuizeOptions extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: controller.canStartQuiz
                     ? () {
-                        // Navigate to quiz screen
-                        print('Starting quiz with ${controller.selectedQuantity.value} questions on ${controller.selectedSubject.value}');
+                        Get.to(()=>SelectQa());
+                      
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -113,6 +116,7 @@ class QuizeOptions extends StatelessWidget {
                 ),
               ),
             )),
+            SizedBox(height: 20.h,),
           ],
         ),
       ),
@@ -131,7 +135,7 @@ class QuizeOptions extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xffFF6B35) : Colors.grey.shade300,
+              color: isSelected ? const Color(0xffE5F5B4) : Color(0xffFFFFFF),
               width: 1.5,
             ),
           ),
@@ -140,10 +144,10 @@ class QuizeOptions extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: isSelected ? Colors.black : Colors.grey.shade700,
+                style: GoogleFonts.inter(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w400,
+                  color: isSelected ? Color(0xff505050) : Color(0xff878787),
                 ),
               ),
               Container(
@@ -165,6 +169,7 @@ class QuizeOptions extends StatelessWidget {
                       )
                     : null,
               ),
+              SizedBox(height: 20.h,),
             ],
           ),
         ),
@@ -172,6 +177,10 @@ class QuizeOptions extends StatelessWidget {
     );
   }
 
+
+
+
+///
   Widget _buildSubjectOption(ProfileController controller, String title, String description) {
     final isSelected = controller.selectedSubject.value == title;
     
@@ -183,7 +192,7 @@ class QuizeOptions extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xffFF6B35) : Colors.grey.shade300,
+            color: isSelected ? const Color(0xffE5F5B4) : Colors.grey.shade300,
             width: 1.5,
           ),
         ),
@@ -195,18 +204,19 @@ class QuizeOptions extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                    style: GoogleFonts.inter(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w500,
                       color: isSelected ? Colors.black : Colors.grey.shade800,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     description,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
+                    style: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff878787),
                     ),
                   ),
                 ],
