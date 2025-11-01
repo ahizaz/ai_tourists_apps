@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/account_screen.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/download_map.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
@@ -130,7 +131,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.offilinemapdownload,
                 title: "Download Offline Map",
                 onTap: () {
-                
+                Get.to(()=>DownloadMap());
                 },
               ),
              

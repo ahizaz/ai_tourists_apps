@@ -210,4 +210,110 @@ class ProfileController extends GetxController {
   bool isPlaceSaved(String placeName) {
     return savedPlaces.any((place) => place['name'] == placeName);
   }
+
+  // Downloaded Maps functionality
+  var downloadedMaps = <Map<String, dynamic>>[
+    {
+      'id': '1',
+      'name': 'Map 01',
+      'lastDownloaded': '24/03/2024',
+    },
+    {
+      'id': '2',
+      'name': 'Map 02',
+      'lastDownloaded': '15/03/2024',
+    },
+    {
+      'id': '3',
+      'name': 'Map 03',
+      'lastDownloaded': '10/03/2024',
+    },
+  ].obs;
+
+  // Show rename dialog
+  void showRenameDialog(BuildContext context, int index) {
+    final TextEditingController nameController =
+        TextEditingController(text: downloadedMaps[index]['name']);
+
+    Get.dialog(
+      AlertDialog(
+        title: Text('Rename Map'),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: 'Name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              if (nameController.text.isNotEmpty) {
+                renameMap(index, nameController.text);
+                Get.back();
+              }
+            },
+            child: Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Rename map
+  void renameMap(int index, String newName) {
+    if (index >= 0 && index < downloadedMaps.length) {
+      downloadedMaps[index]['name'] = newName;
+      Get.snackbar(
+        'Renamed',
+        'Map has been renamed to $newName',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.primaryColor,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        margin: EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    }
+  }
+
+  // Delete map
+  void deleteMap(int index) {
+    if (index >= 0 && index < downloadedMaps.length) {
+      final mapName = downloadedMaps[index]['name'];
+      downloadedMaps.removeAt(index);
+      Get.snackbar(
+        'Deleted',
+        '$mapName has been deleted',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        margin: EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    }
+  }
+
+  // Select map
+  void selectMap(int index) {
+    if (index >= 0 && index < downloadedMaps.length) {
+      final mapName = downloadedMaps[index]['name'];
+      Get.back(); // Go back to previous screen
+      Get.snackbar(
+        'Selected',
+        '$mapName has been selected',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.primaryColor,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+        margin: EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+    }
+  }
 }
