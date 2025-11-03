@@ -89,11 +89,25 @@ class DownloadMap extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  // Download current map view
-                  controller.downloadCurrentMap();
+                  // Download current map view first
+                  final mapName = controller.downloadCurrentMap();
                   
-                  // Go back immediately after download
+                  // Go back immediately
                   Get.back();
+                  
+                  // Show snackbar after going back
+                  Future.delayed(Duration(milliseconds: 100), () {
+                    Get.snackbar(
+                      'Download Complete',
+                      '$mapName has been downloaded successfully',
+                      snackPosition: SnackPosition.BOTTOM,
+                      backgroundColor: Color(0xffFF7029),
+                      colorText: Colors.white,
+                      duration: Duration(seconds: 2),
+                      margin: EdgeInsets.all(16),
+                      borderRadius: 12,
+                    );
+                  });
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xffFF7029),

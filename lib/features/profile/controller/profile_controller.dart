@@ -307,7 +307,7 @@ class ProfileController extends GetxController {
   }
 
   // Download current map view
-  void downloadCurrentMap() {
+  String downloadCurrentMap() {
     final currentPosition = cameraPosition.value;
     final mapNumber = downloadedMaps.length + 1;
     final now = DateTime.now();
@@ -324,16 +324,8 @@ class ProfileController extends GetxController {
     
     downloadedMaps.add(newMap);
     
-    Get.snackbar(
-      'Download Complete',
-      '${newMap['name']} has been downloaded successfully',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Color(0xffFF7029),
-      colorText: Colors.white,
-      duration: Duration(seconds: 2),
-      margin: EdgeInsets.all(16),
-      borderRadius: 12,
-    );
+    // Return the map name instead of showing snackbar here
+    return newMap['name'] as String;
   }
 
 
