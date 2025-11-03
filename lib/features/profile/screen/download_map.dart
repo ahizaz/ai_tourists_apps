@@ -1,230 +1,117 @@
+import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../utils/constants/colors.dart';
-import '../controller/profile_controller.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DownloadMap extends StatelessWidget {
   const DownloadMap({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.find<ProfileController>();
-
+    final ProfileController controller = Get.put(ProfileController());
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.backgroundColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Get.back(),
-        ),
-        title: Text(
-          'Download Offline Map',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        centerTitle: false,
-      ),
+      backgroundColor: Color(0xffF9F9F9),
       body: Column(
         children: [
-          // Download Maps Title
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Download Maps',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-              ),
+          // App Bar
+          Container(
+            color: Colors.white,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 16,
+              bottom: 16,
+              left: 16,
+              right: 16,
             ),
-          ),
-
-          // Maps List
-          Expanded(
-            child: Obx(
-              () => controller.downloadedMaps.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No downloaded maps',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                  : ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: controller.downloadedMaps.length,
-                      itemBuilder: (context, index) {
-                        final map = controller.downloadedMaps[index];
-                        return _buildMapCard(context, controller, map, index);
-                      },
-                    ),
-            ),
-          ),
-
-          // Select Your Own Map Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      AppColors.orangeStart,
-                      AppColors.orangeEnd,
-                    ],
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle select own map
-                    Get.snackbar(
-                      'Select Map',
-                      'Opening map selection...',
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Get.theme.primaryColor,
-                      colorText: Colors.white,
-                      duration: Duration(seconds: 2),
-                      margin: EdgeInsets.all(16),
-                      borderRadius: 12,
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text(
-                    'Select your own map',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMapCard(BuildContext context, ProfileController controller,
-      Map<String, dynamic> map, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Text(
-                  map['name'],
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios_new,
+                      size: 20,
+                    ),
                   ),
                 ),
-                SizedBox(height: 4),
+                SizedBox(width: 16),
                 Text(
-                  'Last download ${map['lastDownloaded']}',
+                  'Download Offline Map',
                   style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
-          PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: Colors.black),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'rename',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, size: 20, color: Colors.black),
-                    SizedBox(width: 12),
-                    Text('Rename'),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, size: 20, color: Colors.red),
-                    SizedBox(width: 12),
-                    Text('Delete', style: TextStyle(color: Colors.red)),
-                  ],
-                ),
-              ),
-            ],
-            onSelected: (value) {
-              if (value == 'rename') {
-                controller.showRenameDialog(context, index);
-              } else if (value == 'delete') {
-                _showDeleteConfirmation(context, controller, index);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
-  void _showDeleteConfirmation(
-      BuildContext context, ProfileController controller, int index) {
-    Get.dialog(
-      AlertDialog(
-        title: Text('Delete Map'),
-        content: Text('Are you sure you want to delete this map?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
+          // Map Container
+          Expanded(
+            child: Container(
+              margin: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300, width: 8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Obx(
+                  () => GoogleMap(
+                    onMapCreated: controller.onMapCreated,
+                    initialCameraPosition: controller.cameraPosition.value,
+                    markers: controller.markers,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: false,
+                    mapToolbarEnabled: false,
+                    onCameraMove: (CameraPosition position) {
+                      controller.cameraPosition.value = position;
+                    },
+                  ),
+                ),
+              ),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              controller.deleteMap(index);
-              Get.back();
-            },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+
+          // Download Button
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Download map functionality
+              
+                  // Optionally go back after download
+                  Future.delayed(Duration(seconds: 2), () {
+                    Get.back();
+                  });
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xffFF7029),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Download Map',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),
