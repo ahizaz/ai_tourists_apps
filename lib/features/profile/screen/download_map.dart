@@ -11,6 +11,7 @@ class DownloadMap extends StatelessWidget {
     final ProfileController controller = Get.put(ProfileController());
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
+      
       body: Column(
         children: [
           // App Bar
