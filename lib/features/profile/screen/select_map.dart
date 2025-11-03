@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/profile/screen/download_map.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/view_saved_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -124,45 +125,50 @@ class SelectMap extends StatelessWidget {
 
   Widget _buildMapCard(BuildContext context, ProfileController controller,
       Map<String, dynamic> map, int index) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  map['name'],
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  'Last download ${map['lastDownloaded']}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () {
+        // Navigate to view the selected map area
+        _viewMapArea(controller, index);
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, 2),
             ),
-          ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    map['name'],
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Last download ${map['lastDownloaded']}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: Colors.black),
             shape: RoundedRectangleBorder(
@@ -200,6 +206,7 @@ class SelectMap extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -224,5 +231,21 @@ class SelectMap extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _viewMapArea(ProfileController controller, int index) {
+    if (index >= 0 && index < controller.downloadedMaps.length) {
+      final map = controller.downloadedMaps[index];
+      final mapName = map['name'];
+      final lat = map['latitude'] ?? controller.initialLat;
+      final lng = map['longitude'] ?? controller.initialLng;
+      final zoom = map['zoom'] ?? 15.0;
+      
+      // Move camera to saved location
+      controller.moveCamera(lat, lng, zoom: zoom);
+      
+      // Navigate to ViewSavedMap screen to view the area (without download button)
+      Get.to(() => ViewSavedMap(mapName: mapName));
+    }
   }
 }

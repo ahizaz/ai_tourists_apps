@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class DownloadMap extends StatelessWidget {
-  const DownloadMap({super.key});
+class ViewSavedMap extends StatelessWidget {
+  final String mapName;
+  
+  const ViewSavedMap({super.key, required this.mapName});
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.put(ProfileController());
+    final ProfileController controller = Get.find<ProfileController>();
+    
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
       body: Column(
@@ -41,7 +44,7 @@ class DownloadMap extends StatelessWidget {
                 ),
                 SizedBox(width: 16),
                 Text(
-                  'Download Offline Map',
+                  mapName,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -51,7 +54,7 @@ class DownloadMap extends StatelessWidget {
             ),
           ),
 
-          // Map Container
+          // Map Container (Full screen without download button)
           Expanded(
             child: Container(
               margin: EdgeInsets.all(16),
@@ -74,39 +77,6 @@ class DownloadMap extends StatelessWidget {
                     onCameraMove: (CameraPosition position) {
                       controller.cameraPosition.value = position;
                     },
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // Download Button
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: () {
-                  // Download current map view
-                  controller.downloadCurrentMap();
-                  
-                  // Go back immediately after download
-                  Get.back();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffFF7029),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Download Map',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
                   ),
                 ),
               ),
