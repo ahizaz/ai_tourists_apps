@@ -215,23 +215,7 @@ class ProfileController extends GetxController {
   }
 
   // Downloaded Maps functionality
-  var downloadedMaps = <Map<String, dynamic>>[
-    {
-      'id': '1',
-      'name': 'Map 01',
-      'lastDownloaded': '24/03/2024',
-    },
-    {
-      'id': '2',
-      'name': 'Map 02',
-      'lastDownloaded': '15/03/2024',
-    },
-    {
-      'id': '3',
-      'name': 'Map 03',
-      'lastDownloaded': '10/03/2024',
-    },
-  ].obs;
+  var downloadedMaps = <Map<String, dynamic>>[].obs;
 
   // Show rename dialog
   void showRenameDialog(BuildContext context, int index) {
@@ -296,14 +280,22 @@ class ProfileController extends GetxController {
     }
   }
 
-  // Select map
+  // Select map and navigate to view it
   void selectMap(int index) {
     if (index >= 0 && index < downloadedMaps.length) {
-      final mapName = downloadedMaps[index]['name'];
+      final map = downloadedMaps[index];
+      final mapName = map['name'];
+      final lat = map['latitude'] ?? initialLat;
+      final lng = map['longitude'] ?? initialLng;
+      final zoom = map['zoom'] ?? 15.0;
+      
+      // Move camera to saved location
+      moveCamera(lat, lng, zoom: zoom);
+      
       Get.back(); // Go back to previous screen
       Get.snackbar(
-        'Selected',
-        '$mapName has been selected',
+        'Map Loaded',
+        '$mapName has been loaded',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Get.theme.primaryColor,
         colorText: Colors.white,
@@ -312,6 +304,36 @@ class ProfileController extends GetxController {
         borderRadius: 12,
       );
     }
+  }
+
+  // Download current map view
+  void downloadCurrentMap() {
+    final currentPosition = cameraPosition.value;
+    final mapNumber = downloadedMaps.length + 1;
+    final now = DateTime.now();
+    final formattedDate = '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    
+    final newMap = {
+      'id': mapNumber.toString(),
+      'name': 'Map ${mapNumber.toString().padLeft(2, '0')}',
+      'lastDownloaded': formattedDate,
+      'latitude': currentPosition.target.latitude,
+      'longitude': currentPosition.target.longitude,
+      'zoom': currentPosition.zoom,
+    };
+    
+    downloadedMaps.add(newMap);
+    
+    Get.snackbar(
+      'Download Complete',
+      '${newMap['name']} has been downloaded successfully',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Color(0xffFF7029),
+      colorText: Colors.white,
+      duration: Duration(seconds: 2),
+      margin: EdgeInsets.all(16),
+      borderRadius: 12,
+    );
   }
 
 
