@@ -87,7 +87,7 @@ class SavePlace extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: .05),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -150,7 +150,7 @@ class SavePlace extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: .1),
                           blurRadius: 8,
                           offset: Offset(0, 2),
                         ),
@@ -370,7 +370,7 @@ class SavePlace extends StatelessWidget {
           ),
         ),
       ),
-      barrierColor: Colors.black.withOpacity(0.3),
+      barrierColor: Colors.black.withValues(alpha: .3),
     );
   }
 }
