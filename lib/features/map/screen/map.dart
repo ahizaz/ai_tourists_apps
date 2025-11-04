@@ -54,8 +54,7 @@ class MapScreen extends StatelessWidget {
                     ),
                     child: TextField(
                       onSubmitted: (value) {
-                        // You can call a function to search and move camera in future
-                        // e.g., controller.moveCamera(newLat, newLng);
+                   
                       },
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
@@ -72,7 +71,7 @@ class MapScreen extends StatelessWidget {
                     height: 40,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: [
+                      children: [ 
                         _buildChip('Hotel'),
                         _buildChip('Restaurant'),
                         _buildChip('ATMs'),
