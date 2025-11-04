@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/home/screen/place_details.dart';
+import 'package:ai_powered_tourists_app/features/home/screen/home_select_place_map.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 
@@ -187,14 +188,20 @@ class PlaceCard extends StatelessWidget {
                       Spacer(),
 
                       // action icons (map / details)////map ar
-                      Container(
-                        width: 36.w,
-                        height: 36.w,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8.r),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to HomeSelectPlaceMap
+                          Get.to(() => const HomeSelectPlaceMap(), arguments: place);
+                        },
+                        child: Container(
+                          width: 36.w,
+                          height: 36.w,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Image.asset(IconPath.mapinactive,width: 30.w,height: 30.w,fit: BoxFit.cover,),
                         ),
-                        child: Image.asset(IconPath.mapinactive,width: 30.w,height: 30.w,fit: BoxFit.cover,),
                       ),
                       SizedBox(width: 8.w),
                        Container(

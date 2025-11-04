@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:get/get.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeController extends GetxController {
   // Basic profile & location info
@@ -16,6 +17,19 @@ class HomeController extends GetxController {
 
   // Dynamic list of places
   final places = <Place>[].obs;
+
+  // Map related properties
+  GoogleMapController? _mapController;
+  final mapMarkers = <Marker>[].obs;
+  
+  // Default location (Rome, Italy - matching the image)
+  final double initialLat = 41.8902;
+  final double initialLng = 12.4922;
+  
+  var mapCameraPosition = const CameraPosition(
+    target: LatLng(41.8902, 12.4922),
+    zoom: 14.0,
+  ).obs;
 
   @override
   void onInit() {
@@ -81,4 +95,62 @@ class HomeController extends GetxController {
   }
 
   void selectCategory(String cat) => selectedCategory.value = cat;
+
+  // Map methods
+  void onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    _addInitialMarkers();
+  }
+
+  void _addInitialMarkers() {
+    // Add some sample markers
+    mapMarkers.add(
+      Marker(
+        markerId: const MarkerId('colosseum'),
+        position: const LatLng(41.8902, 12.4922),
+        infoWindow: const InfoWindow(title: 'Colosseum'),
+      ),
+    );
+    
+    // Add marker for Ashok Nagar (from the image)
+    mapMarkers.add(
+      Marker(
+        markerId: const MarkerId('ashok_nagar'),
+        position: const LatLng(41.8852, 12.4850),
+        infoWindow: const InfoWindow(title: 'Ashok Nagar'),
+      ),
+    );
+  }
+
+  void moveToCurrentLocation() {
+    if (_mapController != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(initialLat, initialLng),
+            zoom: 14.0,
+          ),
+        ),
+      );
+    }
+  }
+
+  void moveToPlace(double lat, double lng) {
+    if (_mapController != null) {
+      _mapController!.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(lat, lng),
+            zoom: 16.0,
+          ),
+        ),
+      );
+    }
+  }
+
+  @override
+  void onClose() {
+    _mapController?.dispose();
+    super.onClose();
+  }
 }
