@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/account_screen.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/profile_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/select_map.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart';
@@ -115,7 +116,7 @@ class ProfileScreen extends StatelessWidget {
                 iconPath: IconPath.aisetup,
                 title: "AI Setup",
                 onTap: () {
-           
+                   Get.to(()=>ProfileAiAssistant());
                 },
               ),
               SizedBox(height: 32.h,),
