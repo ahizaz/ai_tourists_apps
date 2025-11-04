@@ -9,6 +9,10 @@ class HomeController extends GetxController {
 
   // UI state
   var selectedCategory = 'Historical'.obs;
+  var isNotificationRed =false.obs;
+  void toggleNotificationColor(){
+    isNotificationRed.value = !isNotificationRed.value;
+  }
 
   // Dynamic list of places
   final places = <Place>[].obs;

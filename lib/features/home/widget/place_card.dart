@@ -10,8 +10,9 @@ import 'package:get/get.dart';
 class PlaceCard extends StatelessWidget {
   final Place place;
   final VoidCallback? onBookmark;
+  final RxBool isBookmarked = false.obs;
 
-  const PlaceCard({
+  PlaceCard({
     super.key,
     required this.place,
     this.onBookmark, required Null Function() onTap,
@@ -97,17 +98,29 @@ class PlaceCard extends StatelessWidget {
                       ),
                       SizedBox(width: 8.w),
                       GestureDetector(
-                        onTap: onBookmark,
-                        child: Container(
-                          width: 34.w,
-                          height: 34.w,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.r),
-                            border: Border.all(color: Colors.grey[200]!),
+                        onTap: () {
+                          isBookmarked.value = !isBookmarked.value;
+                          if (onBookmark != null) onBookmark!();
+                        },
+                        child: Obx(
+                          () => Container(
+                            width: 34.w,
+                            height: 34.w,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.r),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            child: Icon(
+                              isBookmarked.value
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              size: 20.w,
+                              color: isBookmarked.value
+                                  ? Colors.red
+                                  : Colors.grey[700],
+                            ),
                           ),
-                          child: Icon(Icons.bookmark_border,
-                              size: 20.w, color: Colors.grey[700]),
                         ),
                       ),
                     ],
