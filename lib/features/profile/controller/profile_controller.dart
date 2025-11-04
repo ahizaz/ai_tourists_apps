@@ -14,6 +14,12 @@ class ProfileController extends GetxController {
   var phoneNumber = "+880 10-46-828200".obs;
   var selectedPlan = RxnString();
 
+  // AI Assistant options
+  final RxnString gender = RxnString();
+  final RxnString voice = RxnString();
+  final RxList<String> voiceTypes = <String>[].obs;
+  final int maxVoiceTypesSelections = 3;
+
   // Quiz options
   var selectedQuantity = RxnInt();
   var selectedSubject = RxnString();
@@ -41,6 +47,33 @@ class ProfileController extends GetxController {
 
   void subscribeNow() {
     if (selectedPlan.value != null) {}
+  }
+
+  // AI Assistant methods
+  void selectGender(String? g) {
+    gender.value = g;
+  }
+
+  void selectVoice(String? v) {
+    voice.value = v;
+  }
+
+  bool toggleVoiceType(String t) {
+    if (voiceTypes.contains(t)) {
+      voiceTypes.remove(t);
+      return true;
+    }
+    if (voiceTypes.length < maxVoiceTypesSelections) {
+      voiceTypes.add(t);
+      return true;
+    }
+    return false;
+  }
+
+  void resetAiAssistant() {
+    gender.value = null;
+    voice.value = null;
+    voiceTypes.clear();
   }
 
   // Quiz selection methods

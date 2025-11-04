@@ -1,6 +1,9 @@
+import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/profile_first_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ProfileAiAssistant extends StatelessWidget {
@@ -8,14 +11,17 @@ class ProfileAiAssistant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ensure single controller instance for whole flow
+  
     return Scaffold(
-      body: Padding(padding: EdgeInsets.symmetric(horizontal: 12.w),
-      child: Column(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 12.w),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(height: 150.h),
-              Center(
+          children: [
+            SizedBox(height: 150.h),
+            Center(
               child: Image(
                 image: AssetImage(ImagePath.aiassistant),
                 height: 220.h,
@@ -58,8 +64,8 @@ class ProfileAiAssistant extends StatelessWidget {
                 ),
               ),
             ),
-                        SizedBox(height: 6.h),
-                         Center(
+            SizedBox(height: 6.h),
+            Center(
               child: Text(
                 "guide speaks, sounds, and helps you explore. ",
                 style: GoogleFonts.inter(
@@ -69,10 +75,11 @@ class ProfileAiAssistant extends StatelessWidget {
                 ),
               ),
             ),
-              SizedBox(height: 50.h),
-             InkWell(
+            SizedBox(height: 50.h),
+            InkWell(
               onTap: () {
-      
+                Get.put(ProfileController()); // Register the controller here
+                Get.to(() => ProfileFirstAiAssistant());
               },
               child: Container(
                 width: double.infinity,
@@ -103,8 +110,8 @@ class ProfileAiAssistant extends StatelessWidget {
                 ),
               ),
             ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
