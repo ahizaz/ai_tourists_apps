@@ -1,6 +1,7 @@
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:just_audio/just_audio.dart';
 
 class HomeController extends GetxController {
   // Basic profile & location info
@@ -14,6 +15,14 @@ class HomeController extends GetxController {
   void toggleNotificationColor(){
     isNotificationRed.value = !isNotificationRed.value;
   }
+
+  // AI Tourist Guide state
+  var showAIGuideSheet = false.obs;
+  var isAIGuideStarted = false.obs;
+  var isAudioPlaying = false.obs;
+  var audioPosition = Duration.zero.obs;
+  var audioDuration = Duration.zero.obs;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
   // Dynamic list of places
   final places = <Place>[].obs;
@@ -35,6 +44,27 @@ class HomeController extends GetxController {
   void onInit() {
     super.onInit();
     _loadSampleData();
+    _setupAudioListeners();
+  }
+
+  void _setupAudioListeners() {
+    _audioPlayer.positionStream.listen((position) {
+      audioPosition.value = position;
+    });
+
+    _audioPlayer.durationStream.listen((duration) {
+      audioDuration.value = duration ?? Duration.zero;
+    });
+
+    _audioPlayer.playerStateStream.listen((state) {
+      isAudioPlaying.value = state.playing;
+      
+      // Auto close when audio completes
+      if (state.processingState == ProcessingState.completed) {
+        isAudioPlaying.value = false;
+        audioPosition.value = Duration.zero;
+      }
+    });
   }
 
   void _loadSampleData() {
@@ -148,9 +178,74 @@ class HomeController extends GetxController {
     }
   }
 
+  // AI Tourist Guide Methods
+  void openAIGuideSheet() {
+    showAIGuideSheet.value = true;
+    isAIGuideStarted.value = false;
+  }
+
+  void closeAIGuideSheet() {
+    showAIGuideSheet.value = false;
+    isAIGuideStarted.value = false;
+    stopAudio();
+  }
+
+  void startAITouristGuide() {
+    isAIGuideStarted.value = true;
+    // In future, this will trigger AI to generate audio
+    // For now, we'll use a placeholder audio URL or local asset
+    playDemoAudio();
+  }
+
+  Future<void> playDemoAudio() async {
+    try {
+      // For demo purpose - in future, replace with AI-generated audio
+      // Using a sample audio URL for demonstration
+      await _audioPlayer.setUrl(
+        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      );
+      _audioPlayer.play();
+    } catch (e) {
+      print('Error playing audio: $e');
+    }
+  }
+
+  void toggleAudioPlayback() {
+    if (isAudioPlaying.value) {
+      pauseAudio();
+    } else {
+      resumeAudio();
+    }
+  }
+
+  void pauseAudio() {
+    _audioPlayer.pause();
+  }
+
+  void resumeAudio() {
+    _audioPlayer.play();
+  }
+
+  void stopAudio() {
+    _audioPlayer.stop();
+    audioPosition.value = Duration.zero;
+  }
+
+  void seekAudio(Duration position) {
+    _audioPlayer.seek(position);
+  }
+
+  String formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
   @override
   void onClose() {
     _mapController?.dispose();
+    _audioPlayer.dispose();
     super.onClose();
   }
 }
