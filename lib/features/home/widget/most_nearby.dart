@@ -88,12 +88,10 @@ class MostNearbySection extends StatelessWidget {
                 return PlaceCard(
                   place: place,
                   onTap: () {
-                    // navigate to details page (implement later)
-                    debugPrint('Tapped ${place.title}');
+             
                   },
                   onBookmark: () {
-                    // handle bookmark (implement favorite toggling)
-                    debugPrint('Bookmark ${place.title}');
+                 
                   },
                 );
               },

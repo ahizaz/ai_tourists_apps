@@ -28,13 +28,13 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color _border = borderColor ?? AppColors.border;
+    final Color border = borderColor ?? AppColors.border;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
       decoration: BoxDecoration(
         color: fillColor,
         borderRadius: BorderRadius.circular(borderRadius.r),
-        border: Border.all(color: _border, width: 1.5.w),
+        border: Border.all(color: border, width: 1.5.w),
       ),
       child: Row(
         children: [

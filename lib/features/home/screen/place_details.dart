@@ -84,8 +84,7 @@ class PlaceDetails extends StatelessWidget {
         
                     // (Optional) more detailed text to emulate long details - you can replace with real content
                     Text(
-                      '\nMore details\n\n' +
-                          ('${place.description} ' * 3),
+                      '\nMore details\n\n${'${place.description} ' * 3}',
                       style: GoogleFonts.dmSans(
                           fontSize: 14.sp, height: 1.6, color: Colors.grey[800]),
                     ),
