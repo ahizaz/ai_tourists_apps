@@ -6,14 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-
-
 class Home extends StatelessWidget {
   const Home({super.key});
   @override
   Widget build(BuildContext context) {
-    // Ensure ScreenUtil is initialized in your app (usually in main.dart)
+
     final HomeController controller = Get.put(HomeController());
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
@@ -39,7 +36,6 @@ class Home extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    // notification icon — keep your IconPath or replace with Icon()
                     GestureDetector(
                       onTap: () => debugPrint('Open notifications'),
                       child: Image(
@@ -57,7 +53,6 @@ class Home extends StatelessWidget {
                 CurrentLocationCard(),
                 SizedBox(height: 18.h),
                  MostNearbySection(),
-               
               ],
             ),
           ),

@@ -394,9 +394,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
           ),
 
           SizedBox(height: 20.h),
-
-          // Live audio waveform animation (no slider, just visual)
-          Container(
+          SizedBox(
             height: 60.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
