@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:just_audio/just_audio.dart';
@@ -206,7 +207,7 @@ class HomeController extends GetxController {
       );
       _audioPlayer.play();
     } catch (e) {
-      print('Error playing audio: $e');
+      debugPrint('Error playing audio: $e');
     }
   }
 
