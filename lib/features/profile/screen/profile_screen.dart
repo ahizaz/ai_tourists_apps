@@ -141,7 +141,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.termscondition,
-                title: "terms_condition".tr,
+                title: "Terms and Conditions".tr,
                 onTap: () {
             Get.to(()=>TermsCondition());
                 },
