@@ -29,18 +29,26 @@ class SplashScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 35.h),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image(
-                          image: AssetImage(IconPath.firstdotsplash),
-                          height: 4.h,
-                          width: 72.w,
-                          fit: BoxFit.cover,
-                        ),
-                        const LanguageSelectorButton(),
-                      ],
-                    ),
+     Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+    Expanded(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.only(left: 40), // এখানে মান adjust করো
+          child: Image(
+            image: AssetImage(IconPath.firstdotsplash),
+            height: 4.h,
+            width: 72.w,
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    ),
+    LanguageSelectorButton(),
+  ],
+),
+
                     SizedBox(height: 110.h),
                     Center(
                       child: Image(

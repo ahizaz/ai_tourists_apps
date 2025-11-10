@@ -90,6 +90,15 @@ class AppTranslations extends Translations {
     'city_park_desc': 'A big green area great for walking, cycling and family activities.',
     'great_wall_scenic': 'Great Wall Scenic Spot',
     'great_wall_scenic_desc': 'Beautiful viewpoint with restored watchtowers and easy access trails.',
+    
+    // Profile Screen
+    'account': 'Account',
+    'subscription': 'Subscription',
+    'play_quiz': 'Play Quiz',
+    'ai_setup': 'AI Setup',
+    'save_place': 'Save Place',
+    'download_offline_map': 'Download Offline Map',
+    'terms_condition': 'Terms & Condition',
   };
 
   // French translations
@@ -174,6 +183,15 @@ class AppTranslations extends Translations {
     'city_park_desc': 'Un grand espace vert idéal pour la marche, le vélo et les activités familiales.',
     'great_wall_scenic': 'Point de Vue Grande Muraille',
     'great_wall_scenic_desc': 'Magnifique point de vue avec des tours de guet restaurées et des sentiers d\'accès facile.',
+    
+    // Profile Screen
+    'account': 'Compte',
+    'subscription': 'Abonnement',
+    'play_quiz': 'Jouer au quiz',
+    'ai_setup': 'Configuration IA',
+    'save_place': 'Enregistrer le lieu',
+    'download_offline_map': 'Télécharger la carte hors ligne',
+    'terms_condition': 'Termes et conditions',
   };
 
   // Spanish translations
@@ -258,5 +276,14 @@ class AppTranslations extends Translations {
     'city_park_desc': 'Una gran área verde ideal para caminar, andar en bicicleta y actividades familiares.',
     'great_wall_scenic': 'Mirador Gran Muralla',
     'great_wall_scenic_desc': 'Hermoso mirador con torres de vigilancia restauradas y senderos de fácil acceso.',
+    
+    // Profile Screen
+    'account': 'Cuenta',
+    'subscription': 'Suscripción',
+    'play_quiz': 'Jugar cuestionario',
+    'ai_setup': 'Configuración IA',
+    'save_place': 'Guardar lugar',
+    'download_offline_map': 'Descargar mapa sin conexión',
+    'terms_condition': 'Términos y condiciones',
   };
 }

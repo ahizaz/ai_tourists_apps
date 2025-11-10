@@ -90,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.account,
-                title: "Account",
+                title: "account".tr,
                 onTap: () {
                     Get.to(()=>AccountScreen());
                 },
@@ -98,7 +98,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.subscription,
-                title: "Subscription",
+                title: "subscription".tr,
                 onTap: () {
                  Get.to(()=>SubscriptionScreen());
                 },
@@ -106,7 +106,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.playquize,
-                title: "Play Quiz",
+                title: "play_quiz".tr,
                 onTap: () {
                       Get.to(()=>PlayAiQuize());
                 },
@@ -114,7 +114,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.aisetup,
-                title: "AI Setup",
+                title: "ai_setup".tr,
                 onTap: () {
                    Get.to(()=>ProfileAiAssistant());
                 },
@@ -122,7 +122,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.saveplace,
-                title: "Save Place",
+                title: "save_place".tr,
                 onTap: () {
                 Get.to(()=>SavePlace());
                 },
@@ -131,7 +131,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.offilinemapdownload,
-                title: "Download Offline Map",
+                title: "download_offline_map".tr,
                 onTap: () {
                 Get.to(()=>SelectMap());
                 },
@@ -141,7 +141,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h,),
               ProfileOptionItem(
                 iconPath: IconPath.termscondition,
-                title: "Trams & Condition",
+                title: "terms_condition".tr,
                 onTap: () {
             Get.to(()=>TermsCondition());
                 },
