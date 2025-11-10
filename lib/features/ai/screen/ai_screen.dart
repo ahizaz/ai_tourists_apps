@@ -28,7 +28,7 @@ class AiScreen extends StatelessWidget {
             ),
             SizedBox(width: 8.w),
             Text(
-              "AI Travel Assistant",
+              "ai_travel_assistant".tr,
               style: GoogleFonts.inter(
                 fontWeight: FontWeight.w600,
                 fontSize: 18.sp,
@@ -92,7 +92,7 @@ class AiScreen extends StatelessWidget {
                           ),
                           SizedBox(width: 8.w),
                           Text(
-                            "AI is thinking...",
+                            "ai_is_thinking".tr,
                             style: GoogleFonts.inter(
                               fontSize: 12.sp,
                               color: Color(0xFF878787),
@@ -151,7 +151,7 @@ class AiScreen extends StatelessWidget {
                         color: const Color(0xFF313131),
                       ),
                       decoration: InputDecoration(
-                        hintText: "Start your conversation here…",
+                        hintText: "start_conversation".tr,
                         hintStyle: GoogleFonts.inter(
                           fontSize: 14.sp,
                           color: const Color(0xFF878787),
@@ -230,7 +230,7 @@ class AiScreen extends StatelessWidget {
                 end: Alignment.bottomRight,
               ).createShader(bounds),
               child: Text(
-                "Every picture has a history—let AI",
+                "every_picture_history".tr,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600,
@@ -249,7 +249,7 @@ class AiScreen extends StatelessWidget {
                 end: Alignment.bottomRight,
               ).createShader(bounds),
               child: Text(
-                "reveal it to you",
+                "reveal_it".tr,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontWeight: FontWeight.w600,
@@ -260,7 +260,7 @@ class AiScreen extends StatelessWidget {
             ),
             SizedBox(height: 16.h),
             Text(
-              "Upload or snap a photo, and AI will tell you the full",
+              "upload_snap_photo".tr,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
@@ -269,7 +269,7 @@ class AiScreen extends StatelessWidget {
               ),
             ),
             Text(
-              "story of its history.",
+              "story_history".tr,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
                 fontSize: 14.sp,
@@ -416,7 +416,7 @@ class AiScreen extends StatelessWidget {
               ),
               SizedBox(height: 20.h),
               Text(
-                "Choose Image Source",
+                "choose_image_source".tr,
                 style: GoogleFonts.inter(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
@@ -437,7 +437,7 @@ class AiScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text(
-                  "Gallery",
+                  "gallery".tr,
                   style: GoogleFonts.inter(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
@@ -462,7 +462,7 @@ class AiScreen extends StatelessWidget {
                   ),
                 ),
                 title: Text(
-                  "Camera",
+                  "camera".tr,
                   style: GoogleFonts.inter(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,

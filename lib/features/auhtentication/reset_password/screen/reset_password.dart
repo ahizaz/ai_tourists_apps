@@ -29,7 +29,7 @@ class ResetPassword extends StatelessWidget {
               SizedBox(height: 150.h),
               Center(
                 child: Text(
-                  "Reset Password",
+                  "reset_password".tr,
                   style: GoogleFonts.inter(
                     color: AppColors.textPrimary,
                     fontSize: 22.sp,
@@ -40,7 +40,7 @@ class ResetPassword extends StatelessWidget {
               SizedBox(height: 6.h),
               Center(
                 child: Text(
-                  "Reset your account password and access",
+                  "new_password_required".tr,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
@@ -50,7 +50,7 @@ class ResetPassword extends StatelessWidget {
               ),
               Center(
                 child: Text(
-                  "your personal acccount again",
+                  "from_previous_password".tr,
                   style: GoogleFonts.inter(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
@@ -64,7 +64,7 @@ class ResetPassword extends StatelessWidget {
                 isPasswordHidden: controller.isNewPasswordHidden,
                 onToggle: controller.togglePasswordVisibility,
                 prefixIcon: Icons.lock_outline,
-                hintText: "New Password",
+                hintText: "new_password".tr,
               ),
               SizedBox(height: 16.h),
               PasswordTextField(
@@ -72,7 +72,7 @@ class ResetPassword extends StatelessWidget {
                 isPasswordHidden: controller.isConfirmPasswordHidden,
                 onToggle: controller.toggleConfirmPasswordVisibility,
                 prefixIcon: Icons.lock_outline,
-                hintText: "Confirm Password",
+                hintText: "confirm_password_field".tr,
               ),
               const Spacer(),
 
@@ -103,7 +103,7 @@ class ResetPassword extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              "Next",
+                              "next_btn".tr,
                               style: GoogleFonts.inter(
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.w600,
@@ -128,7 +128,7 @@ class ResetPassword extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              "Next",
+                              "next_btn".tr,
                               style: GoogleFonts.inter(
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,

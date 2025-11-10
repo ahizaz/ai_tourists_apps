@@ -19,7 +19,7 @@ class AccountScreen extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Account',
+          'account'.tr,
           style: TextStyle(
             color: Colors.black,
             fontSize: 18,
@@ -34,22 +34,22 @@ class AccountScreen extends StatelessWidget {
           children: [
             // Full Name Field
             Obx(() => _buildInfoRow(
-              label: 'Full Name',
+              label: 'full_name_label'.tr,
               value: controller.userName.value,
               onTap: () => _showEditDialog(
                 context,
-                'Edit Full Name',
+                'full_name_label'.tr,
                 controller.userName.value,
                 (value) => controller.userName.value = value,
               ),
             )),
             SizedBox(height: 20),
             Obx(() => _buildInfoRow(
-              label: 'E-mail',
+              label: 'email_label'.tr,
               value: controller.userEmail.value,
               onTap: () => _showEditDialog(
                 context,
-                'Edit E-mail',
+                'email_label'.tr,
                 controller.userEmail.value,
                 (value) => controller.userEmail.value = value,
               ),
@@ -120,20 +120,20 @@ class AccountScreen extends StatelessWidget {
           controller: textController,
           decoration: InputDecoration(
             border: OutlineInputBorder(),
-            hintText: 'Enter new value',
+            hintText: 'enter_new_value'.tr,
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel'),
+            child: Text('cancel_btn'.tr),
           ),
           ElevatedButton(
             onPressed: () {
               onSave(textController.text);
               Get.back();
             },
-            child: Text('Save'),
+            child: Text('save_btn'.tr),
           ),
         ],
       ),

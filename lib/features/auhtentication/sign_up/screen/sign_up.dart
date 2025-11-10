@@ -28,7 +28,7 @@ class SignUp extends StatelessWidget {
           SizedBox(height: 105.h),
                 Center(
                   child: Text(
-                    "Create An Account",
+                    "create_an_account".tr,
                     style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
                       fontSize: 22.sp,
@@ -39,14 +39,14 @@ class SignUp extends StatelessWidget {
                       SizedBox(height: 40.h),
                       CustomTextField(
                   controller: controller.nameController,
-                  hintText: "Name",
+                  hintText: "name".tr,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.person,
                 ),
                  SizedBox(height: 16.h),
                             CustomTextField(
                   controller: controller.emailOrPhoneController,
-                  hintText: "email or phone number",
+                  hintText: "email_or_phone".tr,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                 ),
@@ -70,7 +70,7 @@ class SignUp extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "I agree to the",
+                          "i_agree_to".tr,
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
@@ -78,7 +78,7 @@ class SignUp extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 6.w,),
-                        Text("Terms & Condition",style: GoogleFonts.inter( 
+                        Text("terms_and_condition".tr,style: GoogleFonts.inter( 
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
                           color: Color(0xff505050),
@@ -111,7 +111,7 @@ class SignUp extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "Next",
+                        "next_btn".tr,
                         style: GoogleFonts.inter(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
@@ -133,7 +133,7 @@ class SignUp extends StatelessWidget {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Already have an account?",style: GoogleFonts.inter( 
+                        Text("already_have_account".tr,style: GoogleFonts.inter( 
                           color: AppColors.textPrimary,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400
@@ -144,7 +144,7 @@ class SignUp extends StatelessWidget {
                 Get.to(()=>SignIn());
                },
                  child: Text(
-                  "Sign In",
+                  "sign_in".tr,
               style: GoogleFonts.inter(
              color: AppColors.orangeEnd,
               fontWeight: FontWeight.w500,

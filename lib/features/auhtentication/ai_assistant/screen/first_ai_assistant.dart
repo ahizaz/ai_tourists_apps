@@ -44,7 +44,7 @@ class FirstAiAssistant extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'AI Preferences gander',
+                      'ai_preferences'.tr,
                       style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B)),
                     ),
                   ),
@@ -52,7 +52,7 @@ class FirstAiAssistant extends StatelessWidget {
               ),
               Align(alignment: Alignment.centerRight, child: Text('1/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('AI Gander', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(alignment: Alignment.centerLeft, child: Text('ai_gender'.tr, style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
@@ -60,13 +60,13 @@ class FirstAiAssistant extends StatelessWidget {
                     return Column(
                       children: [
                         OptionTile(
-                          label: 'Male',
+                          label: 'male'.tr,
                           selected: ctrl.gender.value == 'Male',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Male'),
                         ),
                         OptionTile(
-                          label: 'Female',
+                          label: 'female'.tr,
                           selected: ctrl.gender.value == 'Female',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Female'),
@@ -91,7 +91,7 @@ class FirstAiAssistant extends StatelessWidget {
                     ),
                   ),
                   child: Center(
-                    child: Text('Next', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
+                    child: Text('next_btn'.tr, style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
                   ),
                 ),
               ),

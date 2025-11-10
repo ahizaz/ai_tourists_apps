@@ -53,7 +53,7 @@ class MapScreen extends StatelessWidget {
                       },
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-                        hintText: 'Search location',
+                        hintText: 'search_location'.tr,
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       ),
