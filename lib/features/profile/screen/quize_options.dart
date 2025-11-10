@@ -1,9 +1,10 @@
-import 'package:ai_powered_tourists_app/features/profile/screen/select_qa.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/interactive_quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/profile_controller.dart';
+import '../controller/interactive_quiz_controller.dart';
 
 class QuizeOptions extends StatelessWidget {
   const QuizeOptions({super.key});
@@ -91,8 +92,11 @@ class QuizeOptions extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: controller.canStartQuiz
                     ? () {
-                        Get.to(()=>SelectQa());
-                      
+                        // Initialize the interactive quiz controller
+                        final quizController = Get.put(InteractiveQuizController());
+                        // Load questions from profile controller if needed
+                        quizController.loadQuestionsFromProfile(controller.qaQuestions);
+                        Get.to(() => const InteractiveQuizScreen());
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
