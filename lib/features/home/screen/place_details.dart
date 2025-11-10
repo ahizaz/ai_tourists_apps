@@ -1,5 +1,5 @@
+import 'package:ai_powered_tourists_app/features/home/screen/home_select_place_map.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
-import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -152,28 +152,30 @@ class PlaceDetails extends StatelessWidget {
 
             Spacer(),
 
-            // map button
-            Container(
-              width: 40.w,
-              height: 40.w,
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12.r),
+            // Start de Visit button
+            GestureDetector(
+              onTap: () {
+                // Navigate to the map screen with the place data
+                Get.to(
+                  () => const HomeSelectPlaceMap(),
+                  arguments: place,
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9ED12E),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Text(
+                  'Start de Visit',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
               ),
-              child: Image.asset( IconPath.mapinactive,height: 30.h,width: 30.w,fit: BoxFit.cover,)
-            ),
-            SizedBox(width: 8.w),
-
-            // more / directions
-            Container(
-              width: 44.w,
-              height: 44.w,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child:Image.asset(IconPath.aiactive)
             ),
           ],
         ),

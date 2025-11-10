@@ -25,7 +25,7 @@ class SplashScreenSecond extends StatelessWidget {
             children: [
               SizedBox(height: 130.h,),
              Center(
-                 child: Text("Explore Without Limits",style: GoogleFonts.inter( 
+                 child: Text('explore_effortlessly'.tr,style: GoogleFonts.inter( 
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   color: Color(0xffFFFFFF)
@@ -33,14 +33,14 @@ class SplashScreenSecond extends StatelessWidget {
              ),
              SizedBox(height: 6.h,),
              Center(
-              child: Text("Enjoy offline access and smart recommendations,",style: GoogleFonts.inter( 
+              child: Text('navigate_plan'.tr,style: GoogleFonts.inter( 
                 fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xffFFFFFF)
               ),),
              ),
              SizedBox(height: 4.h,),
         
                     Center(
-              child: Text("anytime, anywhere",style: GoogleFonts.inter( 
+              child: Text('ai_assistance'.tr,style: GoogleFonts.inter( 
                 fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xffFFFFFF)
               ),),
              ),
@@ -61,7 +61,7 @@ class SplashScreenSecond extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      "Get Start",
+                      'get_start'.tr,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,

@@ -45,7 +45,7 @@ class CurrentLocationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Current location", style: GoogleFonts.inter(
+            Text('current_location'.tr, style: GoogleFonts.inter(
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
               color: Color(0xff252525),
@@ -73,7 +73,7 @@ class CurrentLocationCard extends StatelessWidget {
                 Image.asset(IconPath.sun, width: 24.w, height: 24.h),
                 SizedBox(width: 3.w),
                 Obx(() => Text(
-                      "Weather: ${controller.currentWeather.value}",
+                      "${'weather'.tr}: ${controller.currentWeather.value}",
                       style: GoogleFonts.inter(
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w400,
@@ -84,7 +84,7 @@ class CurrentLocationCard extends StatelessWidget {
                 TextButton(
                   onPressed: () {},
                   child: Text(
-                    'See Map',
+                    'see_map'.tr,
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: Color(0xFF45C5FF),

@@ -9,9 +9,7 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Put the controller (will survive as long as route exists)
     final MapController controller = Get.put(MapController());
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -20,7 +18,6 @@ class MapScreen extends StatelessWidget {
             // Map area
             Positioned.fill(
               child: Obx(() {
-                // Use controller.cameraPosition and controller.markers
                 return GoogleMap(
                   initialCameraPosition: controller.cameraPosition.value,
                   onMapCreated: controller.onMapCreated,
@@ -31,8 +28,6 @@ class MapScreen extends StatelessWidget {
                 );
               }),
             ),
-
-            // Top search box with a slight transparent background
             Positioned(
               left: 16,
               right: 16,
@@ -101,13 +96,13 @@ class MapScreen extends StatelessWidget {
               ),
             ),
 
-            // Bottom-floating button to "move to static location" (example)
+          
             Positioned(
               right: 16,
               bottom: 24,
               child: FloatingActionButton(
                 onPressed: () {
-                  // Example: move camera to the static lat/lng from controller
+                 
                   controller.moveCamera(controller.initialLat, controller.initialLng, zoom: 16);
                 },
                 child: const Icon(Icons.my_location),
@@ -124,7 +119,7 @@ class MapScreen extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8),
       child: OutlinedButton(
         onPressed: () {
-          // In the future you can filter places and move the map
+         
         },
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white70,

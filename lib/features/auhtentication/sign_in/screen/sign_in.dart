@@ -27,7 +27,7 @@ class SignIn extends StatelessWidget {
                 SizedBox(height: 105.h),
                 Center(
                   child: Text(
-                    "Sign In Your Account",
+                    'sign_in_account'.tr,
                     style: GoogleFonts.inter(
                       color: AppColors.textPrimary,
                       fontSize: 22.sp,
@@ -38,7 +38,7 @@ class SignIn extends StatelessWidget {
                 SizedBox(height: 40.h),
                 CustomTextField(
                   controller: controller.emailOrPhoneController,
-                  hintText: "Phone number or email",
+                  hintText: 'phone_or_email'.tr,
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: Icons.email_outlined,
                 ),
@@ -62,7 +62,7 @@ class SignIn extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "Remember me",
+                          'remember_me'.tr,
                           style: GoogleFonts.inter(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w400,
@@ -76,7 +76,7 @@ class SignIn extends StatelessWidget {
                         Get.to(()=>ForgetPassword());
                       },
                       child: Text(
-                        "Forget password?",
+                        'forget_password'.tr,
                         style: GoogleFonts.inter(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -103,7 +103,7 @@ class SignIn extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "Sign In",
+                        'sign_in'.tr,
                         style: GoogleFonts.inter(
                           fontSize: 20.sp,
                           fontWeight: FontWeight.w600,
@@ -125,7 +125,7 @@ class SignIn extends StatelessWidget {
                   child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Don't have an account?",style: GoogleFonts.inter( 
+                        Text('dont_have_account'.tr,style: GoogleFonts.inter( 
                           color: AppColors.textPrimary,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400
@@ -136,7 +136,7 @@ class SignIn extends StatelessWidget {
                 Get.to(()=>SignUp());
                },
                  child: Text(
-                  "Sign Up",
+                  'sign_up'.tr,
               style: GoogleFonts.inter(
              color: AppColors.orangeEnd,
               fontWeight: FontWeight.w500,

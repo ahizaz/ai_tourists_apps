@@ -1,3 +1,4 @@
+import 'package:ai_powered_tourists_app/core/common/widgets/language_selector_button.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen_second.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
@@ -28,13 +29,17 @@ class SplashScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 35.h),
-                    Center(
-                      child: Image(
-                        image: AssetImage(IconPath.firstdotsplash),
-                        height: 4.h,
-                        width: 72.w,
-                        fit: BoxFit.cover,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image(
+                          image: AssetImage(IconPath.firstdotsplash),
+                          height: 4.h,
+                          width: 72.w,
+                          fit: BoxFit.cover,
+                        ),
+                        const LanguageSelectorButton(),
+                      ],
                     ),
                     SizedBox(height: 110.h),
                     Center(
@@ -48,7 +53,7 @@ class SplashScreen extends StatelessWidget {
                     SizedBox(height: 32.h),
                     Center(
                       child: Text(
-                        "Discover the",
+                        'discover_the'.tr,
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 24.sp,
@@ -58,7 +63,7 @@ class SplashScreen extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        "AI Travel Assist App",
+                        'ai_travel_assist'.tr,
                         style: GoogleFonts.inter(
                           fontWeight: FontWeight.w600,
                           fontSize: 24.sp,
@@ -69,7 +74,7 @@ class SplashScreen extends StatelessWidget {
                     SizedBox(height: 8.h),
                     Center(
                       child: Text(
-                        "Smart recommendations and real-time",
+                        'smart_recommendations'.tr,
                         style: GoogleFonts.inter(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
@@ -79,7 +84,7 @@ class SplashScreen extends StatelessWidget {
                     ),
                     Center(
                       child: Text(
-                        "guidance at your fingertips",
+                        'guidance_fingertips'.tr,
                         style: GoogleFonts.inter(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
@@ -104,7 +109,7 @@ class SplashScreen extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            "Next",
+                            'next'.tr,
                             style: GoogleFonts.inter(
                               fontSize: 20.sp,
                               fontWeight: FontWeight.w600,
