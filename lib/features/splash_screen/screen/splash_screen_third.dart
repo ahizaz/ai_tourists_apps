@@ -23,7 +23,7 @@ class SplashScreenThird extends StatelessWidget {
             children: [
                SizedBox(height: 130.h,),
                    Center(
-                 child: Text("Your AI Travel Companion ",style: GoogleFonts.inter( 
+                 child: Text('ai_travel_companion'.tr,style: GoogleFonts.inter( 
                   fontSize: 24.sp,
                   fontWeight: FontWeight.w600,
                   color: Color(0xff252525)
@@ -31,13 +31,13 @@ class SplashScreenThird extends StatelessWidget {
              ),
                SizedBox(height: 6.h,),
                   Center(
-              child: Text("Receive real-time navigation, personalized ",style: GoogleFonts.inter( 
+              child: Text('receive_realtime'.tr,style: GoogleFonts.inter( 
                 fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xff505050)
               ),),
              ),
                    SizedBox(height: 4.h,),
                           Center(
-              child: Text("tips, and multi-language support",style: GoogleFonts.inter( 
+              child: Text('tips_support'.tr,style: GoogleFonts.inter( 
                 fontSize: 14.sp,fontWeight: FontWeight.w400,color: Color(0xff505050)
               ),),
              ),
@@ -58,7 +58,7 @@ class SplashScreenThird extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      "Go To Home",
+                      'go_to_home'.tr,
                       style: GoogleFonts.inter(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w600,

@@ -27,7 +27,7 @@ class Home extends StatelessWidget {
                   children: [
                     Obx(
                       () => Text(
-                        "Hello, ${controller.userName.value}",
+                        "${'hello'.tr}, ${controller.userName.value}",
                         style: GoogleFonts.dmSerifDisplay(
                           fontSize: 24.sp,
                           fontWeight: FontWeight.w400,

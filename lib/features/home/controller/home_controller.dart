@@ -1,3 +1,4 @@
+import 'package:ai_powered_tourists_app/core/localization/localization_service.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,7 +12,7 @@ class HomeController extends GetxController {
   var currentWeather = "22°C".obs;
 
   // UI state
-  var selectedCategory = 'Historical'.obs;
+  var selectedCategory = 'historical'.obs;
   var isNotificationRed =false.obs;
   void toggleNotificationColor(){
     isNotificationRed.value = !isNotificationRed.value;
@@ -46,6 +47,16 @@ class HomeController extends GetxController {
     super.onInit();
     _loadSampleData();
     _setupAudioListeners();
+    
+    // Listen to locale changes and reload data
+    ever(Get.find<LocalizationService>().currentLocale, (_) {
+      reloadPlacesData();
+    });
+  }
+  
+  // Reload places data when language changes
+  void reloadPlacesData() {
+    _loadSampleData();
   }
 
   void _setupAudioListeners() {
@@ -73,56 +84,55 @@ class HomeController extends GetxController {
     places.assignAll([
       Place(
         id: 'gwc',
-        title: 'Great Wall of China',
-        description:
-            'The Great Wall of China is a series of fortifications made of stone, brick, tamped earth, wood, and other materials.',
+        title: 'great_wall_china'.tr,
+        description: 'great_wall_desc'.tr,
         imageUrl:
             'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSxFPo2KM3TStgMefLyEKBR0vlVgPBmxqk0pLS59-sJXBcmW3xH7567GcvcE4ejvayAbYzJwISv_DLj-IRWjMp_fSl5jpG6_hL8H7d-vMMLHYP-dgdpljyhorPpkHgJnZQ40X7am=w270-h312-n-k-no',
         rating: 4.3,
         distanceKm: 2.5,
-        category: 'Historical',
+        category: 'historical'.tr,
       ),
       Place(
         id: 'museum1',
-        title: 'National History Museum',
-        description:
-            'Explore ancient artifacts and natural history exhibitions from around the world.',
+        title: 'national_museum'.tr,
+        description: 'national_museum_desc'.tr,
         imageUrl:
             'https://images.unsplash.com/photo-1554907984-15263bfd63bd?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170',
         rating: 4.0,
         distanceKm: 1.2,
-        category: 'Museum',
+        category: 'museum'.tr,
       ),
       Place(
         id: 'tour1',
-        title: 'City Park',
-        description:
-            'A big green area great for walking, cycling and family activities.',
+        title: 'city_park'.tr,
+        description: 'city_park_desc'.tr,
         imageUrl:
             'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzm7wFydyGdrpZB_1p2eYstikmI5NsQfXyZLfEbhRcOoGJ-eAHrsaCZTxtPNoRaJ4IPzj1anKiRs61q_nBnMFD5aj1Ohc6He_uKUkkRio-udSEMWzbTNciCdF_MNucfvIX7MM5p=s680-w680-h510-rw',
         rating: 4.1,
         distanceKm: 0.9,
-        category: 'Tourism',
+        category: 'tourism'.tr,
       ),
       // duplicate to show list scrolling
       Place(
         id: 'gwc2',
-        title: 'Great Wall Scenic Spot',
-        description:
-            'Beautiful viewpoint with restored watchtowers and easy access trails.',
+        title: 'great_wall_scenic'.tr,
+        description: 'great_wall_scenic_desc'.tr,
         imageUrl:
             'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
         rating: 4.5,
         distanceKm: 3.1,
-        category: 'Historical',
+        category: 'historical'.tr,
       ),
     ]);
   }
 
   List<Place> filteredPlaces() {
     final cat = selectedCategory.value;
-    if (cat == 'All') return places;
-    return places.where((p) => p.category == cat).toList();
+    if (cat == 'all') return places;
+    
+    // Get the translated category value for comparison
+    final translatedCategory = cat.tr;
+    return places.where((p) => p.category == translatedCategory).toList();
   }
 
   void selectCategory(String cat) => selectedCategory.value = cat;
