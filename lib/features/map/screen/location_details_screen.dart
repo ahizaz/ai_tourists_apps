@@ -100,6 +100,7 @@ class LocationDetailsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24.sp,
                       fontWeight: FontWeight.bold,
+                      fontFamily: null, // Use default font, not monospace
                     ),
                   ),
                   SizedBox(height: 8.h),
@@ -475,6 +476,7 @@ class LocationDetailsScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
+                        fontFamily: null, // Use default font, not monospace
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
