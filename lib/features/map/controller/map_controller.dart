@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class MapController extends GetxController {
   // API Key
@@ -75,60 +76,66 @@ class MapController extends GetxController {
       ));
 
       // Move camera to tapped location
-      await moveCamera(position.latitude, position.longitude);
+      await moveCamera(position.latitude, position.longitude, zoom: 16);
 
-      // Get place details using reverse geocoding
-      List<Placemark> placemarks = await placemarkFromCoordinates(
-        position.latitude,
-        position.longitude,
-      );
-
-      if (placemarks.isNotEmpty) {
-        final place = placemarks.first;
-        
-        // Get a proper location name (not Plus Code)
-        final locationName = _getLocationName(place);
-        
-        // Also try to get nearby places from Google Places API
-        await getNearbyPlaceDetails(position.latitude, position.longitude);
-        
-        // Update marker with place info
-        markers.clear();
-        markers.add(Marker(
-          markerId: MarkerId('selected_location'),
-          position: position,
-          infoWindow: InfoWindow(
-            title: locationName,
-            snippet: '${place.locality ?? ''}${place.locality != null && place.administrativeArea != null ? ', ' : ''}${place.administrativeArea ?? ''}',
-          ),
-          onTap: () {
-            showPlaceDetails.value = true;
-          },
-        ));
-
-        // Set basic details
-        selectedPlaceDetails.value = {
-          'name': locationName,
-          'street': place.street ?? '',
-          'locality': place.locality ?? '',
-          'subLocality': place.subLocality ?? '',
-          'administrativeArea': place.administrativeArea ?? '',
-          'country': place.country ?? '',
-          'postalCode': place.postalCode ?? '',
-          'latitude': position.latitude,
-          'longitude': position.longitude,
-          'fullAddress': _formatAddress(place),
-        };
-
-        // Load nearby places (default: hotels)
-        await searchNearbyPlaces(
+      // First, try to get nearby places from Google Places API
+      final placeId = await getNearbyPlaceDetails(position.latitude, position.longitude);
+      
+      if (placeId != null) {
+        // If we found a place_id, get full details
+        await getPlaceDetails(placeId);
+      } else {
+        // Fallback to reverse geocoding if no nearby place found
+        List<Placemark> placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
-          selectedNearbyCategory.value,
         );
 
-        showPlaceDetails.value = true;
+        if (placemarks.isNotEmpty) {
+          final place = placemarks.first;
+          final locationName = _getLocationName(place);
+          
+          // Set basic details from geocoding
+          selectedPlaceDetails.value = {
+            'name': locationName,
+            'street': place.street ?? '',
+            'locality': place.locality ?? '',
+            'subLocality': place.subLocality ?? '',
+            'administrativeArea': place.administrativeArea ?? '',
+            'country': place.country ?? '',
+            'postalCode': place.postalCode ?? '',
+            'latitude': position.latitude,
+            'longitude': position.longitude,
+            'fullAddress': _formatAddress(place),
+            'rating': 'N/A',
+            'phone': 'N/A',
+            'photos': [],
+          };
+        }
       }
+      
+      // Update marker with final place info
+      markers.clear();
+      markers.add(Marker(
+        markerId: MarkerId('selected_location'),
+        position: position,
+        infoWindow: InfoWindow(
+          title: selectedPlaceDetails['name'] ?? 'Selected Location',
+          snippet: selectedPlaceDetails['fullAddress'] ?? '',
+        ),
+        onTap: () {
+          showPlaceDetails.value = true;
+        },
+      ));
+
+      // Load nearby places (default: hotels)
+      await searchNearbyPlaces(
+        position.latitude,
+        position.longitude,
+        selectedNearbyCategory.value,
+      );
+
+      showPlaceDetails.value = true;
     } catch (e) {
       Get.snackbar('Error', 'Failed to get location details: $e');
     } finally {
@@ -137,7 +144,7 @@ class MapController extends GetxController {
   }
 
   // Get nearby place details from Google Places API
-  Future<void> getNearbyPlaceDetails(double lat, double lng) async {
+  Future<String?> getNearbyPlaceDetails(double lat, double lng) async {
     try {
       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
           '?location=$lat,$lng'
@@ -151,15 +158,16 @@ class MapController extends GetxController {
         if (data['results'] != null && data['results'].isNotEmpty) {
           final place = data['results'][0];
           
-          // Get detailed place info
+          // Return the place_id if found
           if (place['place_id'] != null) {
-            await getPlaceDetails(place['place_id']);
+            return place['place_id'];
           }
         }
       }
     } catch (e) {
       print('Error getting nearby places: $e');
     }
+    return null;
   }
 
   // Get detailed place information
@@ -167,7 +175,7 @@ class MapController extends GetxController {
     try {
       final url = 'https://maps.googleapis.com/maps/api/place/details/json'
           '?place_id=$placeId'
-          '&fields=name,formatted_address,formatted_phone_number,rating,opening_hours,website,types,geometry,photos'
+          '&fields=name,formatted_address,formatted_phone_number,rating,opening_hours,website,types,geometry,photos,reviews,price_level,url'
           '&key=$apiKey';
 
       final response = await http.get(Uri.parse(url));
@@ -176,19 +184,34 @@ class MapController extends GetxController {
         final data = json.decode(response.body);
         if (data['result'] != null) {
           final result = data['result'];
+          final geometry = result['geometry'];
           
-          // Merge with existing details
-          selectedPlaceDetails.addAll({
-            'name': result['name'] ?? selectedPlaceDetails['name'],
-            'fullAddress': result['formatted_address'] ?? selectedPlaceDetails['fullAddress'],
+          // Get all photos, not just first few
+          List<dynamic> allPhotos = [];
+          if (result['photos'] != null) {
+            allPhotos = List<dynamic>.from(result['photos']);
+          }
+          
+          // Update selected place details with all information
+          selectedPlaceDetails.value = {
+            'name': result['name'] ?? 'Unknown Location',
+            'fullAddress': result['formatted_address'] ?? 'Address not available',
             'phone': result['formatted_phone_number'] ?? 'N/A',
-            'rating': result['rating']?.toString() ?? 'N/A',
+            'rating': result['rating'] ?? 'N/A',
             'website': result['website'] ?? 'N/A',
             'types': result['types'] ?? [],
             'openingHours': result['opening_hours']?['weekday_text'] ?? [],
             'isOpen': result['opening_hours']?['open_now'] ?? false,
-            'photos': result['photos'] ?? [],
-          });
+            'photos': allPhotos, // Store all photos
+            'reviews': result['reviews'] ?? [],
+            'priceLevel': result['price_level'] ?? 'N/A',
+            'latitude': geometry?['location']?['lat'] ?? selectedPlaceDetails['latitude'],
+            'longitude': geometry?['location']?['lng'] ?? selectedPlaceDetails['longitude'],
+            'place_id': placeId,
+            'url': result['url'] ?? '', // Google Maps URL
+          };
+          
+          print('Loaded ${allPhotos.length} photos for ${result['name']}');
         }
       }
     } catch (e) {
@@ -262,19 +285,33 @@ class MapController extends GetxController {
           for (var place in data['results']) {
             final lat = place['geometry']['location']['lat'];
             final lng = place['geometry']['location']['lng'];
+            final placeId = place['place_id'];
             
             markers.add(Marker(
-              markerId: MarkerId(place['place_id']),
+              markerId: MarkerId(placeId),
               position: LatLng(lat, lng),
               infoWindow: InfoWindow(
                 title: place['name'],
                 snippet: place['vicinity'],
               ),
               onTap: () async {
-                await getPlaceDetails(place['place_id']);
+                // Move camera to marker position
+                await moveCamera(lat, lng, zoom: 16);
+                // Get full place details
+                await getPlaceDetails(placeId);
                 showPlaceDetails.value = true;
               },
             ));
+          }
+          
+          // Show snackbar with results count
+          if (data['results'].length > 0) {
+            Get.snackbar(
+              'Results',
+              'Found ${data['results'].length} ${category.toLowerCase()}s nearby',
+              snackPosition: SnackPosition.BOTTOM,
+              duration: Duration(seconds: 2),
+            );
           }
         }
       }
@@ -289,10 +326,32 @@ class MapController extends GetxController {
   Future<void> selectSearchResult(Map<String, dynamic> result) async {
     final lat = result['lat'];
     final lng = result['lng'];
+    final placeId = result['place_id'];
     
-    await moveCamera(lat, lng);
-    await onMapTap(LatLng(lat, lng));
+    // Move camera to location
+    await moveCamera(lat, lng, zoom: 16);
     
+    // Clear existing markers and add new one
+    markers.clear();
+    markers.add(Marker(
+      markerId: MarkerId(placeId),
+      position: LatLng(lat, lng),
+      infoWindow: InfoWindow(
+        title: result['name'],
+        snippet: result['address'],
+      ),
+      onTap: () {
+        showPlaceDetails.value = true;
+      },
+    ));
+    
+    // Get full place details
+    await getPlaceDetails(placeId);
+    
+    // Show place details
+    showPlaceDetails.value = true;
+    
+    // Clear search results
     searchResults.clear();
   }
 
@@ -324,15 +383,41 @@ class MapController extends GetxController {
       }
 
       Position position = await Geolocator.getCurrentPosition();
-      await moveCamera(position.latitude, position.longitude);
       
-      // Add marker at current location
-      markers.clear();
-      markers.add(Marker(
-        markerId: MarkerId('current_location'),
-        position: LatLng(position.latitude, position.longitude),
-        infoWindow: InfoWindow(title: 'Current Location'),
-      ));
+      // Move camera to current location
+      await moveCamera(position.latitude, position.longitude, zoom: 16);
+      
+      // Try to get nearby place details
+      final placeId = await getNearbyPlaceDetails(position.latitude, position.longitude);
+      
+      if (placeId != null) {
+        // Get full place details
+        await getPlaceDetails(placeId);
+        
+        // Add marker with place details
+        markers.clear();
+        markers.add(Marker(
+          markerId: MarkerId('current_location'),
+          position: LatLng(position.latitude, position.longitude),
+          infoWindow: InfoWindow(
+            title: selectedPlaceDetails['name'] ?? 'Current Location',
+            snippet: selectedPlaceDetails['fullAddress'] ?? '',
+          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          onTap: () {
+            showPlaceDetails.value = true;
+          },
+        ));
+      } else {
+        // Fallback to simple marker
+        markers.clear();
+        markers.add(Marker(
+          markerId: MarkerId('current_location'),
+          position: LatLng(position.latitude, position.longitude),
+          infoWindow: InfoWindow(title: 'Current Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        ));
+      }
     } catch (e) {
       Get.snackbar('Error', 'Failed to get current location: $e');
     }
@@ -373,11 +458,25 @@ class MapController extends GetxController {
   }
 
   // Get photo URL from photo reference
-  String getPhotoUrl(String photoReference, {int maxWidth = 400}) {
+  String getPhotoUrl(String photoReference, {int maxWidth = 800}) {
     return 'https://maps.googleapis.com/maps/api/place/photo'
         '?maxwidth=$maxWidth'
         '&photo_reference=$photoReference'
         '&key=$apiKey';
+  }
+  
+  // Get multiple photo URLs
+  List<String> getPhotoUrls(List<dynamic> photos, {int maxCount = 5, int maxWidth = 800}) {
+    List<String> urls = [];
+    final count = photos.length > maxCount ? maxCount : photos.length;
+    
+    for (int i = 0; i < count; i++) {
+      if (photos[i]['photo_reference'] != null) {
+        urls.add(getPhotoUrl(photos[i]['photo_reference'], maxWidth: maxWidth));
+      }
+    }
+    
+    return urls;
   }
 
   // Search nearby places by type
@@ -452,11 +551,30 @@ class MapController extends GetxController {
   // Open in Google Maps
   Future<void> openInGoogleMaps(double lat, double lng) async {
     try {
-      final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
-      // You can use url_launcher package here
-      Get.snackbar('Info', 'Opening in Google Maps: $url');
+      // Try to open in Google Maps app first (works on Android/iOS)
+      final googleMapsUrl = Uri.parse('google.navigation:q=$lat,$lng');
+      final googleMapsWebUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+      
+      // Try Google Maps app URL first
+      if (await canLaunchUrl(googleMapsUrl)) {
+        await launchUrl(googleMapsUrl);
+      } else if (await canLaunchUrl(googleMapsWebUrl)) {
+        // Fallback to web URL
+        await launchUrl(googleMapsWebUrl, mode: LaunchMode.externalApplication);
+      } else {
+        Get.snackbar(
+          'Error',
+          'Could not open Google Maps',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
     } catch (e) {
-      Get.snackbar('Error', 'Failed to open Google Maps');
+      print('Error opening Google Maps: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to open Google Maps',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
