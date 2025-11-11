@@ -190,6 +190,7 @@ class MapScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                fontFamily: null, // Use default font, not monospace
                               ),
                             ),
                           ),

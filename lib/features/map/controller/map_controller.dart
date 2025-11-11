@@ -86,6 +86,9 @@ class MapController extends GetxController {
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         
+        // Get a proper location name (not Plus Code)
+        final locationName = _getLocationName(place);
+        
         // Also try to get nearby places from Google Places API
         await getNearbyPlaceDetails(position.latitude, position.longitude);
         
@@ -95,8 +98,8 @@ class MapController extends GetxController {
           markerId: MarkerId('selected_location'),
           position: position,
           infoWindow: InfoWindow(
-            title: place.name ?? 'Unknown Location',
-            snippet: '${place.street ?? ''}, ${place.locality ?? ''}',
+            title: locationName,
+            snippet: '${place.locality ?? ''}${place.locality != null && place.administrativeArea != null ? ', ' : ''}${place.administrativeArea ?? ''}',
           ),
           onTap: () {
             showPlaceDetails.value = true;
@@ -105,7 +108,7 @@ class MapController extends GetxController {
 
         // Set basic details
         selectedPlaceDetails.value = {
-          'name': place.name ?? 'Unknown Location',
+          'name': locationName,
           'street': place.street ?? '',
           'locality': place.locality ?? '',
           'subLocality': place.subLocality ?? '',
@@ -333,6 +336,29 @@ class MapController extends GetxController {
     } catch (e) {
       Get.snackbar('Error', 'Failed to get current location: $e');
     }
+  }
+
+  // Helper method to get proper location name (not Plus Code)
+  String _getLocationName(Placemark place) {
+    // Try to get a meaningful name instead of Plus Code
+    // Priority: street > subLocality > locality > administrativeArea
+    if (place.street?.isNotEmpty ?? false) {
+      // Check if it's not a Plus Code (Plus Codes contain '+')
+      if (!place.street!.contains('+')) {
+        return place.street!;
+      }
+    }
+    if (place.subLocality?.isNotEmpty ?? false) {
+      return place.subLocality!;
+    }
+    if (place.locality?.isNotEmpty ?? false) {
+      return place.locality!;
+    }
+    if (place.administrativeArea?.isNotEmpty ?? false) {
+      return place.administrativeArea!;
+    }
+    // If all else fails, use locality or a generic name
+    return place.locality ?? 'Selected Location';
   }
 
   // Helper method to format address
