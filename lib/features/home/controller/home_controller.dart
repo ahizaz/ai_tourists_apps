@@ -1,5 +1,6 @@
 import 'package:ai_powered_tourists_app/core/localization/localization_service.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
+import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -75,8 +76,134 @@ class HomeController extends GetxController {
       if (state.processingState == ProcessingState.completed) {
         isAudioPlaying.value = false;
         audioPosition.value = Duration.zero;
+        
+        // Suggest quiz after visit completion
+        _suggestQuizAfterVisit();
       }
     });
+  }
+  
+  // Method to suggest quiz when visit is finished
+  void _suggestQuizAfterVisit() {
+    // Small delay to allow audio to fully stop
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (Get.isDialogOpen == false) {
+        _showQuizSuggestionDialog();
+      }
+    });
+  }
+  
+  void _showQuizSuggestionDialog() {
+    Get.dialog(
+      Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Icon
+              Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: const Color(0xffFF6B35).withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.quiz_outlined,
+                  size: 40,
+                  color: Color(0xffFF6B35),
+                ),
+              ),
+              const SizedBox(height: 20),
+              
+              // Title
+              Text(
+                'visit_complete'.tr,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xff252525),
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              
+              // Message
+              Text(
+                'quiz_suggestion_message'.tr,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xff878787),
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              
+              // Start Quiz Button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.back(); // Close dialog
+                    closeAIGuideSheet(); // Close the bottom sheet
+                    // Navigate to quiz - Import needed at top of file
+                    Get.to(() => const PlayAiQuize());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffFF6B35),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'start_quiz'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              // Maybe Later Button
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton(
+                  onPressed: () {
+                    Get.back(); // Close dialog
+                  },
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Color(0xffFF6B35), width: 2),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: Text(
+                    'maybe_later'.tr,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xffFF6B35),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: true,
+    );
   }
 
   void _loadSampleData() {
