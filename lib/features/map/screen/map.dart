@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
+import 'package:ai_powered_tourists_app/features/map/screen/location_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -246,25 +247,61 @@ class MapScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                // Directions functionality can be added later
-                                Get.snackbar('Info', 'Directions feature coming soon');
+                                // Open detailed view
+                                Get.to(() => LocationDetailsScreen(
+                                  locationData: controller.selectedPlaceDetails,
+                                ));
                               },
-                              icon: Icon(Icons.directions),
-                              label: Text('Directions'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              icon: Icon(Icons.info_outline),
+                              label: Text('View Details'),
                             ),
                           ),
                           SizedBox(width: 8),
                           Expanded(
-                            child: OutlinedButton.icon(
+                            child: ElevatedButton.icon(
                               onPressed: () {
-                                // Save functionality can be added later
-                                Get.snackbar('Info', 'Save feature coming soon');
+                                // Directions functionality can be added later
+                                Get.snackbar('Info', 'Directions feature coming soon');
                               },
-                              icon: Icon(Icons.bookmark_border),
-                              label: Text('Save'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              icon: Icon(Icons.directions),
+                              label: Text('Directions'),
                             ),
                           ),
                         ],
+                      ),
+                      SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            // Save functionality
+                            controller.savePlace(controller.selectedPlaceDetails);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: Icon(Icons.bookmark_border),
+                          label: Text('Save Place'),
+                        ),
                       ),
                     ],
                   ),
