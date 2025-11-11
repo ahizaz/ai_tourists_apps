@@ -269,8 +269,12 @@ class MapScreen extends StatelessWidget {
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
-                                // Directions functionality can be added later
-                                Get.snackbar('Info', 'Directions feature coming soon');
+                                // Open Google Maps directions
+                                final lat = controller.selectedPlaceDetails['latitude'];
+                                final lng = controller.selectedPlaceDetails['longitude'];
+                                if (lat != null && lng != null) {
+                                  controller.openInGoogleMaps(lat, lng);
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,

@@ -54,31 +54,71 @@ class LocationDetailsScreen extends StatelessWidget {
                 final photos = controller.selectedPlaceDetails['photos'] as List?;
                 
                 if (photos != null && photos.isNotEmpty) {
-                  return PageView.builder(
-                    itemCount: photos.length > 5 ? 5 : photos.length,
-                    itemBuilder: (context, index) {
-                      final photoReference = photos[index]['photo_reference'];
-                      final photoUrl = controller.getPhotoUrl(photoReference);
-                      
-                      return Image.network(
-                        photoUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildDefaultImage();
-                        },
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
+                  // Show all photos in a PageView
+                  return Stack(
+                    children: [
+                      PageView.builder(
+                        itemCount: photos.length, // Show all photos, not just 5
+                        itemBuilder: (context, index) {
+                          final photoReference = photos[index]['photo_reference'];
+                          final photoUrl = controller.getPhotoUrl(photoReference);
+                          
+                          return Image.network(
+                            photoUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return _buildDefaultImage();
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                          loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
+                      ),
+                      // Photo counter indicator
+                      if (photos.length > 1)
+                        Positioned(
+                          bottom: 16.h,
+                          right: 16.w,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 12.w,
+                              vertical: 6.h,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(20.r),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.photo_library,
+                                  color: Colors.white,
+                                  size: 16.sp,
+                                ),
+                                SizedBox(width: 4.w),
+                                Text(
+                                  '${photos.length} photos',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   );
                 } else {
                   return _buildDefaultImage();
@@ -426,11 +466,44 @@ class LocationDetailsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.r),
       ),
       child: InkWell(
-        onTap: () {
-          // Navigate to this place's details
+        onTap: () async {
+          // Navigate to this place's details - Google Maps style
           final lat = place['latitude'];
           final lng = place['longitude'];
-          controller.onMapTap(LatLng(lat, lng));
+          final placeId = place['place_id'];
+          
+          // Show loading indicator
+          Get.dialog(
+            Center(child: CircularProgressIndicator()),
+            barrierDismissible: false,
+          );
+          
+          // Move map camera to the new location
+          await controller.moveCamera(lat, lng, zoom: 16);
+          
+          // Get full place details using place_id
+          if (placeId != null) {
+            await controller.getPlaceDetails(placeId);
+          } else {
+            // Fallback if no place_id
+            await controller.onMapTap(LatLng(lat, lng));
+          }
+          
+          // Load nearby places for the new location
+          await controller.searchNearbyPlaces(
+            lat,
+            lng,
+            controller.selectedNearbyCategory.value,
+          );
+          
+          // Close loading and current screen
+          Get.back(); // Close loading dialog
+          Get.back(); // Close current details screen
+          
+          // Open new details screen for the selected place
+          Get.to(() => LocationDetailsScreen(
+            locationData: controller.selectedPlaceDetails,
+          ));
         },
         borderRadius: BorderRadius.circular(12.r),
         child: Padding(
