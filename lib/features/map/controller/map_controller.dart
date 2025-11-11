@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
@@ -33,6 +35,11 @@ class MapController extends GetxController {
   // Search results
   final RxList<Map<String, dynamic>> searchResults = <Map<String, dynamic>>[].obs;
   final RxBool isSearching = false.obs;
+
+  // Nearby places
+  final RxList<Map<String, dynamic>> nearbyPlaces = <Map<String, dynamic>>[].obs;
+  final RxBool isLoadingNearbyPlaces = false.obs;
+  final RxString selectedNearbyCategory = 'lodging'.obs;
 
   @override
   void onInit() {
@@ -109,6 +116,13 @@ class MapController extends GetxController {
           'longitude': position.longitude,
           'fullAddress': _formatAddress(place),
         };
+
+        // Load nearby places (default: hotels)
+        await searchNearbyPlaces(
+          position.latitude,
+          position.longitude,
+          selectedNearbyCategory.value,
+        );
 
         showPlaceDetails.value = true;
       }
@@ -330,5 +344,106 @@ class MapController extends GetxController {
     if (place.administrativeArea?.isNotEmpty ?? false) parts.add(place.administrativeArea!);
     if (place.country?.isNotEmpty ?? false) parts.add(place.country!);
     return parts.join(', ');
+  }
+
+  // Get photo URL from photo reference
+  String getPhotoUrl(String photoReference, {int maxWidth = 400}) {
+    return 'https://maps.googleapis.com/maps/api/place/photo'
+        '?maxwidth=$maxWidth'
+        '&photo_reference=$photoReference'
+        '&key=$apiKey';
+  }
+
+  // Search nearby places by type
+  Future<void> searchNearbyPlaces(double lat, double lng, String type) async {
+    try {
+      isLoadingNearbyPlaces.value = true;
+      nearbyPlaces.clear();
+
+      final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+          '?location=$lat,$lng'
+          '&radius=5000'
+          '&type=$type'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (data['results'] != null) {
+          nearbyPlaces.value = List<Map<String, dynamic>>.from(
+            data['results'].take(10).map((place) {
+              final placeLat = place['geometry']['location']['lat'];
+              final placeLng = place['geometry']['location']['lng'];
+              final distance = _calculateDistance(lat, lng, placeLat, placeLng);
+              
+              return {
+                'name': place['name'],
+                'vicinity': place['vicinity'],
+                'address': place['formatted_address'] ?? place['vicinity'],
+                'rating': place['rating'],
+                'latitude': placeLat,
+                'longitude': placeLng,
+                'place_id': place['place_id'],
+                'photo': place['photos']?[0]?['photo_reference'],
+                'distance': distance.toStringAsFixed(1),
+                'isOpen': place['opening_hours']?['open_now'],
+              };
+            })
+          );
+        }
+      }
+    } catch (e) {
+      print('Error searching nearby places: $e');
+      Get.snackbar('Error', 'Failed to load nearby places');
+    } finally {
+      isLoadingNearbyPlaces.value = false;
+    }
+  }
+
+  // Calculate distance between two coordinates (in km)
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const double earthRadius = 6371; // km
+    
+    final dLat = _degreesToRadians(lat2 - lat1);
+    final dLon = _degreesToRadians(lon2 - lon1);
+    
+    final a = (sin(dLat / 2) * sin(dLat / 2)) +
+        cos(_degreesToRadians(lat1)) *
+        cos(_degreesToRadians(lat2)) *
+        (sin(dLon / 2) * sin(dLon / 2));
+    
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    
+    return earthRadius * c;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * pi / 180;
+  }
+
+  // Open in Google Maps
+  Future<void> openInGoogleMaps(double lat, double lng) async {
+    try {
+      final url = 'https://www.google.com/maps/search/?api=1&query=$lat,$lng';
+      // You can use url_launcher package here
+      Get.snackbar('Info', 'Opening in Google Maps: $url');
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to open Google Maps');
+    }
+  }
+
+  // Save place
+  void savePlace(Map<String, dynamic> placeData) {
+    // This can be implemented with local storage or database
+    Get.snackbar(
+      'Saved',
+      '${placeData['name']} has been saved to your favorites',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+      duration: Duration(seconds: 2),
+    );
   }
 }
