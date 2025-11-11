@@ -146,14 +146,18 @@ class QuizeOptions extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: isSelected ? Color(0xff505050) : Color(0xff878787),
+              Flexible(
+                child: Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w400,
+                    color: isSelected ? Color(0xff505050) : Color(0xff878787),
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              SizedBox(width: 8),
               Container(
                 width: 20,
                 height: 20,
