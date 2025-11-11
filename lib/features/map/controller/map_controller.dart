@@ -1,8 +1,15 @@
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:http/http.dart' as http;
 
 class MapController extends GetxController {
-  // Static coordinates (example: a point in Dhaka). Replace with whatever static coords you want.
+  // API Key
+  final String apiKey = 'AIzaSyCGBj98ytEcJaL7kbXfnXvtAIlSp5MBAxc';
+  
+  // Static coordinates (example: a point in Dhaka)
   final double initialLat = 23.7808875;
   final double initialLng = 90.2792371;
 
@@ -15,8 +22,17 @@ class MapController extends GetxController {
   // Observable set of markers
   final RxSet<Marker> markers = <Marker>{}.obs;
 
-  // GoogleMap Controller (non-reactive)
+  // GoogleMap Controller
   GoogleMapController? gMapController;
+
+  // Selected place details
+  final RxMap<String, dynamic> selectedPlaceDetails = <String, dynamic>{}.obs;
+  final RxBool showPlaceDetails = false.obs;
+  final RxBool isLoadingPlaceDetails = false.obs;
+
+  // Search results
+  final RxList<Map<String, dynamic>> searchResults = <Map<String, dynamic>>[].obs;
+  final RxBool isSearching = false.obs;
 
   @override
   void onInit() {
@@ -35,6 +51,234 @@ class MapController extends GetxController {
     gMapController = controller;
   }
 
+  // Handle map tap - get place details
+  Future<void> onMapTap(LatLng position) async {
+    try {
+      isLoadingPlaceDetails.value = true;
+      
+      // Add marker at tapped location
+      markers.clear();
+      markers.add(Marker(
+        markerId: MarkerId('tapped_location'),
+        position: position,
+        infoWindow: InfoWindow(
+          title: 'Loading...',
+          snippet: 'Fetching location details',
+        ),
+      ));
+
+      // Move camera to tapped location
+      await moveCamera(position.latitude, position.longitude);
+
+      // Get place details using reverse geocoding
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        
+        // Also try to get nearby places from Google Places API
+        await getNearbyPlaceDetails(position.latitude, position.longitude);
+        
+        // Update marker with place info
+        markers.clear();
+        markers.add(Marker(
+          markerId: MarkerId('selected_location'),
+          position: position,
+          infoWindow: InfoWindow(
+            title: place.name ?? 'Unknown Location',
+            snippet: '${place.street ?? ''}, ${place.locality ?? ''}',
+          ),
+          onTap: () {
+            showPlaceDetails.value = true;
+          },
+        ));
+
+        // Set basic details
+        selectedPlaceDetails.value = {
+          'name': place.name ?? 'Unknown Location',
+          'street': place.street ?? '',
+          'locality': place.locality ?? '',
+          'subLocality': place.subLocality ?? '',
+          'administrativeArea': place.administrativeArea ?? '',
+          'country': place.country ?? '',
+          'postalCode': place.postalCode ?? '',
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+          'fullAddress': _formatAddress(place),
+        };
+
+        showPlaceDetails.value = true;
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to get location details: $e');
+    } finally {
+      isLoadingPlaceDetails.value = false;
+    }
+  }
+
+  // Get nearby place details from Google Places API
+  Future<void> getNearbyPlaceDetails(double lat, double lng) async {
+    try {
+      final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+          '?location=$lat,$lng'
+          '&radius=50'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['results'] != null && data['results'].isNotEmpty) {
+          final place = data['results'][0];
+          
+          // Get detailed place info
+          if (place['place_id'] != null) {
+            await getPlaceDetails(place['place_id']);
+          }
+        }
+      }
+    } catch (e) {
+      print('Error getting nearby places: $e');
+    }
+  }
+
+  // Get detailed place information
+  Future<void> getPlaceDetails(String placeId) async {
+    try {
+      final url = 'https://maps.googleapis.com/maps/api/place/details/json'
+          '?place_id=$placeId'
+          '&fields=name,formatted_address,formatted_phone_number,rating,opening_hours,website,types,geometry,photos'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['result'] != null) {
+          final result = data['result'];
+          
+          // Merge with existing details
+          selectedPlaceDetails.addAll({
+            'name': result['name'] ?? selectedPlaceDetails['name'],
+            'fullAddress': result['formatted_address'] ?? selectedPlaceDetails['fullAddress'],
+            'phone': result['formatted_phone_number'] ?? 'N/A',
+            'rating': result['rating']?.toString() ?? 'N/A',
+            'website': result['website'] ?? 'N/A',
+            'types': result['types'] ?? [],
+            'openingHours': result['opening_hours']?['weekday_text'] ?? [],
+            'isOpen': result['opening_hours']?['open_now'] ?? false,
+            'photos': result['photos'] ?? [],
+          });
+        }
+      }
+    } catch (e) {
+      print('Error getting place details: $e');
+    }
+  }
+
+  // Search for places
+  Future<void> searchPlaces(String query) async {
+    if (query.isEmpty) {
+      searchResults.clear();
+      isSearching.value = false;
+      return;
+    }
+
+    try {
+      isSearching.value = true;
+      
+      // Use Text Search API
+      final url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'
+          '?query=$query'
+          '&location=${initialLat},${initialLng}'
+          '&radius=50000'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['results'] != null) {
+          searchResults.value = List<Map<String, dynamic>>.from(
+            data['results'].map((place) => {
+              'name': place['name'],
+              'address': place['formatted_address'],
+              'lat': place['geometry']['location']['lat'],
+              'lng': place['geometry']['location']['lng'],
+              'place_id': place['place_id'],
+              'rating': place['rating']?.toString() ?? 'N/A',
+              'types': place['types'] ?? [],
+            })
+          );
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to search: $e');
+    } finally {
+      isSearching.value = false;
+    }
+  }
+
+  // Search by category
+  Future<void> searchByCategory(String category) async {
+    try {
+      isSearching.value = true;
+      
+      final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+          '?location=${cameraPosition.value.target.latitude},${cameraPosition.value.target.longitude}'
+          '&radius=5000'
+          '&type=${category.toLowerCase()}'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['results'] != null) {
+          // Clear existing markers
+          markers.clear();
+          
+          // Add markers for each result
+          for (var place in data['results']) {
+            final lat = place['geometry']['location']['lat'];
+            final lng = place['geometry']['location']['lng'];
+            
+            markers.add(Marker(
+              markerId: MarkerId(place['place_id']),
+              position: LatLng(lat, lng),
+              infoWindow: InfoWindow(
+                title: place['name'],
+                snippet: place['vicinity'],
+              ),
+              onTap: () async {
+                await getPlaceDetails(place['place_id']);
+                showPlaceDetails.value = true;
+              },
+            ));
+          }
+        }
+      }
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to search category: $e');
+    } finally {
+      isSearching.value = false;
+    }
+  }
+
+  // Select a search result
+  Future<void> selectSearchResult(Map<String, dynamic> result) async {
+    final lat = result['lat'];
+    final lng = result['lng'];
+    
+    await moveCamera(lat, lng);
+    await onMapTap(LatLng(lat, lng));
+    
+    searchResults.clear();
+  }
+
   // Animate camera to new position
   Future<void> moveCamera(double lat, double lng, {double zoom = 15}) async {
     final newPos = CameraPosition(target: LatLng(lat, lng), zoom: zoom);
@@ -42,12 +286,49 @@ class MapController extends GetxController {
     if (gMapController != null) {
       await gMapController!.animateCamera(CameraUpdate.newCameraPosition(newPos));
     }
-    // update marker
-    markers.clear();
-    markers.add(Marker(
-      markerId: MarkerId('marker_${lat}_$lng'),
-      position: LatLng(lat, lng),
-      infoWindow: const InfoWindow(title: 'Selected location'),
-    ));
+  }
+
+  // Get current location
+  Future<void> getCurrentLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        Get.snackbar('Error', 'Location services are disabled');
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          Get.snackbar('Error', 'Location permission denied');
+          return;
+        }
+      }
+
+      Position position = await Geolocator.getCurrentPosition();
+      await moveCamera(position.latitude, position.longitude);
+      
+      // Add marker at current location
+      markers.clear();
+      markers.add(Marker(
+        markerId: MarkerId('current_location'),
+        position: LatLng(position.latitude, position.longitude),
+        infoWindow: InfoWindow(title: 'Current Location'),
+      ));
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to get current location: $e');
+    }
+  }
+
+  // Helper method to format address
+  String _formatAddress(Placemark place) {
+    List<String> parts = [];
+    if (place.street?.isNotEmpty ?? false) parts.add(place.street!);
+    if (place.subLocality?.isNotEmpty ?? false) parts.add(place.subLocality!);
+    if (place.locality?.isNotEmpty ?? false) parts.add(place.locality!);
+    if (place.administrativeArea?.isNotEmpty ?? false) parts.add(place.administrativeArea!);
+    if (place.country?.isNotEmpty ?? false) parts.add(place.country!);
+    return parts.join(', ');
   }
 }

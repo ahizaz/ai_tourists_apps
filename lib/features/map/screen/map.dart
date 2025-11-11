@@ -10,6 +10,8 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MapController controller = Get.put(MapController());
+    final TextEditingController searchController = TextEditingController();
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -21,6 +23,7 @@ class MapScreen extends StatelessWidget {
                 return GoogleMap(
                   initialCameraPosition: controller.cameraPosition.value,
                   onMapCreated: controller.onMapCreated,
+                  onTap: controller.onMapTap,
                   myLocationEnabled: false,
                   myLocationButtonEnabled: false,
                   zoomControlsEnabled: false,
@@ -48,8 +51,12 @@ class MapScreen extends StatelessWidget {
                       ],
                     ),
                     child: TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        controller.searchPlaces(value);
+                      },
                       onSubmitted: (value) {
-                   
+                        controller.searchPlaces(value);
                       },
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
@@ -67,14 +74,54 @@ class MapScreen extends StatelessWidget {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [ 
-                        _buildChip('Hotel'),
-                        _buildChip('Restaurant'),
-                        _buildChip('ATMs'),
-                        _buildChip('Shopping Mall'),
-                        _buildChip('Hospital'),
+                        _buildChip('Hotel', controller),
+                        _buildChip('Restaurant', controller),
+                        _buildChip('ATMs', controller),
+                        _buildChip('Shopping Mall', controller),
+                        _buildChip('Hospital', controller),
                       ],
                     ),
                   ),
+                  
+                  // Search results dropdown
+                  Obx(() {
+                    if (controller.searchResults.isEmpty) return SizedBox.shrink();
+                    return Container(
+                      margin: EdgeInsets.only(top: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      constraints: BoxConstraints(maxHeight: 200),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: controller.searchResults.length,
+                        itemBuilder: (context, index) {
+                          final result = controller.searchResults[index];
+                          return ListTile(
+                            leading: Icon(Icons.location_on, color: Colors.red),
+                            title: Text(result['name'] ?? ''),
+                            subtitle: Text(
+                              result['address'] ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () {
+                              searchController.clear();
+                              controller.selectSearchResult(result);
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  }),
                 ],
               ),
             ),
@@ -102,24 +149,140 @@ class MapScreen extends StatelessWidget {
               bottom: 24,
               child: FloatingActionButton(
                 onPressed: () {
-                 
-                  controller.moveCamera(controller.initialLat, controller.initialLng, zoom: 16);
+                  controller.getCurrentLocation();
                 },
                 child: const Icon(Icons.my_location),
               ),
             ),
+            
+            // Place details bottom sheet
+            Obx(() {
+              if (!controller.showPlaceDetails.value) return SizedBox.shrink();
+              
+              return Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, -3),
+                      ),
+                    ],
+                  ),
+                  padding: EdgeInsets.all(16),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              controller.selectedPlaceDetails['name'] ?? 'Unknown',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: () {
+                              controller.showPlaceDetails.value = false;
+                            },
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      if (controller.selectedPlaceDetails['rating'] != null)
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 20),
+                            SizedBox(width: 4),
+                            Text(
+                              controller.selectedPlaceDetails['rating'].toString(),
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: Colors.grey, size: 20),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              controller.selectedPlaceDetails['fullAddress'] ?? '',
+                              style: TextStyle(color: Colors.grey[700]),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (controller.selectedPlaceDetails['phone'] != null && 
+                          controller.selectedPlaceDetails['phone'] != 'N/A')
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Row(
+                            children: [
+                              Icon(Icons.phone, color: Colors.grey, size: 20),
+                              SizedBox(width: 4),
+                              Text(
+                                controller.selectedPlaceDetails['phone'],
+                                style: TextStyle(color: Colors.grey[700]),
+                              ),
+                            ],
+                          ),
+                        ),
+                      SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                // Directions functionality can be added later
+                                Get.snackbar('Info', 'Directions feature coming soon');
+                              },
+                              icon: Icon(Icons.directions),
+                              label: Text('Directions'),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                // Save functionality can be added later
+                                Get.snackbar('Info', 'Save feature coming soon');
+                              },
+                              icon: Icon(Icons.bookmark_border),
+                              label: Text('Save'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildChip(String label) {
+  Widget _buildChip(String label, MapController controller) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: OutlinedButton(
         onPressed: () {
-         
+          controller.searchByCategory(label);
         },
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white70,
