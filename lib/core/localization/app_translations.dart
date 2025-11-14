@@ -218,6 +218,22 @@ class AppTranslations extends Translations {
     'location': 'Location',
     'reviews': 'Reviews',
     'rating': 'Rating',
+    
+    // Booking
+    'booking_title': 'Booking.com',
+    'search_hotels': 'Search hotels',
+    'search_hotels_subtitle': 'From cozy country homes to funky city apartments',
+    'destination_name': 'Destination name',
+    'destination_placeholder': 'e.g. city, region, district or specific hotel',
+    'check_in_date': 'Check-in date',
+    'check_out_date': 'Check-out date',
+    'night': 'night',
+    'nights': 'nights',
+    'stay': 'stay',
+    'destination_required': 'Destination Required',
+    'enter_destination': 'Please enter a destination name',
+    'search_complete': 'Search Complete',
+    'searching_hotels_in': 'Searching hotels in',
   };
 
   // French translations
@@ -430,6 +446,22 @@ class AppTranslations extends Translations {
     'location': 'Emplacement',
     'reviews': 'Avis',
     'rating': 'Note',
+    
+    // Booking
+    'booking_title': 'Booking.com',
+    'search_hotels': 'Rechercher des hôtels',
+    'search_hotels_subtitle': 'Des maisons de campagne confortables aux appartements branchés',
+    'destination_name': 'Nom de la destination',
+    'destination_placeholder': 'ex. ville, région, quartier ou hôtel spécifique',
+    'check_in_date': 'Date d\'arrivée',
+    'check_out_date': 'Date de départ',
+    'night': 'nuit',
+    'nights': 'nuits',
+    'stay': 'séjour',
+    'destination_required': 'Destination requise',
+    'enter_destination': 'Veuillez entrer un nom de destination',
+    'search_complete': 'Recherche terminée',
+    'searching_hotels_in': 'Recherche d\'hôtels à',
   };
 
   // Spanish translations
@@ -642,5 +674,21 @@ class AppTranslations extends Translations {
     'location': 'Ubicación',
     'reviews': 'Reseñas',
     'rating': 'Calificación',
+    
+    // Booking
+    'booking_title': 'Booking.com',
+    'search_hotels': 'Buscar hoteles',
+    'search_hotels_subtitle': 'Desde acogedoras casas de campo hasta apartamentos urbanos modernos',
+    'destination_name': 'Nombre del destino',
+    'destination_placeholder': 'ej. ciudad, región, distrito u hotel específico',
+    'check_in_date': 'Fecha de entrada',
+    'check_out_date': 'Fecha de salida',
+    'night': 'noche',
+    'nights': 'noches',
+    'stay': 'estadía',
+    'destination_required': 'Destino requerido',
+    'enter_destination': 'Por favor ingrese un nombre de destino',
+    'search_complete': 'Búsqueda completa',
+    'searching_hotels_in': 'Buscando hoteles en',
   };
 }

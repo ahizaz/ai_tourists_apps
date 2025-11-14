@@ -96,8 +96,8 @@ class BookingController extends GetxController {
   void searchHotels() {
     if (destinationController.text.trim().isEmpty) {
       Get.snackbar(
-        'Destination Required',
-        'Please enter a destination name',
+        'destination_required'.tr,
+        'enter_destination'.tr,
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red.shade100,
         colorText: Colors.red.shade900,
@@ -114,8 +114,8 @@ class BookingController extends GetxController {
       isLoading.value = false;
       
       Get.snackbar(
-        'Search Complete',
-        'Searching hotels in ${destinationController.text}',
+        'search_complete'.tr,
+        '${'searching_hotels_in'.tr} ${destinationController.text}',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.shade100,
         colorText: Colors.green.shade900,
