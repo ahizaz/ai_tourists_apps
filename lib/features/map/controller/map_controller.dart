@@ -42,16 +42,16 @@ class MapController extends GetxController {
   final RxBool isLoadingNearbyPlaces = false.obs;
   final RxString selectedNearbyCategory = 'lodging'.obs;
 
+  // User's current location
+  final RxDouble userLat = 0.0.obs;
+  final RxDouble userLng = 0.0.obs;
+  final RxBool hasUserLocation = false.obs;
+
   @override
   void onInit() {
     super.onInit();
-    // Add the initial marker
-    final initialMarker = Marker(
-      markerId: const MarkerId('initial_marker'),
-      position: LatLng(initialLat, initialLng),
-      infoWindow: const InfoWindow(title: 'You are here'),
-    );
-    markers.add(initialMarker);
+    // Automatically get user's location on init
+    getUserLocation();
   }
 
   // Called when the GoogleMap is created
@@ -62,6 +62,13 @@ class MapController extends GetxController {
   // Handle map tap - get place details
   Future<void> onMapTap(LatLng position) async {
     try {
+      // Debug: Print clicked location coordinates
+      print('========================================');
+      print('📍 CLICKED LOCATION:');
+      print('Latitude: ${position.latitude}');
+      print('Longitude: ${position.longitude}');
+      print('========================================');
+      
       isLoadingPlaceDetails.value = true;
       
       // Add marker at tapped location
@@ -364,6 +371,47 @@ class MapController extends GetxController {
     }
   }
 
+  // Get user's current location (simplified version to just get lat/lng)
+  Future<void> getUserLocation() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Location services are disabled');
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          print('Location permission denied');
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        print('Location permission permanently denied');
+        return;
+      }
+
+      // Get current position
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      // Update observable variables
+      userLat.value = position.latitude;
+      userLng.value = position.longitude;
+      hasUserLocation.value = true;
+      
+      print('User location: ${position.latitude}, ${position.longitude}');
+      
+    } catch (e) {
+      print('Failed to get user location: $e');
+      hasUserLocation.value = false;
+    }
+  }
+
   // Get current location
   Future<void> getCurrentLocation() async {
     try {
@@ -382,7 +430,19 @@ class MapController extends GetxController {
         }
       }
 
-      Position position = await Geolocator.getCurrentPosition();
+      if (permission == LocationPermission.deniedForever) {
+        Get.snackbar('Error', 'Location permission permanently denied. Please enable in settings.');
+        return;
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      
+      // Update observable variables
+      userLat.value = position.latitude;
+      userLng.value = position.longitude;
+      hasUserLocation.value = true;
       
       // Move camera to current location
       await moveCamera(position.latitude, position.longitude, zoom: 16);
@@ -425,14 +485,8 @@ class MapController extends GetxController {
 
   // Helper method to get proper location name (not Plus Code)
   String _getLocationName(Placemark place) {
-    // Try to get a meaningful name instead of Plus Code
-    // Priority: street > subLocality > locality > administrativeArea
-    if (place.street?.isNotEmpty ?? false) {
-      // Check if it's not a Plus Code (Plus Codes contain '+')
-      if (!place.street!.contains('+')) {
-        return place.street!;
-      }
-    }
+    // Try to get a meaningful location name
+    // Priority: subLocality > locality > administrativeArea > street
     if (place.subLocality?.isNotEmpty ?? false) {
       return place.subLocality!;
     }
@@ -442,8 +496,14 @@ class MapController extends GetxController {
     if (place.administrativeArea?.isNotEmpty ?? false) {
       return place.administrativeArea!;
     }
-    // If all else fails, use locality or a generic name
-    return place.locality ?? 'Selected Location';
+    if (place.street?.isNotEmpty ?? false) {
+      // Check if it's not a Plus Code (Plus Codes contain '+')
+      if (!place.street!.contains('+')) {
+        return place.street!;
+      }
+    }
+    // If all else fails, use a generic name
+    return 'Selected Location';
   }
 
   // Helper method to format address
