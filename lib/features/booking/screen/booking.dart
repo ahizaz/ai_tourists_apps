@@ -18,9 +18,9 @@ class Booking extends StatelessWidget {
           'assets/images/logo.png',
           height: 40,
           errorBuilder: (context, error, stackTrace) {
-            return const Text(
-              'Booking.com',
-              style: TextStyle(
+            return Text(
+              'booking_title'.tr,
+              style: const TextStyle(
                 color: Color(0xFF003580),
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -37,9 +37,9 @@ class Booking extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title
-                const Text(
-                  'Search hotels',
-                  style: TextStyle(
+                Text(
+                  'search_hotels'.tr,
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF003580),
@@ -48,9 +48,9 @@ class Booking extends StatelessWidget {
                 const SizedBox(height: 8),
                 
                 // Subtitle
-                const Text(
-                  'From cozy country homes to funky city apartments',
-                  style: TextStyle(
+                Text(
+                  'search_hotels_subtitle'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: Color(0xFF6B5D00),
                   ),
@@ -58,9 +58,9 @@ class Booking extends StatelessWidget {
                 const SizedBox(height: 30),
                 
                 // Destination name field
-                const Text(
-                  'Destination name',
-                  style: TextStyle(
+                Text(
+                  'destination_name'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF003580),
@@ -71,7 +71,7 @@ class Booking extends StatelessWidget {
                   controller: controller.destinationController,
                   style: const TextStyle(fontSize: 16, color: Colors.black87),
                   decoration: InputDecoration(
-                    hintText: 'e.g. city, region, district or specific hotel',
+                    hintText: 'destination_placeholder'.tr,
                     hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 16,
@@ -91,9 +91,9 @@ class Booking extends StatelessWidget {
                 const SizedBox(height: 24),
                 
                 // Check-in date
-                const Text(
-                  'Check-in date',
-                  style: TextStyle(
+                Text(
+                  'check_in_date'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF003580),
@@ -133,9 +133,9 @@ class Booking extends StatelessWidget {
                 const SizedBox(height: 24),
                 
                 // Check-out date
-                const Text(
-                  'Check-out date',
-                  style: TextStyle(
+                Text(
+                  'check_out_date'.tr,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF003580),
@@ -199,9 +199,9 @@ class Booking extends StatelessWidget {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            'Search',
-                            style: TextStyle(
+                        : Text(
+                            'search'.tr,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
@@ -217,7 +217,7 @@ class Booking extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 16),
                           child: Center(
                             child: Text(
-                              '$nights night${nights > 1 ? 's' : ''} stay',
+                              '$nights ${nights > 1 ? 'nights'.tr : 'night'.tr} ${'stay'.tr}',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: Color(0xFF003580),
