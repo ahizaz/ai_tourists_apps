@@ -12,13 +12,13 @@ class MapController extends GetxController {
   // API Key
   final String apiKey = 'AIzaSyCGBj98ytEcJaL7kbXfnXvtAIlSp5MBAxc';
   
-  // Static coordinates (example: a point in Dhaka)
-  final double initialLat = 23.7808875;
-  final double initialLng = 90.2792371;
+  // Static coordinates (example: Kuala Lumpur, Malaysia)
+  final double initialLat = 3.139003;
+  final double initialLng = 101.686855;
 
   // Observable camera position
   final Rx<CameraPosition> cameraPosition = CameraPosition(
-    target: LatLng(23.7808875, 90.2792371),
+    target: LatLng(3.139003, 101.686855),
     zoom: 15,
   ).obs;
 
