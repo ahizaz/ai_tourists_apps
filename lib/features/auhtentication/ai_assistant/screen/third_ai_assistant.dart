@@ -73,8 +73,8 @@ class ThirdAiAssistant extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-               Get.to(()=>LastAiAssistant());
+                onTap: () async {
+                  await ctrl.createProfile();
                 },
                 child: Container(
                   height: 52.h,
