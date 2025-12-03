@@ -115,12 +115,12 @@ class Verification extends StatelessWidget {
               Center(
                 child: Obx(
                   () => Pinput(
-                    length: 4,
+                    length: 6,
                     controller: controller.pinputController,
                     defaultPinTheme: defaultPinTheme,
                     focusedPinTheme: focusedPinTheme,
                     // Use filledPinTheme when all digits are entered, otherwise use defaultPinTheme
-                    submittedPinTheme: controller.pin.value.trim().length == 4
+                    submittedPinTheme: controller.pin.value.trim().length == 6
                         ? filledPinTheme
                         : defaultPinTheme,
                     showCursor: true,
@@ -182,10 +182,10 @@ class Verification extends StatelessWidget {
          
               Spacer(),
               Obx(
-                () => controller.pin.value.trim().length == 4
+                () => controller.pin.value.trim().length == 6
                     ? InkWell(
                         onTap: () {
-                         Get.to(()=>AiAssistant());
+                         controller.verifyOtp();
                         },
                         child: Container(
                           width: double.infinity,

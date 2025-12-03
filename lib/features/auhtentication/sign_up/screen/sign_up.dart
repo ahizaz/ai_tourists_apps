@@ -97,7 +97,7 @@ class SignUp extends StatelessWidget {
                 
                        InkWell(
                   onTap: () {
-                  Get.to(()=>Verification());
+               controller.signUp(); 
                   },
                   child: Container(
                     width: double.infinity,

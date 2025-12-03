@@ -4,6 +4,7 @@ import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_scr
 import 'package:ai_powered_tourists_app/utils/theme/custom_themes/theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -37,6 +38,7 @@ class AITourists extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: SplashScreen(),
+        builder: EasyLoading.init(),
       )),
     );
   }
