@@ -61,20 +61,10 @@ class ThirdAiAssistant extends StatelessWidget {
                       children: types.map((t) {
                         return OptionTile(
                           label: t,
-                          selected: ctrl.voiceTypes.contains(t),
-                          isCheckbox: true,
+                          selected: ctrl.voiceType.value == t,
+                          isCheckbox: false,
                           onTap: () {
-                            final ok = ctrl.toggleVoiceType(t);
-                            if (!ok) {
-                              Get.snackbar(
-                                'Limit reached',
-                                'You can select up to ${ctrl.maxVoiceTypesSelections} items',
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: Colors.black87,
-                                colorText: Colors.white,
-                                margin: EdgeInsets.all(12.w),
-                              );
-                            }
+                            ctrl.selectVoiceType(t);
                           },
                         );
                       }).toList(),
