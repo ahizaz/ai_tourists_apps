@@ -11,11 +11,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 
 class ResetPassword extends StatelessWidget {
-  const ResetPassword({super.key});
+  final String token;
+  const ResetPassword({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
-    final ResetPasswordController controller = Get.put(ResetPasswordController());
+    final ResetPasswordController controller = Get.put(ResetPasswordController(token: token));
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.backgroundColor,
@@ -81,13 +82,7 @@ class ResetPassword extends StatelessWidget {
                 return InkWell(
                   onTap: controller.isButtonEnabled.value
                       ? () {
-                       
-                          controller.newPassword.clear();
-                          controller.confirmPassword.clear();
-                          controller.isButtonEnabled.value = false;
-
-                         Get.to(()=>SignIn());
-                       
+                          controller.resetPassword();
                         }
                       : null,
                   child: controller.isButtonEnabled.value
