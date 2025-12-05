@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/last_ai_assistant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -76,6 +77,7 @@ class AiAssistantController extends GetxController {
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint("🎉 Profile Created Successfully");
         EasyLoading.showSuccess("Profile Created!");
+        Get.to(()=>LastAiAssistant());
         return;
       } else {
         final data = jsonDecode(response.body);

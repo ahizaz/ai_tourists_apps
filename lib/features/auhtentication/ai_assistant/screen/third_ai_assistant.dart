@@ -32,7 +32,7 @@ class ThirdAiAssistant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AiAssistantController ctrl = Get.find();
-    final types = ['Historical', 'Artistic', 'Fun facts'];
+    final types = ['Historical', 'Artistic', 'Fun_facts'];
 
     return Scaffold(
       backgroundColor: Colors.white,
