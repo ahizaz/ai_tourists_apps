@@ -1,4 +1,5 @@
 import 'package:ai_powered_tourists_app/core/common/widgets/language_selector_button.dart';
+import 'package:ai_powered_tourists_app/features/splash_screen/controller/splash_controller.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen_second.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
@@ -13,12 +14,16 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Initialize splash controller for auto-login check
+    Get.put(SplashController());
+
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 14.w),
-          child: SingleChildScrollView( // ✅ শুধু এটুকু যোগ করা হলো
+          child: SingleChildScrollView(
+            // ✅ শুধু এটুকু যোগ করা হলো
             physics: const BouncingScrollPhysics(),
             child: ConstrainedBox(
               constraints: BoxConstraints(
@@ -29,25 +34,27 @@ class SplashScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 35.h),
-     Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    Expanded(
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.only(left: 40), // এখানে মান adjust করো
-          child: Image(
-            image: AssetImage(IconPath.firstdotsplash),
-            height: 4.h,
-            width: 72.w,
-            fit: BoxFit.cover,
-          ),
-        ),
-      ),
-    ),
-    LanguageSelectorButton(),
-  ],
-),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                left: 40,
+                              ), // এখানে মান adjust করো
+                              child: Image(
+                                image: AssetImage(IconPath.firstdotsplash),
+                                height: 4.h,
+                                width: 72.w,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                        LanguageSelectorButton(),
+                      ],
+                    ),
 
                     SizedBox(height: 110.h),
                     Center(

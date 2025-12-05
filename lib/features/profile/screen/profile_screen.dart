@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
@@ -69,82 +70,96 @@ class ProfileScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 4.h,),
-            Center(
-              child: Obx(()=>Text(controller.userName.value,
-              style: GoogleFonts.inter(fontSize: 20.sp,fontWeight: FontWeight.w600,
-              color: Color(0xff2A222C)),
-              )),
-            ),
-              SizedBox(height: 4.h,),
-             Center(
-  child: Obx(() => Text(
-        controller.userEmail.value,
-        style: GoogleFonts.inter(
-          fontSize: 16.sp,
-          fontWeight: FontWeight.w400,
-          color: Color(0xff878787),
-        ),
-      )),
-),
-              SizedBox(height: 32.h,),
+              SizedBox(height: 4.h),
+              Center(
+                child: Obx(
+                  () => Text(
+                    controller.userName.value,
+                    style: GoogleFonts.inter(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xff2A222C),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Center(
+                child: Obx(
+                  () => Text(
+                    controller.userEmail.value,
+                    style: GoogleFonts.inter(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff878787),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.account,
                 title: "account".tr,
                 onTap: () {
-                    Get.to(()=>AccountScreen());
+                  Get.to(() => AccountScreen());
                 },
               ),
-              SizedBox(height: 32.h,),
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.subscription,
                 title: "subscription".tr,
                 onTap: () {
-                 Get.to(()=>SubscriptionScreen());
+                  Get.to(() => SubscriptionScreen());
                 },
               ),
-              SizedBox(height: 32.h,),
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.playquize,
                 title: "play_quiz".tr,
                 onTap: () {
-                      Get.to(()=>PlayAiQuize());
+                  Get.to(() => PlayAiQuize());
                 },
               ),
-              SizedBox(height: 32.h,),
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.aisetup,
                 title: "ai_setup".tr,
                 onTap: () {
-                   Get.to(()=>ProfileAiAssistant());
+                  Get.to(() => ProfileAiAssistant());
                 },
               ),
-              SizedBox(height: 32.h,),
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.saveplace,
                 title: "save_place".tr,
                 onTap: () {
-                Get.to(()=>SavePlace());
+                  Get.to(() => SavePlace());
                 },
               ),
-             
-              SizedBox(height: 32.h,),
+
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.offilinemapdownload,
                 title: "download_offline_map".tr,
                 onTap: () {
-                Get.to(()=>SelectMap());
+                  Get.to(() => SelectMap());
                 },
               ),
-             
-           
-              SizedBox(height: 32.h,),
+
+              SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.termscondition,
                 title: "Terms and Conditions".tr,
                 onTap: () {
-            Get.to(()=>TermsCondition());
+                  Get.to(() => TermsCondition());
                 },
+              ),
+
+              SizedBox(height: 32.h),
+              ProfileOptionItem(
+                iconPath: Icons.logout,
+                title: "Logout".tr,
+                onTap: controller.logout,
               ),
             ],
           ),
