@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 class ProfileOptionItem extends StatelessWidget {
-  final String iconPath;
+  final dynamic iconPath; // Can be String or IconData
   final String title;
   final VoidCallback? onTap;
 
@@ -17,7 +16,6 @@ class ProfileOptionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -27,13 +25,16 @@ class ProfileOptionItem extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 4.h),
           child: Row(
             children: [
-              Image(
-                image: AssetImage(iconPath),
-                width: 30.w,
-                height: 30.h,
-                fit: BoxFit.cover,
-              ),
-              SizedBox(width: 8.w,),
+              // Support both String (asset path) and IconData
+              iconPath is IconData
+                  ? Icon(iconPath, size: 30.w, color: const Color(0xff505050))
+                  : Image(
+                      image: AssetImage(iconPath),
+                      width: 30.w,
+                      height: 30.h,
+                      fit: BoxFit.cover,
+                    ),
+              SizedBox(width: 8.w),
               Text(
                 title,
                 style: GoogleFonts.inter(

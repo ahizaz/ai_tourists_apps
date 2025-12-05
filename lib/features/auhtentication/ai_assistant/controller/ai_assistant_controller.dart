@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
@@ -35,7 +34,9 @@ class AiAssistantController extends GetxController {
     debugPrint("📤 Voice: ${voice.value}");
     debugPrint("📤 Voice Type: ${voiceType.value}");
 
-    if (gender.value == null || voice.value == null || voiceType.value == null) {
+    if (gender.value == null ||
+        voice.value == null ||
+        voiceType.value == null) {
       debugPrint("❌ Missing fields");
       EasyLoading.showError("Please complete all selections");
       return;
@@ -76,8 +77,15 @@ class AiAssistantController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         debugPrint("🎉 Profile Created Successfully");
+
+        // Remove temporary token after successful profile creation
+        Get.find<StorageService>().removeAccessToken();
+        debugPrint(
+          "🗑️ Temporary token removed - User must login to get permanent token",
+        );
+
         EasyLoading.showSuccess("Profile Created!");
-        Get.to(()=>LastAiAssistant());
+        Get.to(() => LastAiAssistant());
         return;
       } else {
         final data = jsonDecode(response.body);

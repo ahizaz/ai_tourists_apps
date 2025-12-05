@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
+import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
-
-  
   var profileImage = Rx<File?>(null);
   var userName = "Brooklyn Simmons".obs;
   var userEmail = "brooklyn.sim@example.com".obs;
@@ -252,8 +253,9 @@ class ProfileController extends GetxController {
 
   // Show rename dialog
   void showRenameDialog(BuildContext context, int index) {
-    final TextEditingController nameController =
-        TextEditingController(text: downloadedMaps[index]['name']);
+    final TextEditingController nameController = TextEditingController(
+      text: downloadedMaps[index]['name'],
+    );
 
     Get.dialog(
       AlertDialog(
@@ -266,10 +268,7 @@ class ProfileController extends GetxController {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Get.back(), child: Text('Cancel')),
           TextButton(
             onPressed: () {
               if (nameController.text.isNotEmpty) {
@@ -321,10 +320,10 @@ class ProfileController extends GetxController {
       final lat = map['latitude'] ?? initialLat;
       final lng = map['longitude'] ?? initialLng;
       final zoom = map['zoom'] ?? 15.0;
-      
+
       // Move camera to saved location
       moveCamera(lat, lng, zoom: zoom);
-      
+
       Get.back(); // Go back to previous screen
       Get.snackbar(
         'Map Loaded',
@@ -344,8 +343,9 @@ class ProfileController extends GetxController {
     final currentPosition = cameraPosition.value;
     final mapNumber = downloadedMaps.length + 1;
     final now = DateTime.now();
-    final formattedDate = '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
-    
+    final formattedDate =
+        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+
     final newMap = {
       'id': mapNumber.toString(),
       'name': 'Map ${mapNumber.toString().padLeft(2, '0')}',
@@ -354,29 +354,25 @@ class ProfileController extends GetxController {
       'longitude': currentPosition.target.longitude,
       'zoom': currentPosition.zoom,
     };
-    
+
     downloadedMaps.add(newMap);
-    
+
     // Return the map name instead of showing snackbar here
     return newMap['name'] as String;
   }
-
-
-
 
   ///offline map
   final double initialLat = 23.7808875;
   final double initialLng = 90.2792371;
 
-   final Rx<CameraPosition> cameraPosition = CameraPosition(
+  final Rx<CameraPosition> cameraPosition = CameraPosition(
     target: LatLng(23.7808875, 90.2792371),
     zoom: 15,
   ).obs;
-  
 
-   final RxSet<Marker> markers = <Marker>{}.obs;
-     GoogleMapController? gMapController;
-       @override
+  final RxSet<Marker> markers = <Marker>{}.obs;
+  GoogleMapController? gMapController;
+  @override
   void onInit() {
     super.onInit();
     // Add the initial marker
@@ -387,24 +383,50 @@ class ProfileController extends GetxController {
     );
     markers.add(initialMarker);
   }
-    void onMapCreated(GoogleMapController controller) {
+
+  void onMapCreated(GoogleMapController controller) {
     gMapController = controller;
   }
-   Future<void> moveCamera(double lat, double lng, {double zoom = 15}) async {
+
+  Future<void> moveCamera(double lat, double lng, {double zoom = 15}) async {
     final newPos = CameraPosition(target: LatLng(lat, lng), zoom: zoom);
     cameraPosition.value = newPos;
     if (gMapController != null) {
-      await gMapController!.animateCamera(CameraUpdate.newCameraPosition(newPos));
+      await gMapController!.animateCamera(
+        CameraUpdate.newCameraPosition(newPos),
+      );
     }
     // update marker
     markers.clear();
-    markers.add(Marker(
-      markerId: MarkerId('marker_${lat}_$lng'),
-      position: LatLng(lat, lng),
-      infoWindow: const InfoWindow(title: 'Selected location'),
-    ));
+    markers.add(
+      Marker(
+        markerId: MarkerId('marker_${lat}_$lng'),
+        position: LatLng(lat, lng),
+        infoWindow: const InfoWindow(title: 'Selected location'),
+      ),
+    );
   }
 
+  // Logout method
+  Future<void> logout() async {
+    try {
+      debugPrint("🚪 Logout button clicked");
+      EasyLoading.show(status: "Logging out...");
 
+      // Clear all tokens and user data
+      Get.find<StorageService>().logout();
 
+      await Future.delayed(const Duration(milliseconds: 500));
+      EasyLoading.showSuccess("Logged out successfully");
+
+      debugPrint("✅ Logout successful - Navigating to Splash Screen");
+
+      // Navigate to splash screen
+      await Future.delayed(const Duration(milliseconds: 500));
+      Get.offAll(() => SplashScreen());
+    } catch (e) {
+      debugPrint("❌ Logout Error: $e");
+      EasyLoading.showError("Something went wrong");
+    }
+  }
 }

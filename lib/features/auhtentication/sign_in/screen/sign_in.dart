@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+
 class SignIn extends StatelessWidget {
   const SignIn({super.key});
   @override
@@ -73,7 +74,7 @@ class SignIn extends StatelessWidget {
                     ),
                     TextButton(
                       onPressed: () {
-                        Get.to(()=>ForgetPassword());
+                        Get.to(() => ForgetPassword());
                       },
                       child: Text(
                         'forget_password'.tr,
@@ -88,9 +89,7 @@ class SignIn extends StatelessWidget {
                 ),
                 SizedBox(height: 24.h),
                 InkWell(
-                  onTap: () {
-                 Get.to(()=>BottomNavbar());
-                  },
+                  onTap: controller.signIn,
                   child: Container(
                     width: double.infinity,
                     height: 48.h,
@@ -123,34 +122,36 @@ class SignIn extends StatelessWidget {
                 SizedBox(height: 24.h),
                 Center(
                   child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('dont_have_account'.tr,style: GoogleFonts.inter( 
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'dont_have_account'.tr,
+                        style: GoogleFonts.inter(
                           color: AppColors.textPrimary,
                           fontSize: 16.sp,
-                          fontWeight: FontWeight.w400
-                        ),),
-                        SizedBox(width: 5.w,),
-                     InkWell(
-               onTap: () {
-                Get.to(()=>SignUp());
-               },
-                 child: Text(
-                  'sign_up'.tr,
-              style: GoogleFonts.inter(
-             color: AppColors.orangeEnd,
-              fontWeight: FontWeight.w500,
-                fontSize: 15.sp,
-                 decoration: TextDecoration.underline, 
-                    decorationColor: AppColors.orangeEnd, 
-                   decorationThickness: 1.5, 
-    ),
-  ),
-)
-
-                      ],
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      SizedBox(width: 5.w),
+                      InkWell(
+                        onTap: () {
+                          Get.to(() => SignUp());
+                        },
+                        child: Text(
+                          'sign_up'.tr,
+                          style: GoogleFonts.inter(
+                            color: AppColors.orangeEnd,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15.sp,
+                            decoration: TextDecoration.underline,
+                            decorationColor: AppColors.orangeEnd,
+                            decorationThickness: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                )
+                ),
               ],
             ),
           ),
