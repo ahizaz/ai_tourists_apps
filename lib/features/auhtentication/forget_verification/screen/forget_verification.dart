@@ -9,11 +9,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:pinput/pinput.dart';
 
 class ForgetVerification extends StatelessWidget {
-  const ForgetVerification({super.key});
+  final String? email;
+  const ForgetVerification({super.key, this.email});
 
   @override
   Widget build(BuildContext context) {
-      final ForgetVerificationController controller = Get.put(ForgetVerificationController());
+      final ForgetVerificationController controller = Get.put(ForgetVerificationController(email: email ?? ''));
       
     final defaultPinTheme = PinTheme(
       width: 54.w,
@@ -109,12 +110,12 @@ class ForgetVerification extends StatelessWidget {
                  Center(
                 child: Obx(
                   () => Pinput(
-                    length: 4,
+                    length: 6,
                     controller: controller.pinputController,
                     defaultPinTheme: defaultPinTheme,
                     focusedPinTheme: focusedPinTheme,
                     // Use filledPinTheme when all digits are entered, otherwise use defaultPinTheme
-                    submittedPinTheme: controller.pin.value.trim().length == 4
+                    submittedPinTheme: controller.pin.value.trim().length == 6
                         ? filledPinTheme
                         : defaultPinTheme,
                     showCursor: true,
@@ -134,95 +135,60 @@ class ForgetVerification extends StatelessWidget {
                 ),
               ),
           SizedBox(height: 20.h),
-           Center(
-                child: Obx(
-                  () => Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        controller.secondsRemaining.value > 0
-                            ? 'Resend code in ${controller.secondsRemaining.value}s'
-                            : 'Didn\'t receive the code?',
+          Spacer(),
+          Obx(
+            () => controller.pin.value.trim().length == 6
+                ? InkWell(
+                    onTap: () => controller.verifyOtp(controller.pin.value),
+                    child: Container(
+                      width: double.infinity,
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        image: const DecorationImage(
+                          image: AssetImage(ImagePath.button),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Next",
+                          style: GoogleFonts.inter(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(0, 1),
+                                blurRadius: 4,
+                                color: Colors.black.withValues(alpha: 0.4),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                : Container(
+                    width: double.infinity,
+                    height: 48.h,
+                    decoration: BoxDecoration(
+                      color: const Color(0xffE1E1E1),
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Center(
+                      child: Text(
+                        "Next",
                         style: GoogleFonts.inter(
-                          fontSize: 12.sp,
-                          color: const Color(0xff505050),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: const Color(0xff878787),
                         ),
                       ),
-                      SizedBox(width: 8.w),
-                      controller.secondsRemaining.value == 0
-                          ? GestureDetector(
-                              onTap: controller.resendCode,
-                              child: Text(
-                                'Resend',
-                                style: GoogleFonts.inter(
-                                  decoration: TextDecoration.underline,
-                                     decorationColor: AppColors.orangeEnd, 
-                                      decorationThickness: 1.5, 
-                                  
-                                  fontSize: 12.sp,
-                                  color: const Color(0xffF5461B),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
+                    ),
                   ),
-                ),
-              ), 
-                 Spacer(),
-                    Obx(
-                () => controller.pin.value.trim().length == 4
-                    ? InkWell(
-                        onTap: () {
-                        Get.to(()=>ResetPassword());
-                        },
-                        child: Container(
-                          width: double.infinity,
-                          height: 48.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12.r),
-                            image: const DecorationImage(
-                              image: AssetImage(ImagePath.button),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Next",
-                              style: GoogleFonts.inter(
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(
-                                    offset: const Offset(0, 1),
-                                    blurRadius: 4,
-                                    color: Colors.black.withValues(alpha: 0.4),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                    : Container(
-                        width: double.infinity,
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          color: Color(0xffE1E1E1),
-                          borderRadius: BorderRadius.circular(12.r),
-                        ),
-                        child: Center(
-                          child: Text("Next",style: GoogleFonts.inter( 
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff878787)
-                          ),),
-                        ),
-                      ),
-              ),
-                 SizedBox(height: 20.h,)
+          ),
+          SizedBox(height: 20.h,)
 
            ],
 

@@ -4,5 +4,7 @@ class Url{
   static const String verifyotp = "$baseUrl/auth/verify-otp/";
   static const String profilecreation = "$baseUrl/profile/profile/";
   static const String signin = "$baseUrl/auth/login/";
+  static const String forgetpassword = "$baseUrl/auth/forgot-password/";
+  static const String resetPassword = "$baseUrl/auth/reset-password/";
 
 }

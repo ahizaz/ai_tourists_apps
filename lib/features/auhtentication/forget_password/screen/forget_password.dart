@@ -62,7 +62,7 @@ class ForgetPassword extends StatelessWidget {
               Obx(() {
   return controller.isEmailValid.value
       ? InkWell(
-          onTap: controller.onNextPressed,
+          onTap: () => controller.onNextPressed(),
          
     
           child: Container(
