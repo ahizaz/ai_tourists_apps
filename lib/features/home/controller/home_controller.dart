@@ -124,6 +124,14 @@ class HomeController extends GetxController {
       currentLat.value = position.latitude;
       currentLng.value = position.longitude;
       
+      // Debug print: Show actual device location coordinates
+      debugPrint('========================================');
+      debugPrint('📍 DEVICE CURRENT LOCATION:');
+      debugPrint('Latitude: ${position.latitude}');
+      debugPrint('Longitude: ${position.longitude}');
+      debugPrint('Accuracy: ${position.accuracy} meters');
+      debugPrint('========================================');
+      
       // Update map camera position
       mapCameraPosition.value = CameraPosition(
         target: LatLng(position.latitude, position.longitude),
@@ -153,9 +161,137 @@ class HomeController extends GetxController {
     }
   }
   
+  // Get building name from Google Places API Nearby Search
+  Future<String?> _getBuildingNameFromPlacesAPI(double lat, double lng) async {
+    try {
+      final apiKey = ApiKeys.googleMapsApiKey;
+      // Use Nearby Search to find the exact place at these coordinates
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=50&key=$apiKey'
+      );
+      
+      final response = await http.get(url);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        
+        if (data['status'] == 'OK' && data['results'] != null && (data['results'] as List).isNotEmpty) {
+          // Get the first result (closest place)
+          final firstResult = (data['results'] as List)[0];
+          final placeName = firstResult['name'] as String?;
+          final types = firstResult['types'] as List<dynamic>?;
+          
+          // Check if it's a building, establishment, or point of interest
+          if (placeName != null && placeName.isNotEmpty && types != null) {
+            // Prioritize buildings, establishments, and specific places
+            bool isRelevantPlace = types.any((type) => [
+              'establishment',
+              'point_of_interest',
+              'premise',
+              'building'
+            ].contains(type));
+            
+            if (isRelevantPlace) {
+              debugPrint('🏢 Places API found: $placeName (types: $types)');
+              return placeName;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Error getting building name from Places API: $e');
+    }
+    return null;
+  }
+  
+  // Extract building name from formatted address string
+  String? _extractBuildingFromFormattedAddress(String formattedAddress) {
+    try {
+      // Common building name patterns
+      final buildingPatterns = [
+        RegExp(r'([A-Z][a-zA-Z\s]*\s*(?:Tower|Building|Plaza|Mall|Complex|Center|Centre|Towers))', caseSensitive: false),
+        RegExp(r'(Aqua\s+Tower)', caseSensitive: false),
+        RegExp(r'([A-Z][a-zA-Z\s]*\s*(?:Hotel|Apartment|Residence|Residency))', caseSensitive: false),
+      ];
+      
+      for (var pattern in buildingPatterns) {
+        final match = pattern.firstMatch(formattedAddress);
+        if (match != null && match.group(1) != null) {
+          String buildingName = match.group(1)!.trim();
+          // Make sure it's not too long (likely not a building name)
+          if (buildingName.length <= 50) {
+            return buildingName;
+          }
+        }
+      }
+      
+      // Also check if first part before comma looks like a building name
+      final parts = formattedAddress.split(',');
+      if (parts.isNotEmpty) {
+        final firstPart = parts[0].trim();
+        // Check if it contains building indicators
+        if (firstPart.contains(RegExp(r'(Tower|Building|Plaza|Mall|Complex|Center|Centre)', caseSensitive: false)) &&
+            !firstPart.contains(RegExp(r'\d+\s+\w+\s+(?:Road|Street|Avenue|Lane)', caseSensitive: false))) {
+          return firstPart;
+        }
+      }
+    } catch (e) {
+      debugPrint('⚠️ Error extracting building from formatted address: $e');
+    }
+    return null;
+  }
+  
+  // Extract building name from all geocoding results
+  String? _extractBuildingFromAllResults(List<dynamic> results) {
+    for (var result in results) {
+      final addressComponents = result['address_components'] as List<dynamic>?;
+      if (addressComponents != null) {
+        for (var component in addressComponents) {
+          final types = component['types'] as List<dynamic>?;
+          final longName = component['long_name'] as String? ?? '';
+          
+          if (types != null && types.contains('premise') && longName.isNotEmpty) {
+            return longName;
+          }
+        }
+      }
+      
+      // Also check formatted_address for building names
+      final formattedAddress = result['formatted_address'] as String?;
+      if (formattedAddress != null) {
+        // Look for common building indicators in formatted address
+        final buildingPatterns = [
+          'Tower',
+          'Building',
+          'Plaza',
+          'Mall',
+          'Complex',
+          'Center',
+          'Centre'
+        ];
+        
+        for (var pattern in buildingPatterns) {
+          if (formattedAddress.contains(pattern)) {
+            // Try to extract building name (usually before the first comma or street)
+            final parts = formattedAddress.split(',');
+            for (var part in parts) {
+              if (part.contains(pattern)) {
+                return part.trim();
+              }
+            }
+          }
+        }
+      }
+    }
+    return null;
+  }
+  
   // Convert coordinates to address using Google Geocoding API (English only)
   Future<void> getAddressFromCoordinates(double lat, double lng) async {
     try {
+      // Debug print coordinates being used
+      debugPrint('🔍 Fetching address for coordinates: $lat, $lng');
+      
       // Use Google Geocoding API with language=en to ensure English address
       final apiKey = ApiKeys.googleMapsApiKey;
       final url = Uri.parse(
@@ -168,15 +304,36 @@ class HomeController extends GetxController {
         final data = json.decode(response.body);
         
         if (data['status'] == 'OK' && data['results'].isNotEmpty) {
+          // First, try to get building name from Google Places API Nearby Search
+          String? buildingName = await _getBuildingNameFromPlacesAPI(lat, lng);
+          if (buildingName != null && buildingName.isNotEmpty) {
+            debugPrint('🏢 Found building name from Places API: $buildingName');
+          }
+          
           // Parse address components to build a readable street address
           final result = data['results'][0];
           final addressComponents = result['address_components'] as List<dynamic>?;
+          
+          // Also check all results for building names
+          String? buildingFromResults = _extractBuildingFromAllResults(data['results'] as List);
+          if (buildingFromResults != null && buildingFromResults.isNotEmpty) {
+            buildingName = buildingName ?? buildingFromResults;
+            debugPrint('🏢 Found building name from results: $buildingName');
+          }
+          
+          // Debug: Print all address components
+          debugPrint('📍 Address components received:');
+          if (addressComponents != null) {
+            for (var component in addressComponents) {
+              debugPrint('  - ${component['long_name']} (${component['types']})');
+            }
+          }
           
           if (addressComponents != null && addressComponents.isNotEmpty) {
             // Extract address components - prioritize specific locations
             String streetNumber = '';
             String route = '';
-            String premise = ''; // Building name like "Agora Tower"
+            String premise = buildingName ?? ''; // Use building name from Places API first
             String pointOfInterest = ''; // POI like landmarks
             String sublocality = '';
             String sublocalityLevel1 = '';
@@ -189,7 +346,7 @@ class HomeController extends GetxController {
               final longName = component['long_name'] as String? ?? '';
               
               if (types != null) {
-                if (types.contains('premise')) {
+                if (types.contains('premise') && premise.isEmpty) {
                   premise = longName; // Building name
                 } else if (types.contains('point_of_interest')) {
                   pointOfInterest = longName; // Landmarks
@@ -214,21 +371,22 @@ class HomeController extends GetxController {
             // Build readable address with priority for specific locations
             List<String> addressParts = [];
             
-            // Street address (most specific)
-            if (streetNumber.isNotEmpty && route.isNotEmpty) {
-              addressParts.add('$streetNumber $route');
-            } else if (route.isNotEmpty) {
-              addressParts.add(route);
-            }
-            
-            // Building/Premise (very specific - like "Agora Tower")
+            // PRIORITY 1: Building/Premise (very specific - like "Aqua Tower", "Mohakhali Aqua Tower")
+            // Show building name FIRST if available, as it's the most specific location
             if (premise.isNotEmpty) {
               addressParts.add(premise);
             }
             
-            // Point of Interest
+            // PRIORITY 2: Point of Interest (landmarks, specific places)
             if (pointOfInterest.isNotEmpty && pointOfInterest != premise) {
               addressParts.add(pointOfInterest);
+            }
+            
+            // PRIORITY 3: Street address (specific street location)
+            if (streetNumber.isNotEmpty && route.isNotEmpty) {
+              addressParts.add('$streetNumber $route');
+            } else if (route.isNotEmpty) {
+              addressParts.add(route);
             }
             
             // Area/Neighborhood (specific area like "Mohakhali")
@@ -267,7 +425,60 @@ class HomeController extends GetxController {
               // Check if it contains Plus Code pattern (contains + and numbers/letters)
               if (!readableAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
                 currentAddress.value = readableAddress;
+                debugPrint('✅ Using parsed address: $readableAddress');
                 return;
+              }
+            }
+            
+            // Try to extract building name from formatted_address if we still don't have one
+            if (premise.isEmpty) {
+              final formattedAddress = result['formatted_address'] as String?;
+              if (formattedAddress != null && formattedAddress.isNotEmpty) {
+                // Look for building names in formatted address (before first comma usually)
+                final buildingFromFormatted = _extractBuildingFromFormattedAddress(formattedAddress);
+                if (buildingFromFormatted != null && buildingFromFormatted.isNotEmpty) {
+                  premise = buildingFromFormatted;
+                  // Rebuild address with building name
+                  addressParts.clear();
+                  addressParts.add(premise);
+                  if (pointOfInterest.isNotEmpty && pointOfInterest != premise) {
+                    addressParts.add(pointOfInterest);
+                  }
+                  if (streetNumber.isNotEmpty && route.isNotEmpty) {
+                    addressParts.add('$streetNumber $route');
+                  } else if (route.isNotEmpty) {
+                    addressParts.add(route);
+                  }
+                  if (sublocalityLevel2.isNotEmpty) {
+                    addressParts.add(sublocalityLevel2);
+                  } else if (sublocalityLevel1.isNotEmpty) {
+                    addressParts.add(sublocalityLevel1);
+                  } else if (sublocality.isNotEmpty) {
+                    addressParts.add(sublocality);
+                  } else if (neighborhood.isNotEmpty) {
+                    addressParts.add(neighborhood);
+                  }
+                  if (locality.isNotEmpty) {
+                    if (sublocalityLevel2.isEmpty && sublocalityLevel1.isEmpty && 
+                        sublocality.isEmpty && neighborhood.isEmpty) {
+                      addressParts.add(locality);
+                    } else if (locality.toLowerCase() != sublocalityLevel2.toLowerCase() &&
+                               locality.toLowerCase() != sublocalityLevel1.toLowerCase() &&
+                               locality.toLowerCase() != sublocality.toLowerCase() &&
+                               locality.toLowerCase() != neighborhood.toLowerCase()) {
+                      addressParts.add(locality);
+                    }
+                  }
+                  
+                  if (addressParts.isNotEmpty) {
+                    final readableAddress = addressParts.join(', ');
+                    if (!readableAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
+                      currentAddress.value = readableAddress;
+                      debugPrint('✅ Using address with extracted building: $readableAddress');
+                      return;
+                    }
+                  }
+                }
               }
             }
             
@@ -277,6 +488,7 @@ class HomeController extends GetxController {
                 formattedAddress.isNotEmpty && 
                 !formattedAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
               currentAddress.value = formattedAddress;
+              debugPrint('✅ Using formatted address: $formattedAddress');
               return;
             }
           }
@@ -284,6 +496,7 @@ class HomeController extends GetxController {
       }
       
       // Fallback to geocoding package if API fails (may show in device locale)
+      debugPrint('⚠️ Google API failed, using geocoding package fallback');
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
       
       if (placemarks.isNotEmpty) {
@@ -317,16 +530,20 @@ class HomeController extends GetxController {
         
         if (addressParts.isNotEmpty) {
           currentAddress.value = addressParts.join(', ');
+          debugPrint('✅ Using geocoding package address: ${currentAddress.value}');
         } else {
           // Last resort: show coordinates
           currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+          debugPrint('⚠️ Using coordinates as address');
         }
       } else {
         currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+        debugPrint('⚠️ No placemarks found, using coordinates');
       }
     } catch (e) {
-      debugPrint('Error getting address: $e');
+      debugPrint('❌ Error getting address: $e');
       currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+      debugPrint('📍 Final address set to: ${currentAddress.value}');
     }
   }
   
