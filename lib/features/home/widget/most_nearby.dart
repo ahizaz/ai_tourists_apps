@@ -12,13 +12,6 @@ class MostNearbySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final HomeController controller = Get.find();
 
-    final categories = [
-      {'key': 'historical', 'label': 'historical'.tr},
-      {'key': 'tourism', 'label': 'tourism'.tr},
-      {'key': 'museum', 'label': 'museum'.tr},
-      {'key': 'all', 'label': 'all'.tr},
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -32,77 +25,68 @@ class MostNearbySection extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-           
-           
           ],
         ),
         SizedBox(height: 12.h),
 
-        // category pills
-        Obx(
-          () => Row(
-            children: categories.map((cat) {
-              final selected = controller.selectedCategory.value == cat['key'];
-              return GestureDetector(
-                onTap: () => controller.selectCategory(cat['key']!),
-                child: Container(
-                  margin: EdgeInsets.only(right: 8.w),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                  decoration: BoxDecoration(
-                    color: selected ? Color(0xffBDE446): Colors.grey[100],
-                    borderRadius: BorderRadius.circular(24.r),
-                    border: selected
-                        ? Border.all(color: Color(0xffE5F5B4), width: 1.4)
-                        : null,
-                  ),
-                  child: Text(
-                    cat['label']!,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 13.sp,
-                      color: selected ? Color(0xff252525) : Colors.grey[700],
-                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                    ),
-                  ),
+        // places list from API
+        Obx(() {
+          // Show loading indicator while fetching nearby places
+          if (controller.isLoadingNearbyPlaces.value) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 40.h),
+              child: Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xffBDE446)),
                 ),
-              );
-            }).toList(),
-          ),
-        ),
-        SizedBox(height: 12.h),
+              ),
+            );
+          }
 
-        // places list
-        Obx(
-          () {
-            final items = controller.filteredPlaces();
-            if (items.isEmpty) {
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 24.h),
-                child: Center(
-                  child: Text('no_places_found'.tr,
-                      style: GoogleFonts.dmSans(fontSize: 14.sp)),
-                ),
-              );
-            }
+          // Show nearby places from API if available
+          if (controller.nearbyPlaces.isNotEmpty) {
             return ListView.builder(
               physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: items.length,
+              itemCount: controller.nearbyPlaces.length,
               itemBuilder: (context, index) {
-                final place = items[index];
-                return PlaceCard(
-                  place: place,
-                  onTap: () {
-             
-                  },
-                  onBookmark: () {
-                 
-                  },
-                );
+                final nearbyPlace = controller.nearbyPlaces[index];
+                // Convert NearbyPlace to Place for PlaceCard widget
+                final place = nearbyPlace.toPlace();
+
+                return PlaceCard(place: place, onTap: () {}, onBookmark: () {});
               },
             );
-          },
-        ),
+          }
+
+          // If no nearby places from API, show message
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 24.h),
+            child: Center(
+              child: Column(
+                children: [
+                  Icon(Icons.location_off, size: 48.w, color: Colors.grey[400]),
+                  SizedBox(height: 12.h),
+                  Text(
+                    'No nearby places found',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Pull down to refresh location',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12.sp,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
       ],
     );
   }

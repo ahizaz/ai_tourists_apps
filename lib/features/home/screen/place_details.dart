@@ -31,7 +31,7 @@ class PlaceDetails extends StatelessWidget {
         ],
       ),
       body: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 10.w),
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Column(
           children: [
             // Image
@@ -53,7 +53,7 @@ class PlaceDetails extends StatelessWidget {
               ),
             ),
             SizedBox(height: 16.h),
-        
+
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -61,32 +61,44 @@ class PlaceDetails extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      place.title,
-                      style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      'Short summary or subtitle can go here',
-                      style: GoogleFonts.dmSans(
-                          fontSize: 13.sp, color: Colors.grey[700]),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            place.title,
+                            style: GoogleFonts.dmSerifDisplay(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber, size: 18.w),
+                            SizedBox(width: 4.w),
+                            Text(
+                              place.rating.toStringAsFixed(1),
+                              style: GoogleFonts.dmSans(
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     SizedBox(height: 12.h),
+
+                    // Description
                     Text(
                       place.description,
                       style: GoogleFonts.dmSans(
-                          fontSize: 14.sp, height: 1.6, color: Colors.grey[800]),
-                    ),
-                    SizedBox(height: 12.h),
-        
-                    // (Optional) more detailed text to emulate long details - you can replace with real content
-                    Text(
-                      '\nMore details\n\n${'${place.description} ' * 3}',
-                      style: GoogleFonts.dmSans(
-                          fontSize: 14.sp, height: 1.6, color: Colors.grey[800]),
+                        fontSize: 14.sp,
+                        height: 1.6,
+                        color: Colors.grey[800],
+                      ),
                     ),
                     SizedBox(height: 80.h), // spacing for bottom bar
                   ],
@@ -138,7 +150,11 @@ class PlaceDetails extends StatelessWidget {
             // distance
             Row(
               children: [
-                Icon(Icons.location_on_outlined, size: 16.w, color: Colors.grey),
+                Icon(
+                  Icons.location_on_outlined,
+                  size: 16.w,
+                  color: Colors.grey,
+                ),
                 SizedBox(width: 6.w),
                 Text(
                   '${place.distanceKm}km',
@@ -156,10 +172,7 @@ class PlaceDetails extends StatelessWidget {
             GestureDetector(
               onTap: () {
                 // Navigate to the map screen with the place data
-                Get.to(
-                  () => const HomeSelectPlaceMap(),
-                  arguments: place,
-                );
+                Get.to(() => const HomeSelectPlaceMap(), arguments: place);
               },
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
