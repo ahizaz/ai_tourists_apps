@@ -16,7 +16,7 @@ class NearbyPlace {
     required this.placeDescription,
     required this.placeRating,
     required this.latitude,
-    required this.longitude,
+    required this.longitude,//
   });
 
   // Factory constructor to create NearbyPlace from JSON
