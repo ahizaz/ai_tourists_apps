@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
+import 'package:ai_powered_tourists_app/features/home/controller/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -9,8 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 class MapController extends GetxController {
-  // API Key
-  final String apiKey = 'AIzaSyCGBj98ytEcJaL7kbXfnXvtAIlSp5MBAxc';
+  // API Key - Using centralized configuration
+  final String apiKey = ApiKeys.googleMapsApiKey;
   
   // Static coordinates (example: Kuala Lumpur, Malaysia)
   final double initialLat = 3.139003;
@@ -50,6 +52,26 @@ class MapController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    
+    // Check if HomeController already has location, use that instead of defaulting to Malaysia
+    try {
+      final homeController = Get.find<HomeController>();
+      if (homeController.currentLat.value != 0.0 && homeController.currentLng.value != 0.0) {
+        // Use location from HomeController
+        userLat.value = homeController.currentLat.value;
+        userLng.value = homeController.currentLng.value;
+        hasUserLocation.value = true;
+        cameraPosition.value = CameraPosition(
+          target: LatLng(userLat.value, userLng.value),
+          zoom: 16.0,
+        );
+        return;
+      }
+    } catch (e) {
+      // HomeController not found, continue to get location
+      debugPrint('HomeController not found, getting location: $e');
+    }
+    
     // Automatically get user's location on init
     getUserLocation();
   }
