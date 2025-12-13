@@ -58,16 +58,29 @@ class CurrentLocationCard extends StatelessWidget {
               children: [
                 Image.asset(IconPath.location, width: 24.w, height: 24.h),
                 SizedBox(width: 3.w),
-                Obx(() => Text(
-                      controller.currentAddress.value,
-                      style: GoogleFonts.inter(
-                        fontSize: 11.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff505050),
-                      ),
-                    )),
+                Expanded(
+                  child: Obx(() => controller.isLoadingLocation.value
+                      ? Text(
+                          'Getting location...',
+                          style: GoogleFonts.inter(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff505050),
+                          ),
+                        )
+                      : Text(
+                          controller.currentAddress.value,
+                          style: GoogleFonts.inter(
+                            fontSize: 11.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff505050),
+                          ),
+                        )),
+                ),
               ],
-            ),   /// Weather & Map Button
+            ),
+            SizedBox(height: 8.h),
+            /// Weather & Map Button
             Row(
               children: [
                 Image.asset(IconPath.sun, width: 24.w, height: 24.h),
@@ -81,17 +94,23 @@ class CurrentLocationCard extends StatelessWidget {
                       ),
                     )),
                 Spacer(),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    'see_map'.tr,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Color(0xFF45C5FF),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
+                Obx(() => TextButton(
+                      onPressed: controller.isLoadingLocation.value
+                          ? null
+                          : () {
+                              controller.navigateToMapWithCurrentLocation();
+                            },
+                      child: Text(
+                        'see_map'.tr,
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: controller.isLoadingLocation.value
+                              ? Colors.grey
+                              : Color(0xFF45C5FF),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    )),
               ],
             )
           ],
