@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
 import 'package:ai_powered_tourists_app/core/localization/localization_service.dart';
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
+import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:ai_powered_tourists_app/features/home/model/nearby_place.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 import 'package:ai_powered_tourists_app/features/map/screen/map.dart';
@@ -19,7 +22,7 @@ class HomeController extends GetxController {
   var userName = "Jak Nos".obs;
   var currentAddress = "Loading location...".obs;
   var currentWeather = "Loading...".obs;
-  
+
   // Current location coordinates
   var currentLat = 0.0.obs;
   var currentLng = 0.0.obs;
@@ -27,8 +30,8 @@ class HomeController extends GetxController {
 
   // UI state
   var selectedCategory = 'historical'.obs;
-  var isNotificationRed =false.obs;
-  void toggleNotificationColor(){
+  var isNotificationRed = false.obs;
+  void toggleNotificationColor() {
     isNotificationRed.value = !isNotificationRed.value;
   }
 
@@ -43,14 +46,18 @@ class HomeController extends GetxController {
   // Dynamic list of places
   final places = <Place>[].obs;
 
+  // Nearby places from API
+  final nearbyPlaces = <NearbyPlace>[].obs;
+  var isLoadingNearbyPlaces = false.obs;
+
   // Map related properties
   GoogleMapController? _mapController;
   final mapMarkers = <Marker>[].obs;
-  
+
   // Default location (Rome, Italy - matching the image)
   final double initialLat = 41.8902;
   final double initialLng = 12.4922;
-  
+
   var mapCameraPosition = const CameraPosition(
     target: LatLng(41.8902, 12.4922),
     zoom: 14.0,
@@ -61,24 +68,24 @@ class HomeController extends GetxController {
     super.onInit();
     _loadSampleData();
     _setupAudioListeners();
-    
+
     // Get current location when app starts
     getCurrentLocation();
-    
+
     // Listen to locale changes and reload data
     ever(Get.find<LocalizationService>().currentLocale, (_) {
       reloadPlacesData();
     });
   }
-  
+
   // Get current location
   Future<void> getCurrentLocation({bool showLoading = true}) async {
     try {
       isLoadingLocation.value = true;
-      
+
       // Always show loading when getting location
       EasyLoading.show(status: 'Getting your location...');
-      
+
       // Check if location services are enabled
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -119,11 +126,11 @@ class HomeController extends GetxController {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      
+
       // Update coordinates
       currentLat.value = position.latitude;
       currentLng.value = position.longitude;
-      
+
       // Debug print: Show actual device location coordinates
       debugPrint('========================================');
       debugPrint('📍 DEVICE CURRENT LOCATION:');
@@ -131,25 +138,29 @@ class HomeController extends GetxController {
       debugPrint('Longitude: ${position.longitude}');
       debugPrint('Accuracy: ${position.accuracy} meters');
       debugPrint('========================================');
-      
+
       // Update map camera position
       mapCameraPosition.value = CameraPosition(
         target: LatLng(position.latitude, position.longitude),
         zoom: 14.0,
       );
-      
+
       // Convert coordinates to address
       EasyLoading.show(status: 'Getting address...');
       await getAddressFromCoordinates(position.latitude, position.longitude);
-      
+
       // Get weather for current location
       EasyLoading.show(status: 'Fetching weather...');
       await getWeatherForLocation(position.latitude, position.longitude);
-      
+
+      // Send location to backend API
+      EasyLoading.show(status: 'Sending location to server...');
+      await sendLocationToBackend(position.latitude, position.longitude);
+
       // Success
       EasyLoading.dismiss();
       EasyLoading.showSuccess('Location updated');
-      
+
       isLoadingLocation.value = false;
     } catch (e) {
       debugPrint('Error getting location: $e');
@@ -160,37 +171,41 @@ class HomeController extends GetxController {
       isLoadingLocation.value = false;
     }
   }
-  
+
   // Get building name from Google Places API Nearby Search
   Future<String?> _getBuildingNameFromPlacesAPI(double lat, double lng) async {
     try {
       final apiKey = ApiKeys.googleMapsApiKey;
       // Use Nearby Search to find the exact place at these coordinates
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=50&key=$apiKey'
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=50&key=$apiKey',
       );
-      
+
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
-        if (data['status'] == 'OK' && data['results'] != null && (data['results'] as List).isNotEmpty) {
+
+        if (data['status'] == 'OK' &&
+            data['results'] != null &&
+            (data['results'] as List).isNotEmpty) {
           // Get the first result (closest place)
           final firstResult = (data['results'] as List)[0];
           final placeName = firstResult['name'] as String?;
           final types = firstResult['types'] as List<dynamic>?;
-          
+
           // Check if it's a building, establishment, or point of interest
           if (placeName != null && placeName.isNotEmpty && types != null) {
             // Prioritize buildings, establishments, and specific places
-            bool isRelevantPlace = types.any((type) => [
-              'establishment',
-              'point_of_interest',
-              'premise',
-              'building'
-            ].contains(type));
-            
+            bool isRelevantPlace = types.any(
+              (type) => [
+                'establishment',
+                'point_of_interest',
+                'premise',
+                'building',
+              ].contains(type),
+            );
+
             if (isRelevantPlace) {
               debugPrint('🏢 Places API found: $placeName (types: $types)');
               return placeName;
@@ -203,17 +218,23 @@ class HomeController extends GetxController {
     }
     return null;
   }
-  
+
   // Extract building name from formatted address string
   String? _extractBuildingFromFormattedAddress(String formattedAddress) {
     try {
       // Common building name patterns
       final buildingPatterns = [
-        RegExp(r'([A-Z][a-zA-Z\s]*\s*(?:Tower|Building|Plaza|Mall|Complex|Center|Centre|Towers))', caseSensitive: false),
+        RegExp(
+          r'([A-Z][a-zA-Z\s]*\s*(?:Tower|Building|Plaza|Mall|Complex|Center|Centre|Towers))',
+          caseSensitive: false,
+        ),
         RegExp(r'(Aqua\s+Tower)', caseSensitive: false),
-        RegExp(r'([A-Z][a-zA-Z\s]*\s*(?:Hotel|Apartment|Residence|Residency))', caseSensitive: false),
+        RegExp(
+          r'([A-Z][a-zA-Z\s]*\s*(?:Hotel|Apartment|Residence|Residency))',
+          caseSensitive: false,
+        ),
       ];
-      
+
       for (var pattern in buildingPatterns) {
         final match = pattern.firstMatch(formattedAddress);
         if (match != null && match.group(1) != null) {
@@ -224,14 +245,24 @@ class HomeController extends GetxController {
           }
         }
       }
-      
+
       // Also check if first part before comma looks like a building name
       final parts = formattedAddress.split(',');
       if (parts.isNotEmpty) {
         final firstPart = parts[0].trim();
         // Check if it contains building indicators
-        if (firstPart.contains(RegExp(r'(Tower|Building|Plaza|Mall|Complex|Center|Centre)', caseSensitive: false)) &&
-            !firstPart.contains(RegExp(r'\d+\s+\w+\s+(?:Road|Street|Avenue|Lane)', caseSensitive: false))) {
+        if (firstPart.contains(
+              RegExp(
+                r'(Tower|Building|Plaza|Mall|Complex|Center|Centre)',
+                caseSensitive: false,
+              ),
+            ) &&
+            !firstPart.contains(
+              RegExp(
+                r'\d+\s+\w+\s+(?:Road|Street|Avenue|Lane)',
+                caseSensitive: false,
+              ),
+            )) {
           return firstPart;
         }
       }
@@ -240,7 +271,7 @@ class HomeController extends GetxController {
     }
     return null;
   }
-  
+
   // Extract building name from all geocoding results
   String? _extractBuildingFromAllResults(List<dynamic> results) {
     for (var result in results) {
@@ -249,13 +280,15 @@ class HomeController extends GetxController {
         for (var component in addressComponents) {
           final types = component['types'] as List<dynamic>?;
           final longName = component['long_name'] as String? ?? '';
-          
-          if (types != null && types.contains('premise') && longName.isNotEmpty) {
+
+          if (types != null &&
+              types.contains('premise') &&
+              longName.isNotEmpty) {
             return longName;
           }
         }
       }
-      
+
       // Also check formatted_address for building names
       final formattedAddress = result['formatted_address'] as String?;
       if (formattedAddress != null) {
@@ -267,9 +300,9 @@ class HomeController extends GetxController {
           'Mall',
           'Complex',
           'Center',
-          'Centre'
+          'Centre',
         ];
-        
+
         for (var pattern in buildingPatterns) {
           if (formattedAddress.contains(pattern)) {
             // Try to extract building name (usually before the first comma or street)
@@ -285,66 +318,72 @@ class HomeController extends GetxController {
     }
     return null;
   }
-  
+
   // Convert coordinates to address using Google Geocoding API (English only)
   Future<void> getAddressFromCoordinates(double lat, double lng) async {
     try {
       // Debug print coordinates being used
       debugPrint('🔍 Fetching address for coordinates: $lat, $lng');
-      
+
       // Use Google Geocoding API with language=en to ensure English address
       final apiKey = ApiKeys.googleMapsApiKey;
       final url = Uri.parse(
-        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&language=en&key=$apiKey'
+        'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&language=en&key=$apiKey',
       );
-      
+
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        
+
         if (data['status'] == 'OK' && data['results'].isNotEmpty) {
           // First, try to get building name from Google Places API Nearby Search
           String? buildingName = await _getBuildingNameFromPlacesAPI(lat, lng);
           if (buildingName != null && buildingName.isNotEmpty) {
             debugPrint('🏢 Found building name from Places API: $buildingName');
           }
-          
+
           // Parse address components to build a readable street address
           final result = data['results'][0];
-          final addressComponents = result['address_components'] as List<dynamic>?;
-          
+          final addressComponents =
+              result['address_components'] as List<dynamic>?;
+
           // Also check all results for building names
-          String? buildingFromResults = _extractBuildingFromAllResults(data['results'] as List);
+          String? buildingFromResults = _extractBuildingFromAllResults(
+            data['results'] as List,
+          );
           if (buildingFromResults != null && buildingFromResults.isNotEmpty) {
             buildingName = buildingName ?? buildingFromResults;
             debugPrint('🏢 Found building name from results: $buildingName');
           }
-          
+
           // Debug: Print all address components
           debugPrint('📍 Address components received:');
           if (addressComponents != null) {
             for (var component in addressComponents) {
-              debugPrint('  - ${component['long_name']} (${component['types']})');
+              debugPrint(
+                '  - ${component['long_name']} (${component['types']})',
+              );
             }
           }
-          
+
           if (addressComponents != null && addressComponents.isNotEmpty) {
             // Extract address components - prioritize specific locations
             String streetNumber = '';
             String route = '';
-            String premise = buildingName ?? ''; // Use building name from Places API first
+            String premise =
+                buildingName ?? ''; // Use building name from Places API first
             String pointOfInterest = ''; // POI like landmarks
             String sublocality = '';
             String sublocalityLevel1 = '';
             String sublocalityLevel2 = '';
             String neighborhood = '';
             String locality = '';
-            
+
             for (var component in addressComponents) {
               final types = component['types'] as List<dynamic>?;
               final longName = component['long_name'] as String? ?? '';
-              
+
               if (types != null) {
                 if (types.contains('premise') && premise.isEmpty) {
                   premise = longName; // Building name
@@ -367,28 +406,28 @@ class HomeController extends GetxController {
                 }
               }
             }
-            
+
             // Build readable address with priority for specific locations
             List<String> addressParts = [];
-            
+
             // PRIORITY 1: Building/Premise (very specific - like "Aqua Tower", "Mohakhali Aqua Tower")
             // Show building name FIRST if available, as it's the most specific location
             if (premise.isNotEmpty) {
               addressParts.add(premise);
             }
-            
+
             // PRIORITY 2: Point of Interest (landmarks, specific places)
             if (pointOfInterest.isNotEmpty && pointOfInterest != premise) {
               addressParts.add(pointOfInterest);
             }
-            
+
             // PRIORITY 3: Street address (specific street location)
             if (streetNumber.isNotEmpty && route.isNotEmpty) {
               addressParts.add('$streetNumber $route');
             } else if (route.isNotEmpty) {
               addressParts.add(route);
             }
-            
+
             // Area/Neighborhood (specific area like "Mohakhali")
             // Priority: sublocality_level_2 > sublocality_level_1 > sublocality > neighborhood
             if (sublocalityLevel2.isNotEmpty) {
@@ -400,25 +439,28 @@ class HomeController extends GetxController {
             } else if (neighborhood.isNotEmpty) {
               addressParts.add(neighborhood);
             }
-            
+
             // City (show only if we don't have more specific info, or if it's different from sublocality)
             if (locality.isNotEmpty) {
               // Only add city if sublocality is different or we don't have sublocality
-              if (sublocalityLevel2.isEmpty && sublocalityLevel1.isEmpty && 
-                  sublocality.isEmpty && neighborhood.isEmpty) {
+              if (sublocalityLevel2.isEmpty &&
+                  sublocalityLevel1.isEmpty &&
+                  sublocality.isEmpty &&
+                  neighborhood.isEmpty) {
                 addressParts.add(locality);
-              } else if (locality.toLowerCase() != sublocalityLevel2.toLowerCase() &&
-                         locality.toLowerCase() != sublocalityLevel1.toLowerCase() &&
-                         locality.toLowerCase() != sublocality.toLowerCase() &&
-                         locality.toLowerCase() != neighborhood.toLowerCase()) {
+              } else if (locality.toLowerCase() !=
+                      sublocalityLevel2.toLowerCase() &&
+                  locality.toLowerCase() != sublocalityLevel1.toLowerCase() &&
+                  locality.toLowerCase() != sublocality.toLowerCase() &&
+                  locality.toLowerCase() != neighborhood.toLowerCase()) {
                 addressParts.add(locality);
               }
             }
-            
+
             // State/Province (only if we have specific location, otherwise it's redundant)
             // Skip administrative area if we already have city/sublocality
             // Country (only add if different country or if address is very short)
-            
+
             // Only use formatted address if we don't have street info and it's not a Plus Code
             if (addressParts.isNotEmpty) {
               final readableAddress = addressParts.join(', ');
@@ -429,19 +471,22 @@ class HomeController extends GetxController {
                 return;
               }
             }
-            
+
             // Try to extract building name from formatted_address if we still don't have one
             if (premise.isEmpty) {
               final formattedAddress = result['formatted_address'] as String?;
               if (formattedAddress != null && formattedAddress.isNotEmpty) {
                 // Look for building names in formatted address (before first comma usually)
-                final buildingFromFormatted = _extractBuildingFromFormattedAddress(formattedAddress);
-                if (buildingFromFormatted != null && buildingFromFormatted.isNotEmpty) {
+                final buildingFromFormatted =
+                    _extractBuildingFromFormattedAddress(formattedAddress);
+                if (buildingFromFormatted != null &&
+                    buildingFromFormatted.isNotEmpty) {
                   premise = buildingFromFormatted;
                   // Rebuild address with building name
                   addressParts.clear();
                   addressParts.add(premise);
-                  if (pointOfInterest.isNotEmpty && pointOfInterest != premise) {
+                  if (pointOfInterest.isNotEmpty &&
+                      pointOfInterest != premise) {
                     addressParts.add(pointOfInterest);
                   }
                   if (streetNumber.isNotEmpty && route.isNotEmpty) {
@@ -459,33 +504,41 @@ class HomeController extends GetxController {
                     addressParts.add(neighborhood);
                   }
                   if (locality.isNotEmpty) {
-                    if (sublocalityLevel2.isEmpty && sublocalityLevel1.isEmpty && 
-                        sublocality.isEmpty && neighborhood.isEmpty) {
+                    if (sublocalityLevel2.isEmpty &&
+                        sublocalityLevel1.isEmpty &&
+                        sublocality.isEmpty &&
+                        neighborhood.isEmpty) {
                       addressParts.add(locality);
-                    } else if (locality.toLowerCase() != sublocalityLevel2.toLowerCase() &&
-                               locality.toLowerCase() != sublocalityLevel1.toLowerCase() &&
-                               locality.toLowerCase() != sublocality.toLowerCase() &&
-                               locality.toLowerCase() != neighborhood.toLowerCase()) {
+                    } else if (locality.toLowerCase() !=
+                            sublocalityLevel2.toLowerCase() &&
+                        locality.toLowerCase() !=
+                            sublocalityLevel1.toLowerCase() &&
+                        locality.toLowerCase() != sublocality.toLowerCase() &&
+                        locality.toLowerCase() != neighborhood.toLowerCase()) {
                       addressParts.add(locality);
                     }
                   }
-                  
+
                   if (addressParts.isNotEmpty) {
                     final readableAddress = addressParts.join(', ');
-                    if (!readableAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
+                    if (!readableAddress.contains(
+                      RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'),
+                    )) {
                       currentAddress.value = readableAddress;
-                      debugPrint('✅ Using address with extracted building: $readableAddress');
+                      debugPrint(
+                        '✅ Using address with extracted building: $readableAddress',
+                      );
                       return;
                     }
                   }
                 }
               }
             }
-            
+
             // Fallback: Use formatted_address if it's not a Plus Code
             final formattedAddress = result['formatted_address'] as String?;
-            if (formattedAddress != null && 
-                formattedAddress.isNotEmpty && 
+            if (formattedAddress != null &&
+                formattedAddress.isNotEmpty &&
                 !formattedAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
               currentAddress.value = formattedAddress;
               debugPrint('✅ Using formatted address: $formattedAddress');
@@ -494,31 +547,32 @@ class HomeController extends GetxController {
           }
         }
       }
-      
+
       // Fallback to geocoding package if API fails (may show in device locale)
       debugPrint('⚠️ Google API failed, using geocoding package fallback');
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
-      
+
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks.first;
-        
+
         // Format address, avoiding Plus Codes
         List<String> addressParts = [];
-        
+
         // Check if street is not a Plus Code
-        if (place.street != null && 
-            place.street!.isNotEmpty && 
+        if (place.street != null &&
+            place.street!.isNotEmpty &&
             !place.street!.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
           addressParts.add(place.street!);
         }
-        
+
         if (place.subLocality != null && place.subLocality!.isNotEmpty) {
           addressParts.add(place.subLocality!);
         }
         if (place.locality != null && place.locality!.isNotEmpty) {
           addressParts.add(place.locality!);
         }
-        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+        if (place.administrativeArea != null &&
+            place.administrativeArea!.isNotEmpty) {
           addressParts.add(place.administrativeArea!);
         }
         if (place.postalCode != null && place.postalCode!.isNotEmpty) {
@@ -527,26 +581,31 @@ class HomeController extends GetxController {
         if (place.country != null && place.country!.isNotEmpty) {
           addressParts.add(place.country!);
         }
-        
+
         if (addressParts.isNotEmpty) {
           currentAddress.value = addressParts.join(', ');
-          debugPrint('✅ Using geocoding package address: ${currentAddress.value}');
+          debugPrint(
+            '✅ Using geocoding package address: ${currentAddress.value}',
+          );
         } else {
           // Last resort: show coordinates
-          currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+          currentAddress.value =
+              "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
           debugPrint('⚠️ Using coordinates as address');
         }
       } else {
-        currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+        currentAddress.value =
+            "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
         debugPrint('⚠️ No placemarks found, using coordinates');
       }
     } catch (e) {
       debugPrint('❌ Error getting address: $e');
-      currentAddress.value = "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
+      currentAddress.value =
+          "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
       debugPrint('📍 Final address set to: ${currentAddress.value}');
     }
   }
-  
+
   // Get weather for location using wttr.in API (free, no API key needed)
   Future<void> getWeatherForLocation(double lat, double lng) async {
     try {
@@ -557,7 +616,7 @@ class HomeController extends GetxController {
         url,
         headers: {'User-Agent': 'Mozilla/5.0'}, // Some APIs require user agent
       );
-      
+
       if (response.statusCode == 200) {
         try {
           final data = json.decode(response.body);
@@ -571,14 +630,14 @@ class HomeController extends GetxController {
           debugPrint('Error parsing weather response: $e');
         }
       }
-      
+
       // Fallback: Try alternative weather API (Open-Meteo - free, no key needed)
       try {
         final url = Uri.parse(
-          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current=temperature_2m&temperature_unit=celsius'
+          'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current=temperature_2m&temperature_unit=celsius',
         );
         final response = await http.get(url);
-        
+
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           final temp = data['current']?['temperature_2m'];
@@ -590,7 +649,7 @@ class HomeController extends GetxController {
       } catch (e) {
         debugPrint('Open-Meteo API error: $e');
       }
-      
+
       // Final fallback: Use location-based estimation
       double estimatedTemp = 25.0; // Default
       if (lat > 60) {
@@ -604,15 +663,79 @@ class HomeController extends GetxController {
       } else {
         estimatedTemp = 10.0; // Southern regions
       }
-      
+
       currentWeather.value = "${estimatedTemp.toStringAsFixed(0)}°C";
-      
     } catch (e) {
       debugPrint('Error getting weather: $e');
       currentWeather.value = "N/A";
     }
   }
-  
+
+  // Send location to backend API and fetch nearby places
+  Future<void> sendLocationToBackend(double lat, double lng) async {
+    try {
+      // Get access token from storage
+      final token = Get.find<StorageService>().getAccessToken();
+
+      if (token == null || token.isEmpty) {
+        debugPrint('❌ No access token found');
+        EasyLoading.showError('Authentication required');
+        return;
+      }
+
+      isLoadingNearbyPlaces.value = true;
+
+      debugPrint('========================================');
+      debugPrint('📤 SENDING LOCATION TO BACKEND:');
+      debugPrint('API URL: ${Url.savedPLaceApi}');
+      debugPrint('Latitude: $lat');
+      debugPrint('Longitude: $lng');
+      debugPrint('Token: Bearer $token');
+      debugPrint('========================================');
+
+      final response = await http.post(
+        Uri.parse(Url.savedPLaceApi),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'latitude': lat,
+          'longitude': lng,
+          // 'radius': 5000, // Optional
+        }),
+      );
+
+      debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        debugPrint('✅ Location sent successfully');
+        final data = jsonDecode(response.body);
+
+        // Parse nearby places response
+        try {
+          final nearbyResponse = NearbyPlacesResponse.fromJson(data);
+          nearbyPlaces.value = nearbyResponse.data;
+
+          debugPrint('✅ Found ${nearbyPlaces.length} nearby places');
+          for (var place in nearbyPlaces) {
+            debugPrint('  - ${place.placeName} (${place.placeRating} ⭐)');
+          }
+        } catch (e) {
+          debugPrint('❌ Error parsing nearby places: $e');
+        }
+      } else {
+        debugPrint('❌ Failed to send location: ${response.statusCode}');
+        debugPrint('Error: ${response.body}');
+      }
+    } catch (e) {
+      debugPrint('❌ Error sending location to backend: $e');
+    } finally {
+      isLoadingNearbyPlaces.value = false;
+    }
+  }
+
   // Reload places data when language changes
   void reloadPlacesData() {
     _loadSampleData();
@@ -629,18 +752,18 @@ class HomeController extends GetxController {
 
     _audioPlayer.playerStateStream.listen((state) {
       isAudioPlaying.value = state.playing;
-      
+
       // Auto close when audio completes
       if (state.processingState == ProcessingState.completed) {
         isAudioPlaying.value = false;
         audioPosition.value = Duration.zero;
-        
+
         // Suggest quiz after visit completion
         _suggestQuizAfterVisit();
       }
     });
   }
-  
+
   // Method to suggest quiz when visit is finished
   void _suggestQuizAfterVisit() {
     // Small delay to allow audio to fully stop
@@ -650,13 +773,11 @@ class HomeController extends GetxController {
       }
     });
   }
-  
+
   void _showQuizSuggestionDialog() {
     Get.dialog(
       Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
@@ -677,7 +798,7 @@ class HomeController extends GetxController {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Title
               Text(
                 'visit_complete'.tr,
@@ -689,7 +810,7 @@ class HomeController extends GetxController {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
-              
+
               // Message
               Text(
                 'quiz_suggestion_message'.tr,
@@ -701,7 +822,7 @@ class HomeController extends GetxController {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              
+
               // Start Quiz Button
               SizedBox(
                 width: double.infinity,
@@ -731,7 +852,7 @@ class HomeController extends GetxController {
                 ),
               ),
               const SizedBox(height: 12),
-              
+
               // Maybe Later Button
               SizedBox(
                 width: double.infinity,
@@ -814,7 +935,7 @@ class HomeController extends GetxController {
   List<Place> filteredPlaces() {
     final cat = selectedCategory.value;
     if (cat == 'all') return places;
-    
+
     // Get the translated category value for comparison
     final translatedCategory = cat.tr;
     return places.where((p) => p.category == translatedCategory).toList();
@@ -837,7 +958,7 @@ class HomeController extends GetxController {
         infoWindow: const InfoWindow(title: 'Colosseum'),
       ),
     );
-    
+
     // Add marker for Ashok Nagar (from the image)
     mapMarkers.add(
       Marker(
@@ -849,7 +970,9 @@ class HomeController extends GetxController {
   }
 
   void moveToCurrentLocation() {
-    if (_mapController != null && currentLat.value != 0.0 && currentLng.value != 0.0) {
+    if (_mapController != null &&
+        currentLat.value != 0.0 &&
+        currentLng.value != 0.0) {
       _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
@@ -861,15 +984,12 @@ class HomeController extends GetxController {
     } else if (_mapController != null) {
       _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(initialLat, initialLng),
-            zoom: 14.0,
-          ),
+          CameraPosition(target: LatLng(initialLat, initialLng), zoom: 14.0),
         ),
       );
     }
   }
-  
+
   // Navigate to map screen with current location
   void navigateToMapWithCurrentLocation() async {
     if (currentLat.value != 0.0 && currentLng.value != 0.0) {
@@ -882,7 +1002,7 @@ class HomeController extends GetxController {
           // Create and register it so it's available when screen loads
           mapController = Get.put(MapController());
         }
-        
+
         // Set the location BEFORE navigating so map initializes with correct location
         mapController.userLat.value = currentLat.value;
         mapController.userLng.value = currentLng.value;
@@ -891,13 +1011,13 @@ class HomeController extends GetxController {
           target: LatLng(currentLat.value, currentLng.value),
           zoom: 16.0,
         );
-        
+
         // Navigate to map screen
         Get.to(() => const MapScreen());
-        
+
         // Wait for map to initialize and then update
         await Future.delayed(const Duration(milliseconds: 1200));
-        
+
         try {
           // Update camera position again after map loads
           if (mapController.gMapController != null) {
@@ -910,7 +1030,7 @@ class HomeController extends GetxController {
               ),
             );
           }
-          
+
           // Clear existing markers and add current location marker
           mapController.markers.clear();
           mapController.markers.add(
@@ -921,7 +1041,9 @@ class HomeController extends GetxController {
                 title: 'Current Location',
                 snippet: currentAddress.value,
               ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+              icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueBlue,
+              ),
             ),
           );
         } catch (e) {
@@ -937,7 +1059,7 @@ class HomeController extends GetxController {
       EasyLoading.show(status: 'Getting location...');
       await getCurrentLocation(showLoading: false);
       EasyLoading.dismiss();
-      
+
       if (currentLat.value != 0.0 && currentLng.value != 0.0) {
         navigateToMapWithCurrentLocation();
       } else {
@@ -950,10 +1072,7 @@ class HomeController extends GetxController {
     if (_mapController != null) {
       _mapController!.animateCamera(
         CameraUpdate.newCameraPosition(
-          CameraPosition(
-            target: LatLng(lat, lng),
-            zoom: 16.0,
-          ),
+          CameraPosition(target: LatLng(lat, lng), zoom: 16.0),
         ),
       );
     }
