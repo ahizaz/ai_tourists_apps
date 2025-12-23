@@ -94,7 +94,7 @@ class _AnswerFeedbackOverlayState extends State<AnswerFeedbackOverlay>
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xff28A745).withOpacity(0.3),
+                color: const Color(0xff28A745).withValues(alpha: .3),
                 blurRadius: 30,
                 spreadRadius: 10,
               ),
@@ -139,7 +139,7 @@ class _AnswerFeedbackOverlayState extends State<AnswerFeedbackOverlay>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xffDC3545).withOpacity(0.3),
+                      color: const Color(0xffDC3545).withValues(alpha: .3),
                       blurRadius: 30,
                       spreadRadius: 10,
                     ),

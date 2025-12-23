@@ -1,6 +1,5 @@
 // ...existing code...
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/controller/ai_assistant_controller.dart';
-import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/last_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
 
 import 'package:flutter/material.dart';

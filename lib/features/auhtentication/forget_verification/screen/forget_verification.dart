@@ -1,5 +1,5 @@
 import 'package:ai_powered_tourists_app/features/auhtentication/forget_verification/controller/forget_verification_controller.dart';
-import 'package:ai_powered_tourists_app/features/auhtentication/reset_password/screen/reset_password.dart';
+
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';

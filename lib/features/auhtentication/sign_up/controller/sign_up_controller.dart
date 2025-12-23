@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/verification_code/screen/verification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -72,6 +73,15 @@ class SignUpController extends GetxController{
         emailOrPhoneController.clear();
         passwordController.clear();
         rememberMe.value=false;
+
+        // Persist name and email so profile/home show correct values
+        try {
+          final storage = Get.find<StorageService>();
+          storage.saveUserName(name);
+          storage.saveUserEmail(email);
+        } catch (e) {
+          debugPrint('Error saving signup info to storage: $e');
+        }
 
        Get.to(() => const Verification(),arguments: email);  
 
