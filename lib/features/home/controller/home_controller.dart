@@ -69,8 +69,10 @@ class HomeController extends GetxController {
     _loadSampleData();
     _setupAudioListeners();
 
-    // Get current location when app starts
-    getCurrentLocation();
+    // Get current location when app starts (after first frame so UI is ready)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getCurrentLocation();
+    });
 
     // Listen to locale changes and reload data
     ever(Get.find<LocalizationService>().currentLocale, (_) {
@@ -90,7 +92,26 @@ class HomeController extends GetxController {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         EasyLoading.dismiss();
-        EasyLoading.showError('Location services disabled');
+        // Prompt user to open device Location settings
+        if (Get.isDialogOpen == false) {
+          Get.defaultDialog(
+            title: 'location_services_disabled'.tr,
+            middleText: 'please_enable_location_services'.tr,
+            onConfirm: () async {
+              Get.back();
+              await Geolocator.openLocationSettings();
+              // Give user a moment to enable then retry
+              await Future.delayed(const Duration(seconds: 1));
+              getCurrentLocation();
+            },
+            textConfirm: 'open_settings'.tr,
+            onCancel: () {
+              Get.back();
+            },
+            textCancel: 'cancel'.tr,
+          );
+        }
+
         currentAddress.value = "Location services disabled";
         currentWeather.value = "N/A";
         isLoadingLocation.value = false;
@@ -100,11 +121,30 @@ class HomeController extends GetxController {
       // Check location permission
       EasyLoading.show(status: 'Checking permissions...');
       LocationPermission permission = await Geolocator.checkPermission();
+
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           EasyLoading.dismiss();
-          EasyLoading.showError('Location permission denied');
+          // Show dialog offering retry or open app settings
+          if (Get.isDialogOpen == false) {
+            Get.defaultDialog(
+              title: 'permission_denied'.tr,
+              middleText: 'please_allow_location_access'.tr,
+              onConfirm: () {
+                Get.back();
+                // Retry requesting permission
+                getCurrentLocation();
+              },
+              textConfirm: 'retry'.tr,
+              onCancel: () async {
+                Get.back();
+                await Geolocator.openAppSettings();
+              },
+              textCancel: 'open_settings'.tr,
+            );
+          }
+
           currentAddress.value = "Location permission denied";
           currentWeather.value = "N/A";
           isLoadingLocation.value = false;
@@ -114,7 +154,23 @@ class HomeController extends GetxController {
 
       if (permission == LocationPermission.deniedForever) {
         EasyLoading.dismiss();
-        EasyLoading.showError('Location permission permanently denied');
+        // Permission permanently denied — prompt user to open app settings
+        if (Get.isDialogOpen == false) {
+          Get.defaultDialog(
+            title: 'permission_permanently_denied'.tr,
+            middleText: 'open_app_settings_to_enable_location'.tr,
+            onConfirm: () async {
+              Get.back();
+              await Geolocator.openAppSettings();
+            },
+            textConfirm: 'open_settings'.tr,
+            onCancel: () {
+              Get.back();
+            },
+            textCancel: 'cancel'.tr,
+          );
+        }
+
         currentAddress.value = "Location permission permanently denied";
         currentWeather.value = "N/A";
         isLoadingLocation.value = false;
