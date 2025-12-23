@@ -35,6 +35,12 @@ class HomeController extends GetxController {
     isNotificationRed.value = !isNotificationRed.value;
   }
 
+  // Update user name in-memory and persist to storage
+  void setUserName(String name) {
+    userName.value = name;
+    Get.find<StorageService>().saveUserName(name);
+  }
+
   // AI Tourist Guide state
   var showAIGuideSheet = false.obs;
   var isAIGuideStarted = false.obs;
@@ -66,6 +72,17 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+
+    // Load saved user name from storage (if available)
+    try {
+      final storedName = Get.find<StorageService>().getUserName();
+      if (storedName != null && storedName.isNotEmpty) {
+        userName.value = storedName;
+      }
+    } catch (e) {
+      debugPrint('Error loading stored user name: $e');
+    }
+
     _loadSampleData();
     _setupAudioListeners();
 

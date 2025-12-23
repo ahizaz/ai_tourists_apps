@@ -44,6 +44,44 @@ class StorageService extends GetxService {
     debugPrint("🗑️ Refresh Token removed from SharedPreferences");
   }
 
+  // User name storage
+  void saveUserName(String name) {
+    _box.write('user_name', name);
+    debugPrint("💾 User name saved to SharedPreferences: $name");
+  }
+
+  String? getUserName() {
+    final name = _box.read('user_name');
+    if (name != null) {
+      debugPrint("📖 User name retrieved from SharedPreferences: $name");
+    }
+    return name;
+  }
+
+  void removeUserName() {
+    _box.remove('user_name');
+    debugPrint("🗑️ User name removed from SharedPreferences");
+  }
+
+  // User email storage
+  void saveUserEmail(String email) {
+    _box.write('user_email', email);
+    debugPrint("💾 User email saved to SharedPreferences: $email");
+  }
+
+  String? getUserEmail() {
+    final email = _box.read('user_email');
+    if (email != null) {
+      debugPrint("📖 User email retrieved from SharedPreferences: $email");
+    }
+    return email;
+  }
+
+  void removeUserEmail() {
+    _box.remove('user_email');
+    debugPrint("🗑️ User email removed from SharedPreferences");
+  }
+
   // User Login Status
   bool isLoggedIn() {
     final token = getAccessToken();

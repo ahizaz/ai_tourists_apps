@@ -384,6 +384,44 @@ class ProfileController extends GetxController {
     markers.add(initialMarker);
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    // Load persisted name/email from storage (if available)
+    try {
+      final storage = Get.find<StorageService>();
+      final storedName = storage.getUserName();
+      final storedEmail = storage.getUserEmail();
+      if (storedName != null && storedName.isNotEmpty) {
+        userName.value = storedName;
+      }
+      if (storedEmail != null && storedEmail.isNotEmpty) {
+        userEmail.value = storedEmail;
+      }
+    } catch (e) {
+      debugPrint('Error loading profile info from storage: $e');
+    }
+  }
+
+  // Persist name and email when updated
+  void setUserName(String name) {
+    userName.value = name;
+    try {
+      Get.find<StorageService>().saveUserName(name);
+    } catch (e) {
+      debugPrint('Error saving user name: $e');
+    }
+  }
+
+  void setUserEmail(String email) {
+    userEmail.value = email;
+    try {
+      Get.find<StorageService>().saveUserEmail(email);
+    } catch (e) {
+      debugPrint('Error saving user email: $e');
+    }
+  }
+
   void onMapCreated(GoogleMapController controller) {
     gMapController = controller;
   }

@@ -85,11 +85,11 @@ class MapController extends GetxController {
   Future<void> onMapTap(LatLng position) async {
     try {
       // Debug: Print clicked location coordinates
-      print('========================================');
-      print('📍 CLICKED LOCATION:');
-      print('Latitude: ${position.latitude}');
-      print('Longitude: ${position.longitude}');
-      print('========================================');
+      debugPrint('========================================');
+      debugPrint('📍 CLICKED LOCATION:');
+      debugPrint('Latitude: ${position.latitude}');
+      debugPrint('Longitude: ${position.longitude}');
+      debugPrint('========================================');
       
       isLoadingPlaceDetails.value = true;
       
@@ -194,7 +194,7 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      print('Error getting nearby places: $e');
+      debugPrint('Error getting nearby places: $e');
     }
     return null;
   }
@@ -240,11 +240,11 @@ class MapController extends GetxController {
             'url': result['url'] ?? '', // Google Maps URL
           };
           
-          print('Loaded ${allPhotos.length} photos for ${result['name']}');
+          debugPrint('Loaded ${allPhotos.length} photos for ${result['name']}');
         }
       }
     } catch (e) {
-      print('Error getting place details: $e');
+      debugPrint('Error getting place details: $e');
     }
   }
 
@@ -398,7 +398,7 @@ class MapController extends GetxController {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('Location services are disabled');
+        debugPrint('Location services are disabled');
         return;
       }
 
@@ -406,13 +406,13 @@ class MapController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print('Location permission denied');
+          debugPrint('Location permission denied');
           return;
         }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        print('Location permission permanently denied');
+        debugPrint('Location permission permanently denied');
         return;
       }
 
@@ -426,10 +426,10 @@ class MapController extends GetxController {
       userLng.value = position.longitude;
       hasUserLocation.value = true;
       
-      print('User location: ${position.latitude}, ${position.longitude}');
+      debugPrint('User location: ${position.latitude}, ${position.longitude}');
       
     } catch (e) {
-      print('Failed to get user location: $e');
+      debugPrint('Failed to get user location: $e');
       hasUserLocation.value = false;
     }
   }
