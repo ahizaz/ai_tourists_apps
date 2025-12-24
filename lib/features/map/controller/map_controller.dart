@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
 import 'package:ai_powered_tourists_app/features/home/controller/home_controller.dart';
+import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -674,6 +675,40 @@ class MapController extends GetxController {
         return;
       }
 
+      // Ensure ProfileController is available and its saved list is loaded
+      ProfileController profile;
+      try {
+        if (Get.isRegistered<ProfileController>()) {
+          profile = Get.find<ProfileController>();
+        } else {
+          profile = Get.put(ProfileController());
+        }
+
+        if (!profile.hasLoadedSavedPlaces.value) {
+          await profile.fetchSavedPlaces();
+        }
+      } catch (e) {
+        debugPrint('Error accessing ProfileController: $e');
+        // proceed without local check if profile fails
+      }
+
+      // Check if place already saved locally (by name)
+      final placeName = (placeData['place_name'] ?? placeData['name'] ?? '').toString();
+      if (placeName.isNotEmpty) {
+        try {
+          if (Get.isRegistered<ProfileController>()) {
+            final p = Get.find<ProfileController>();
+            if (p.isPlaceSaved(placeName)) {
+              EasyLoading.showInfo('Already saved');
+              Get.snackbar('Info', '$placeName already saved', snackPosition: SnackPosition.BOTTOM);
+              return;
+            }
+          }
+        } catch (e) {
+          debugPrint('Error checking saved places: $e');
+        }
+      }
+
       EasyLoading.show(status: 'Saving...');
 
       debugPrint('API: ${Url.savePlace}');
@@ -699,6 +734,17 @@ class MapController extends GetxController {
           '${placeData['place_name'] ?? 'Place'} saved successfully',
           snackPosition: SnackPosition.BOTTOM,
         );
+
+        // Refresh Profile saved places so UI updates immediately
+        try {
+          if (Get.isRegistered<ProfileController>()) {
+            final profile = Get.find<ProfileController>();
+            profile.hasLoadedSavedPlaces.value = false;
+            await profile.fetchSavedPlaces();
+          }
+        } catch (e) {
+          debugPrint('Error refreshing saved places: $e');
+        }
       } else {
         EasyLoading.dismiss();
         EasyLoading.showError('Failed to save');
