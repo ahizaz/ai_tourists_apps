@@ -11,6 +11,10 @@ class SavePlace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.put(ProfileController());
+    // Fetch saved places from API once when screen builds
+    if (!controller.hasLoadedSavedPlaces.value) {
+      controller.fetchSavedPlaces();
+    }
 
     return Scaffold(
       backgroundColor: Color(0xffF9F9F9),
