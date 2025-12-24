@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'dart:convert';
+import 'dart:math';
+import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen.dart';
@@ -207,6 +211,88 @@ class ProfileController extends GetxController {
           'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=500',
     },
   ].obs;
+
+  // Track whether saved places have been loaded from API
+  final RxBool hasLoadedSavedPlaces = false.obs;
+
+  /// Fetch saved places from backend API using bearer token
+  Future<void> fetchSavedPlaces() async {
+    if (hasLoadedSavedPlaces.value) return;
+    try {
+      EasyLoading.show(status: 'Loading saved places...');
+      final token = Get.find<StorageService>().getAccessToken();
+      debugPrint('Fetching saved places. Token: $token');
+
+      if (token == null || token.isEmpty) {
+        debugPrint('No access token found. Aborting fetchSavedPlaces.');
+        EasyLoading.dismiss();
+        hasLoadedSavedPlaces.value = true;
+        return;
+      }
+
+      final uri = Uri.parse(Url.getSavePlace);
+      final response = await http.get(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      debugPrint('Saved places response status: ${response.statusCode}');
+      debugPrint('Saved places response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> body = json.decode(response.body);
+        final List<dynamic> data = body['data'] ?? [];
+
+        final List<Map<String, dynamic>> places = data.map((item) {
+          final lat = (item['latitude'] is num) ? (item['latitude'] as num).toDouble() : (item['latitude'] != null ? double.tryParse(item['latitude'].toString()) ?? 0.0 : 0.0);
+          final lng = (item['longitude'] is num) ? (item['longitude'] as num).toDouble() : (item['longitude'] != null ? double.tryParse(item['longitude'].toString()) ?? 0.0 : 0.0);
+
+          return {
+            'name': item['place_name'] ?? '',
+            'description': item['place_description'] ?? '',
+            'rating': double.tryParse((item['place_rating'] ?? '').toString()) ?? 0.0,
+            'distance': _formatDistance(initialLat, initialLng, lat, lng),
+            'image': item['place_image'] ?? '',
+            'latitude': lat,
+            'longitude': lng,
+            'id': item['id'],
+          };
+        }).toList();
+
+        savedPlaces.assignAll(places);
+      } else {
+        debugPrint('Failed to load saved places: ${response.statusCode}');
+      }
+    } catch (e, st) {
+      debugPrint('Error fetching saved places: $e\n$st');
+    } finally {
+      EasyLoading.dismiss();
+      hasLoadedSavedPlaces.value = true;
+    }
+  }
+
+  String _formatDistance(double lat1, double lon1, double lat2, double lon2) {
+    try {
+      const double earthRadius = 6371; // km
+      double dLat = _deg2rad(lat2 - lat1);
+      double dLon = _deg2rad(lon2 - lon1);
+      double a = (sin(dLat / 2) * sin(dLat / 2)) + cos(_deg2rad(lat1)) * cos(_deg2rad(lat2)) * (sin(dLon / 2) * sin(dLon / 2));
+      double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+      double distance = earthRadius * c;
+      if (distance >= 1) {
+        return '${distance.toStringAsFixed(1)}km';
+      } else {
+        return '${(distance * 1000).toStringAsFixed(0)}m';
+      }
+    } catch (_) {
+      return '';
+    }
+  }
+
+  double _deg2rad(double deg) => deg * (pi / 180);
 
   // Remove place from saved list
   void unsavePlace(int index) {
