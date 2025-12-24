@@ -7,16 +7,20 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 
 class PlaceCard extends StatelessWidget {
   final Place place;
   final VoidCallback? onBookmark;
   final RxBool isBookmarked = false.obs;
+  final Map<String, dynamic>? rawData;
 
   PlaceCard({
     super.key,
     required this.place,
-    this.onBookmark, required Null Function() onTap,
+    this.onBookmark,
+    this.rawData,
+    required Null Function() onTap,
   });
 
   @override
@@ -99,9 +103,33 @@ class PlaceCard extends StatelessWidget {
                       ),
                       SizedBox(width: 8.w),
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           isBookmarked.value = !isBookmarked.value;
                           if (onBookmark != null) onBookmark!();
+
+                          // Build payload for API. Prefer rawData (NearbyPlace json) if available.
+                          final payload = rawData ?? {
+                            'place_id': place.id,
+                            'place_name': place.title,
+                            'place_image': place.imageUrl,
+                            'place_description': place.description,
+                            'place_rating': place.rating.toStringAsFixed(2),
+                            'latitude': 0.0,
+                            'longitude': 0.0,
+                          };
+
+                          try {
+                            MapController mapController;
+                            if (Get.isRegistered<MapController>()) {
+                              mapController = Get.find<MapController>();
+                            } else {
+                              mapController = Get.put(MapController());
+                            }
+
+                            await mapController.savePlace(payload);
+                          } catch (e) {
+                            debugPrint('Failed to save place: $e');
+                          }
                         },
                         child: Obx(
                           () => Container(

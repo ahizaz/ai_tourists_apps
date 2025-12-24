@@ -8,6 +8,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapController extends GetxController {
@@ -660,16 +663,55 @@ class MapController extends GetxController {
     }
   }
 
-  // Save place
-  void savePlace(Map<String, dynamic> placeData) {
-    // This can be implemented with local storage or database
-    Get.snackbar(
-      'Saved',
-      '${placeData['name']} has been saved to your favorites',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-      duration: Duration(seconds: 2),
-    );
+  // Save place by calling backend API
+  Future<void> savePlace(Map<String, dynamic> placeData) async {
+    try {
+      final token = Get.find<StorageService>().getAccessToken();
+
+      if (token == null || token.isEmpty) {
+        debugPrint('❌ No access token found');
+        EasyLoading.showError('Authentication required');
+        return;
+      }
+
+      EasyLoading.show(status: 'Saving...');
+
+      debugPrint('API: ${Url.savePlace}');
+      debugPrint('Saving place data: ${placeData.toString()}');
+
+      final response = await http.post(
+        Uri.parse(Url.savePlace),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(placeData),
+      );
+
+      debugPrint('Save place status: ${response.statusCode}');
+      debugPrint('Save place body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.dismiss();
+        EasyLoading.showSuccess('Place saved');
+        Get.snackbar(
+          'Saved',
+          '${placeData['place_name'] ?? 'Place'} saved successfully',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } else {
+        EasyLoading.dismiss();
+        EasyLoading.showError('Failed to save');
+        Get.snackbar(
+          'Error',
+          'Failed to save place',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('Exception saving place: $e');
+      EasyLoading.showError('Failed to save');
+    }
   }
 }
