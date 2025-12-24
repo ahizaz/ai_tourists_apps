@@ -6,6 +6,7 @@ class Url{
   static const String signin = "$baseUrl/auth/login/";
   static const String forgetpassword = "$baseUrl/auth/forgot-password/";
   static const String resetPassword = "$baseUrl/auth/reset-password/";
-  static const String savedPLaceApi= "$baseUrl/area/nearby-places/";
+  static const String shownNearby= "$baseUrl/area/nearby-places/";
+  static const String savePlace ="$baseUrl/area/save-area/";
 
 } 

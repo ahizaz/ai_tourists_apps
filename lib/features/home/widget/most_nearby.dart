@@ -54,7 +54,12 @@ class MostNearbySection extends StatelessWidget {
                 // Convert NearbyPlace to Place for PlaceCard widget
                 final place = nearbyPlace.toPlace();
 
-                return PlaceCard(place: place, onTap: () {}, onBookmark: () {});
+                return PlaceCard(
+                  place: place,
+                  rawData: nearbyPlace.toJson(),
+                  onTap: () {},
+                  onBookmark: () {},
+                );
               },
             );
           }

@@ -760,14 +760,14 @@ class HomeController extends GetxController {
 
       debugPrint('========================================');
       debugPrint('📤 SENDING LOCATION TO BACKEND:');
-      debugPrint('API URL: ${Url.savedPLaceApi}');
+      debugPrint('API URL: ${Url.shownNearby}');
       debugPrint('Latitude: $lat');
       debugPrint('Longitude: $lng');
       debugPrint('Token: Bearer $token');
       debugPrint('========================================');
 
       final response = await http.post(
-        Uri.parse(Url.savedPLaceApi),
+        Uri.parse(Url.shownNearby),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
