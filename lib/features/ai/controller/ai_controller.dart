@@ -1,4 +1,11 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:geocoding/geocoding.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:ai_powered_tourists_app/core/urls/urls.dart';
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,37 +22,6 @@ class AiController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Add initial welcome message with personalization
-    _addWelcomeMessage();
-  }
-
-  void _addWelcomeMessage() {
-    // Try to get the user's name from ProfileController
-    String userName = "Explorer"; // Default name
-    try {
-      final profileController = Get.find<ProfileController>();
-      userName = profileController.userName.value.split(' ')[0]; // Get first name only
-    } catch (e) {
-      // If ProfileController not found, use default
-    }
-
-    final now = DateTime.now();
-    String greeting;
-    
-    // Personalized greeting based on time of day
-    if (now.hour < 12) {
-      greeting = "Good morning";
-    } else if (now.hour < 17) {
-      greeting = "Good afternoon";
-    } else {
-      greeting = "Good evening";
-    }
-
-    messages.add(ChatMessage(
-      text: "$greeting, $userName! 👋\n\nI'm your AI travel companion, and I'm excited to explore the world with you! 🌍✨\n\nI can help you:\n• 📸 Discover the history behind any landmark - just snap a photo!\n• 🏛️ Learn fascinating stories about famous historical sites\n• 🗺️ Get detailed information about world heritage sites\n• 💡 Answer your questions about travel destinations\n\nWhat would you like to explore today?",
-      isUser: false,
-      timestamp: now,
-    ));
   }
 
   Future<void> pickImageFromGallery() async {
@@ -126,8 +102,8 @@ class AiController extends GetxController {
     messageController.clear();
     _scrollToBottom();
     
-    // Simulate AI response
-    _generateAIResponse(text);
+    // Call real AI API
+    _callAiApi(text);
   }
 
   Future<void> _generateAIResponse(String userMessage) async {
@@ -158,6 +134,110 @@ class AiController extends GetxController {
     
     isLoading.value = false;
     _scrollToBottom();
+  }
+
+  Future<void> _callAiApi(String userMessage) async {
+    isLoading.value = true;
+
+    try {
+      // Get token
+      final token = Get.find<StorageService>().getAccessToken();
+      if (token == null || token.isEmpty) {
+        EasyLoading.showError('Authentication required');
+        isLoading.value = false;
+        return;
+      }
+
+      // Get current position and resolved place
+      String resolvedPlace = 'Selected Location';
+      try {
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (serviceEnabled) {
+          Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          List<Placemark> placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
+          if (placemarks.isNotEmpty) {
+            final place = placemarks.first;
+            resolvedPlace = _getLocationNameFromPlacemark(place);
+          }
+        }
+      } catch (e) {
+        debugPrint('Failed to resolve location: $e');
+      }
+
+      final body = {
+        'resolved_place': resolvedPlace,
+        'question': userMessage,
+      };
+
+      EasyLoading.show(status: 'Thinking...');
+
+      debugPrint('AI API: ${Url.chat}');
+      debugPrint('AI Request body: ${jsonEncode(body)}');
+
+      final response = await http.post(
+        Uri.parse(Url.chat),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      );
+
+      debugPrint('AI response status: ${response.statusCode}');
+      debugPrint('AI response body: ${response.body}');
+
+      EasyLoading.dismiss();
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final answer = data['answer']?.toString() ?? 'No answer available';
+
+        messages.add(ChatMessage(
+          text: answer,
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      } else {
+        EasyLoading.showError('Failed to get response');
+        messages.add(ChatMessage(
+          text: 'Sorry, I could not get an answer right now.',
+          isUser: false,
+          timestamp: DateTime.now(),
+        ));
+      }
+
+      _scrollToBottom();
+    } catch (e) {
+      EasyLoading.dismiss();
+      debugPrint('Exception calling AI API: $e');
+      EasyLoading.showError('Request failed');
+      messages.add(ChatMessage(
+        text: 'Something went wrong. Please try again.',
+        isUser: false,
+        timestamp: DateTime.now(),
+      ));
+      _scrollToBottom();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  String _getLocationNameFromPlacemark(Placemark place) {
+    if (place.subLocality?.isNotEmpty ?? false) {
+      return place.subLocality!;
+    }
+    if (place.locality?.isNotEmpty ?? false) {
+      return place.locality!;
+    }
+    if (place.administrativeArea?.isNotEmpty ?? false) {
+      return place.administrativeArea!;
+    }
+    if (place.street?.isNotEmpty ?? false) {
+      if (!place.street!.contains('+')) {
+        return place.street!;
+      }
+    }
+    return 'Selected Location';
   }
 
   String _getGreatWallResponse() {
