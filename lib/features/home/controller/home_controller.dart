@@ -13,6 +13,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -1163,11 +1164,37 @@ class HomeController extends GetxController {
     stopAudio();
   }
 
-  void startAITouristGuide() {
+  Future<void> startAITouristGuide({required Place place}) async {
     isAIGuideStarted.value = true;
-    // In future, this will trigger AI to generate audio
-    // For now, we'll use a placeholder audio URL or local asset
-    playDemoAudio();
+
+    try {
+      // Use current resolved address if available, otherwise fallback to place title
+      final resolved = (currentAddress.value.isNotEmpty && currentAddress.value != 'Loading location...')
+          ? currentAddress.value
+          : place.title;
+
+      debugPrint('Starting AI guide for selected place: ${place.title} (resolved: $resolved)');
+
+      // Fetch audio URL from service (does not play)
+      final audioUrl = await PlaceVoiceService.fetchAudioUrl(
+        resolvedPlace: resolved,
+        selectedPlace: place.title,
+      );
+
+      if (audioUrl == null) {
+        debugPrint('No audio URL returned from service');
+        isAIGuideStarted.value = false;
+        return;
+      }
+
+      // Set URL on controller's audio player so UI/listeners stay in sync
+      await _audioPlayer.setUrl(audioUrl);
+      await _audioPlayer.play();
+    } catch (e) {
+      debugPrint('Error starting AI guide: $e');
+      EasyLoading.showError('Unable to start AI guide');
+      isAIGuideStarted.value = false;
+    }
   }
 
   Future<void> playDemoAudio() async {
