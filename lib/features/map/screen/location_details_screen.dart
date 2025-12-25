@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
 
 class LocationDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> locationData;
@@ -544,15 +545,29 @@ class LocationDetailsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      place['name'] ?? 'Unknown',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: null, // Use default font, not monospace
+                    GestureDetector(
+                      onTap: () async {
+                        final name = place['name'] ?? 'Unknown';
+                        debugPrint('LocationDetails: nearby place name tapped -> $name');
+                        try {
+                          await PlaceVoiceService.fetchAndPlay(
+                            resolvedPlace: name,
+                            selectedPlace: name,
+                          );
+                        } catch (e) {
+                          debugPrint('LocationDetails: fetchAndPlay error: $e');
+                        }
+                      },
+                      child: Text(
+                        place['name'] ?? 'Unknown',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: null, // Use default font, not monospace
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     SizedBox(height: 4.h),
                     if (place['rating'] != null)

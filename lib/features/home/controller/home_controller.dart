@@ -1169,12 +1169,9 @@ class HomeController extends GetxController {
     isAIGuideStarted.value = true;
 
     try {
-      // Use current resolved address if available, otherwise fallback to place title
-      final resolved = (currentAddress.value.isNotEmpty && currentAddress.value != 'Loading location...')
-          ? currentAddress.value
-          : place.title;
-
-      debugPrint('Starting AI guide for selected place: ${place.title} (resolved: $resolved)');
+        // Use the selected place's name as resolvedPlace (do not use current device location)
+        final resolved = place.title;
+        debugPrint('Starting AI guide for selected place: ${place.title} (resolved set to place title: $resolved)');
 
       // Fetch audio URL from service (does not play)
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(
