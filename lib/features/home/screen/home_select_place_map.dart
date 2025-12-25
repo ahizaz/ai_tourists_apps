@@ -331,7 +331,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: InkWell(
             onTap: () {
-              controller.startAITouristGuide();
+              controller.startAITouristGuide(place: place);
             },
             child: Container(
               width: double.infinity,
