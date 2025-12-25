@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
+import 'package:ai_powered_tourists_app/core/services/system_volume.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -1187,8 +1188,23 @@ class HomeController extends GetxController {
         return;
       }
 
+      // Try to raise device media volume to maximum (Android)
+      try {
+        final ok = await SystemVolume.setMaxVolume();
+        debugPrint('SystemVolume.setMaxVolume returned: $ok');
+      } catch (e) {
+        debugPrint('SystemVolume.setMaxVolume exception: $e');
+      }
+
       // Set URL on controller's audio player so UI/listeners stay in sync
       await _audioPlayer.setUrl(audioUrl);
+      // Ensure maximum player volume (0.0 - 1.0)
+      try {
+        await _audioPlayer.setVolume(1.0);
+        debugPrint('HomeController: set audio player volume to 1.0');
+      } catch (e) {
+        debugPrint('HomeController: setVolume failed: $e');
+      }
       await _audioPlayer.play();
     } catch (e) {
       debugPrint('Error starting AI guide: $e');

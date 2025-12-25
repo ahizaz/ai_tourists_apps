@@ -89,6 +89,13 @@ class PlaceVoiceService {
       }
 
       await _player.setUrl(audioUrl);
+      // Ensure maximum player volume (0.0 - 1.0)
+      try {
+        await _player.setVolume(1.0);
+        debugPrint('PlaceVoiceService: set player volume to 1.0');
+      } catch (e) {
+        debugPrint('PlaceVoiceService: setVolume failed: $e');
+      }
       EasyLoading.showSuccess('Playing audio');
       await _player.play();
       EasyLoading.dismiss();
