@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/profile_controller.dart';
 import '../controller/interactive_quiz_controller.dart';
+import '../services/play_quize.dart';
 
 class QuizeOptions extends StatelessWidget {
   const QuizeOptions({super.key});
@@ -91,12 +92,26 @@ class QuizeOptions extends StatelessWidget {
               height: 56,
               child: ElevatedButton(
                 onPressed: controller.canStartQuiz
-                    ? () {
-                        // Initialize the interactive quiz controller
-                        final quizController = Get.put(InteractiveQuizController());
-                        // Load questions from profile controller if needed
-                        quizController.loadQuestionsFromProfile(controller.qaQuestions);
-                        Get.to(() => const InteractiveQuizScreen());
+                    ? () async {
+                        final selectedCount = controller.selectedQuantity.value ?? 10;
+                        final lat = controller.cameraPosition.value.target.latitude;
+                        final lng = controller.cameraPosition.value.target.longitude;
+
+                        debugPrint('Requesting quiz for ($lat, $lng) count: $selectedCount');
+
+                        final quizData = await PlayQuizeService.fetchLocationQuiz(
+                          latitude: lat,
+                          longitude: lng,
+                          count: selectedCount,
+                        );
+
+                        if (quizData.isNotEmpty) {
+                          final quizController = Get.put(InteractiveQuizController());
+                          quizController.questions = quizData;
+                          Get.to(() => const InteractiveQuizScreen());
+                        } else {
+                          Get.snackbar('Quiz', 'Failed to load quiz. Please try again.');
+                        }
                       }
                     : null,
                 style: ElevatedButton.styleFrom(

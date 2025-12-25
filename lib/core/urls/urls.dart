@@ -10,5 +10,6 @@ class Url{
   static const String savePlace ="$baseUrl/area/save-area/";
   static const String getSavePlace = "$baseUrl/area/save-area/";
   static const String chat = "$baseUrl/api/ai/chat";
+  static const String playQuize = "$baseUrl/api/ai/location-quiz";
 
 } 
