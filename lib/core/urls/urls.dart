@@ -9,5 +9,6 @@ class Url{
   static const String shownNearby= "$baseUrl/area/nearby-places/";
   static const String savePlace ="$baseUrl/area/save-area/";
   static const String getSavePlace = "$baseUrl/area/save-area/";
+  static const String chat = "$baseUrl/api/ai/chat";
 
 } 

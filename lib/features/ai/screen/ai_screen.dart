@@ -43,10 +43,6 @@ class AiScreen extends StatelessWidget {
           // Chat messages area
           Expanded(
             child: Obx(() {
-              if (controller.messages.isEmpty) {
-                return _buildWelcomeScreen();
-              }
-              
               return ListView.builder(
                 controller: controller.scrollController,
                 padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -207,80 +203,7 @@ class AiScreen extends StatelessWidget {
   }
 
   Widget _buildWelcomeScreen() {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              ImagePath.aiball,
-              width: 200.w,
-              height: 200.h,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 20.h),
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Color(0xFFCDCDCD),
-                  Color(0xFF313131),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ).createShader(bounds),
-              child: Text(
-                "every_picture_history".tr,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20.sp,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Color(0xFFCDCDCD),
-                  Color(0xFF313131),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomRight,
-              ).createShader(bounds),
-              child: Text(
-                "reveal_it".tr,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20.sp,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              "upload_snap_photo".tr,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xff878787),
-              ),
-            ),
-            Text(
-              "story_history".tr,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xff878787),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    return const SizedBox.shrink();
   }
 
   Widget _buildMessageBubble(ChatMessage message) {
