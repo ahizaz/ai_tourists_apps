@@ -19,6 +19,15 @@ class HomeSelectPlaceMap extends StatelessWidget {
     // Get HomeController
     final HomeController controller = Get.find<HomeController>();
 
+    // If a place was passed, request the controller to geocode and show it.
+    if (place != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (controller.lastShownPlaceName.value != place.title) {
+          controller.showPlaceByName(place.title);
+        }
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -30,8 +39,8 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 return GoogleMap(
                   initialCameraPosition: controller.mapCameraPosition.value,
                   onMapCreated: controller.onMapCreated,
-                  myLocationEnabled: false,
-                  myLocationButtonEnabled: false,
+                  myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
                   zoomControlsEnabled: false,
                   markers: controller.mapMarkers.toSet(),
                 );
