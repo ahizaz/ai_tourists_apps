@@ -5,7 +5,6 @@ import 'package:ai_powered_tourists_app/features/profile/screen/select_map.dart'
 import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
-import 'package:ai_powered_tourists_app/features/profile/screen/terms_condition.dart';
 import 'package:ai_powered_tourists_app/features/profile/widget/profile_option.dart';
 import 'package:ai_powered_tourists_app/features/settings/screen/terms_condition.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';

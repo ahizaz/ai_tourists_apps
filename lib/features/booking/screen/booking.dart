@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import '../controller/booking_controller.dart';
 
 class Booking extends StatelessWidget {
@@ -48,13 +49,13 @@ class Booking extends StatelessWidget {
                 const SizedBox(height: 8),
                 
                 // Subtitle
-                Text(
-                  'search_hotels_subtitle'.tr,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xFF6B5D00),
-                  ),
-                ),
+                // Text(
+                //   'search_hotels_subtitle'.tr,
+                //   style: const TextStyle(
+                //     fontSize: 16,
+                //     color: Color(0xFF6B5D00),
+                //   ),
+                // ),
                 const SizedBox(height: 30),
                 
                 // Destination name field
@@ -208,26 +209,56 @@ class Booking extends StatelessWidget {
                           ),
                   ),
                 )),
-                
+                const SizedBox(height: 12),
+                // Explore Attractions button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      const url = 'https://www.getyourguide.com?partner_id=JEKMPEG&cmp=share_to_earn';
+                      final launched = await launchUrlString(url);
+                      if (!launched) {
+                        Get.snackbar('Error', 'Could not open URL');
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF0071C2),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Explore Attractions',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
                 // Additional info
-                Obx(() {
-                  final nights = controller.numberOfNights;
-                  return nights > 0
-                      ? Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Center(
-                            child: Text(
-                              '$nights ${nights > 1 ? 'nights'.tr : 'night'.tr} ${'stay'.tr}',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF003580),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        )
-                      : const SizedBox.shrink();
-                }),
+                // Obx(() {
+                //   final nights = controller.numberOfNights;
+                //   return nights > 0
+                //       ? Padding(
+                //           padding: const EdgeInsets.only(top: 16),
+                //           child: Center(
+                //             child: Text(
+                //               '$nights ${nights > 1 ? 'nights'.tr : 'night'.tr} ${'stay'.tr}',
+                //               style: const TextStyle(
+                //                 fontSize: 14,
+                //                 color: Color(0xFF003580),
+                //                 fontWeight: FontWeight.w500,
+                //               ),
+                //             ),
+                //           ),
+                //         )
+                //       : const SizedBox.shrink();
+                // }),
               ],
             ),
           ),
