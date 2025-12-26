@@ -7,6 +7,7 @@ import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart'
 import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/terms_condition.dart';
 import 'package:ai_powered_tourists_app/features/profile/widget/profile_option.dart';
+import 'package:ai_powered_tourists_app/features/settings/screen/terms_condition.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -149,9 +150,9 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.termscondition,
-                title: "Terms and Conditions".tr,
+                title: "Terms and Conditions and privacy policy".tr,
                 onTap: () {
-                  Get.to(() => TermsCondition());
+                  Get.to(() => TermsConditionScreen());
                 },
               ),
 

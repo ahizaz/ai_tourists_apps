@@ -61,6 +61,8 @@ class HomeController extends GetxController {
   // Map related properties
   GoogleMapController? _mapController;
   final mapMarkers = <Marker>[].obs;
+  // Last shown place name to avoid repeated geocoding calls
+  var lastShownPlaceName = ''.obs;
 
   // Default location (Rome, Italy - matching the image)
   final double initialLat = 41.8902;
@@ -219,6 +221,28 @@ class HomeController extends GetxController {
         target: LatLng(position.latitude, position.longitude),
         zoom: 14.0,
       );
+
+      // Add or update current location marker on the map
+      try {
+        // Remove any previous current location marker
+        mapMarkers.removeWhere((m) => m.markerId.value == 'current_location');
+
+        mapMarkers.add(
+          Marker(
+            markerId: const MarkerId('current_location'),
+            position: LatLng(position.latitude, position.longitude),
+            infoWindow: InfoWindow(
+              title: 'Current Location',
+              snippet: currentAddress.value,
+            ),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueAzure,
+            ),
+          ),
+        );
+      } catch (e) {
+        debugPrint('Error adding current location marker: $e');
+      }
 
       // Convert coordinates to address
       EasyLoading.show(status: 'Getting address...');
@@ -1150,6 +1174,57 @@ class HomeController extends GetxController {
           CameraPosition(target: LatLng(lat, lng), zoom: 16.0),
         ),
       );
+    }
+  }
+
+  // Geocode a place name using Google Geocoding API and show it on the map.
+  // This will add a marker with id `selected_place` and move the camera there.
+  Future<void> showPlaceByName(String placeName) async {
+    try {
+      if (placeName.isEmpty) return;
+
+      // Avoid repeated geocoding for the same place
+      if (lastShownPlaceName.value == placeName) return;
+
+      final apiKey = ApiKeys.googleMapsApiKey;
+      final url = Uri.parse(
+        'https://maps.googleapis.com/maps/api/geocode/json?address=${Uri.encodeComponent(placeName)}&key=$apiKey',
+      );
+
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == 'OK' && (data['results'] as List).isNotEmpty) {
+          final first = (data['results'] as List)[0];
+          final location = first['geometry']?['location'];
+          if (location != null) {
+            final lat = (location['lat'] as num).toDouble();
+            final lng = (location['lng'] as num).toDouble();
+
+            // Remove existing selected_place marker
+            mapMarkers.removeWhere((m) => m.markerId.value == 'selected_place');
+
+            mapMarkers.add(
+              Marker(
+                markerId: const MarkerId('selected_place'),
+                position: LatLng(lat, lng),
+                infoWindow: InfoWindow(title: placeName),
+              ),
+            );
+
+            // Move camera to the place
+            moveToPlace(lat, lng);
+
+            // Remember last shown to avoid repeated calls
+            lastShownPlaceName.value = placeName;
+            return;
+          }
+        }
+      }
+
+      debugPrint('Geocoding failed for $placeName: ${response.body}');
+    } catch (e) {
+      debugPrint('Error in showPlaceByName: $e');
     }
   }
 
