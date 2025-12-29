@@ -20,8 +20,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
-  // Basic profile & location info
-  // Default empty so stored/signed-up name is shown when available
+
   var userName = ''.obs;
   var currentAddress = "Loading location...".obs;
   var currentWeather = "Loading...".obs;
