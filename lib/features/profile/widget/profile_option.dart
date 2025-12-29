@@ -35,12 +35,16 @@ class ProfileOptionItem extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
               SizedBox(width: 8.w),
-              Text(
-                title,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff505050),
-                  fontSize: 18.sp,
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    color: const Color(0xff505050),
+                    fontSize: 18.sp,
+                  ),
                 ),
               ),
               const Spacer(),
