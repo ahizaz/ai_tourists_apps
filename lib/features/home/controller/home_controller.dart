@@ -20,7 +20,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
 
 class HomeController extends GetxController {
-
   var userName = ''.obs;
   var currentAddress = "Loading location...".obs;
   var currentWeather = "Loading...".obs;
@@ -50,6 +49,7 @@ class HomeController extends GetxController {
   var audioPosition = Duration.zero.obs;
   var audioDuration = Duration.zero.obs;
   final AudioPlayer _audioPlayer = AudioPlayer();
+  Rx<Place?> currentPlayingPlace = Rx<Place?>(null);
 
   // Dynamic list of places
   final places = <Place>[].obs;
@@ -1242,11 +1242,14 @@ class HomeController extends GetxController {
 
   Future<void> startAITouristGuide({required Place place}) async {
     isAIGuideStarted.value = true;
+    currentPlayingPlace.value = place; // Store the current place
 
     try {
-        // Use the selected place's name as resolvedPlace (do not use current device location)
-        final resolved = place.title;
-        debugPrint('Starting AI guide for selected place: ${place.title} (resolved set to place title: $resolved)');
+      // Use the selected place's name as resolvedPlace (do not use current device location)
+      final resolved = place.title;
+      debugPrint(
+        'Starting AI guide for selected place: ${place.title} (resolved set to place title: $resolved)',
+      );
 
       // Fetch audio URL from service (does not play)
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(

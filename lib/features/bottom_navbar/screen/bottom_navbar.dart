@@ -43,30 +43,36 @@ class BottomNavbar extends StatelessWidget {
       body: Obx(() => screens[controller.selectedIndex.value]),
       backgroundColor: const Color(0xffF5F5F5),
       bottomNavigationBar: Obx(
-        () => NavigationBarTheme(
-          data: const NavigationBarThemeData(
-            overlayColor: WidgetStatePropertyAll(Color(0xffF5F5F5)),
+        () => Container(
+          height: 80.h,
+          decoration: BoxDecoration(
+            color: const Color(0xffF5F5F5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, -2),
+              ),
+            ],
           ),
-          child: NavigationBar(
-            indicatorColor: Colors.transparent,
-            elevation: 9,
-            height: 96.h,
-            shadowColor: Colors.black,
-            backgroundColor: const Color(0xffF5F5F5),
-            selectedIndex: controller.selectedIndex.value,
-            onDestinationSelected: (int index) {
-              controller.changeIndex(index);
-            },
-            // 🔹 শুধু আইকন, কোনো label নেই
-            destinations: List.generate(5, (index) {
-              return NavigationDestination(
-                icon: Image.asset(
-                  controller.selectedIndex.value == index
-                      ? activeIcons[index]
-                      : inactiveIcons[index],
-                  width: 64.w,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(5, (index) {
+              final isSelected = controller.selectedIndex.value == index;
+              return Expanded(
+                child: InkWell(
+                  onTap: () => controller.changeIndex(index),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      isSelected ? activeIcons[index] : inactiveIcons[index],
+                      width: 56.w,
+                      height: 56.h,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
-                label: '', 
               );
             }),
           ),
