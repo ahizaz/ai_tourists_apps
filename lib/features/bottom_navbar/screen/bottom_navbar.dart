@@ -32,7 +32,7 @@ class BottomNavbar extends StatelessWidget {
   final List<String> inactiveIcons = [
     IconPath.inactivehomeicon,
     IconPath.mapinactive,
-    IconPath.aiinactive,
+    IconPath.aiactive,
     IconPath.bookinginactive,
     IconPath.profileinactive,
   ];
