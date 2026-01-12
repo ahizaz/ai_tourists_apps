@@ -15,7 +15,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
   Widget build(BuildContext context) {
     // Get the place data from arguments
     final Place? place = Get.arguments as Place?;
-    
+
     // Get HomeController
     final HomeController controller = Get.find<HomeController>();
 
@@ -161,7 +161,10 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 children: [
                   // rating
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.orange[50],
                       borderRadius: BorderRadius.circular(12.r),
@@ -186,8 +189,11 @@ class HomeSelectPlaceMap extends StatelessWidget {
                   // distance
                   Row(
                     children: [
-                      Icon(Icons.location_on_outlined,
-                          size: 16.w, color: Colors.grey),
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: 16.w,
+                        color: Colors.grey,
+                      ),
                       SizedBox(width: 6.w),
                       Text(
                         '${place.distanceKm}km',
@@ -203,31 +209,45 @@ class HomeSelectPlaceMap extends StatelessWidget {
 
                   // map button
                   Container(
-                      width: 40.w,
-                      height: 40.w,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12.r),
+                    width: 44.w,
+                    height: 44.w,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        IconPath.mapactive,
+                        height: 22.h,
+                        width: 22.w,
+                        fit: BoxFit.contain,
                       ),
-                      child: Image.asset(IconPath.mapactive,
-                          height: 30.h, width: 30.w, fit: BoxFit.cover)),
+                    ),
+                  ),
                   SizedBox(width: 8.w),
 
-                  // more / directions
+                  // AI button
                   InkWell(
                     onTap: () {
                       controller.openAIGuideSheet();
                       _showAIGuideBottomSheet(context, place, controller);
                     },
                     child: Container(
-                        width: 44.w,
-                        height: 44.w,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12.r),
-                          border: Border.all(color: Colors.grey[200]!),
+                      width: 44.w,
+                      height: 44.w,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Center(
+                        child: Image.asset(
+                          IconPath.aiactive,
+                          height: 22.h,
+                          width: 22.w,
+                          fit: BoxFit.contain,
                         ),
-                        child: Image.asset(IconPath.aiactive)),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -237,7 +257,10 @@ class HomeSelectPlaceMap extends StatelessWidget {
   }
 
   void _showAIGuideBottomSheet(
-      BuildContext context, Place place, HomeController controller) {
+    BuildContext context,
+    Place place,
+    HomeController controller,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -253,7 +276,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
             ),
           ),
           child: controller.isAIGuideStarted.value
-              ? _buildAudioPlayerView(controller)
+              ? _buildAudioPlayerView(controller, place)
               : _buildInitialGuideView(context, place, controller),
         );
       }),
@@ -263,7 +286,10 @@ class HomeSelectPlaceMap extends StatelessWidget {
   }
 
   Widget _buildInitialGuideView(
-      BuildContext context, Place place, HomeController controller) {
+    BuildContext context,
+    Place place,
+    HomeController controller,
+  ) {
     return Column(
       children: [
         SizedBox(height: 12.h),
@@ -279,14 +305,14 @@ class HomeSelectPlaceMap extends StatelessWidget {
         SizedBox(height: 12.h),
 
         // Map preview with marker
-         Center(
-              child: Image(
-                image: AssetImage(ImagePath.aiassistant),
-                height: 200.h,
-                width: 160.w,
-                fit: BoxFit.cover,
-              ),
-            ),
+        Center(
+          child: Image(
+            image: AssetImage(ImagePath.aiassistant),
+            height: 200.h,
+            width: 160.w,
+            fit: BoxFit.cover,
+          ),
+        ),
 
         SizedBox(height: 8.h),
 
@@ -314,21 +340,19 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 16.sp,
                   color: Color(0xff878787),
-                  fontWeight: FontWeight.w400
+                  fontWeight: FontWeight.w400,
                 ),
-              
               ),
-                  Center(
-                    child: Text(
-                                    'and secrets of this landmark.',
-                                    style: GoogleFonts.inter(
+              Center(
+                child: Text(
+                  'and secrets of this landmark.',
+                  style: GoogleFonts.inter(
                     fontSize: 16.sp,
                     color: Color(0xff878787),
-                    fontWeight: FontWeight.w400
-                                    ),
-                              
-                                  ),
+                    fontWeight: FontWeight.w400,
                   ),
+                ),
+              ),
             ],
           ),
         ),
@@ -368,118 +392,168 @@ class HomeSelectPlaceMap extends StatelessWidget {
     );
   }
 
-  Widget _buildAudioPlayerView(HomeController controller) {
-    return Padding(
-      padding: EdgeInsets.all(16.w),
-      child: Column(
-        children: [
-          SizedBox(height: 4.h),
-          // Handle bar
-          Container(
-            width: 40.w,
-            height: 4.h,
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2.r),
+  Widget _buildAudioPlayerView(HomeController controller, Place place) {
+    return Stack(
+      children: [
+        // Background image
+        Positioned.fill(
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(24.r),
+              topRight: Radius.circular(24.r),
+            ),
+            child: Image.network(
+              place.imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[300],
+                  child: Icon(Icons.image, size: 50.w, color: Colors.grey),
+                );
+              },
             ),
           ),
-          SizedBox(height: 16.h),
-
-          // Audio waveform visualization
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+        ),
+        // Dark overlay for better text visibility
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.6),
+                  Colors.black.withValues(alpha: 0.8),
+                ],
+              ),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(24.r),
+                topRight: Radius.circular(24.r),
+              ),
+            ),
+          ),
+        ),
+        // Content on top
+        Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
             children: [
-              Icon(Icons.graphic_eq, size: 24.w, color: Colors.orange),
-              SizedBox(width: 12.w),
-              Text(
-                'AI Tourist Guide Playing...',
-                style: GoogleFonts.dmSans(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+              SizedBox(height: 4.h),
+              // Handle bar
+              Container(
+                width: 40.w,
+                height: 4.h,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(2.r),
                 ),
               ),
+              SizedBox(height: 16.h),
+
+              // Audio waveform visualization
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.graphic_eq, size: 24.w, color: Colors.white),
+                  SizedBox(width: 12.w),
+                  Text(
+                    'AI Tourist Guide Playing...',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 20.h),
+              SizedBox(
+                height: 60.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: List.generate(25, (index) {
+                    return Obx(() {
+                      // Animate bars when playing
+                      final isPlaying = controller.isAudioPlaying.value;
+                      final baseHeight = 8.h;
+                      final maxHeight = 40.h;
+
+                      // Create wave effect
+                      final animatedHeight = isPlaying
+                          ? baseHeight +
+                                (maxHeight - baseHeight) *
+                                    ((index % 3 == 0
+                                        ? 0.7
+                                        : index % 3 == 1
+                                        ? 0.9
+                                        : 0.5))
+                          : baseHeight;
+
+                      return Container(
+                        width: 3.w,
+                        height: animatedHeight,
+                        margin: EdgeInsets.symmetric(horizontal: 2.w),
+                        decoration: BoxDecoration(
+                          color: isPlaying
+                              ? (index % 2 == 0
+                                    ? Colors.orange
+                                    : Colors.deepOrange)
+                              : Colors.white.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(2.r),
+                        ),
+                      );
+                    });
+                  }),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Elapsed time display (no total duration)
+              Obx(() {
+                return Text(
+                  controller.formatDuration(controller.audioPosition.value),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                );
+              }),
+
+              SizedBox(height: 20.h),
+
+              // Play/Pause button
+              Obx(() {
+                return InkWell(
+                  onTap: () {
+                    controller.toggleAudioPlayback();
+                  },
+                  child: Container(
+                    width: 60.w,
+                    height: 60.w,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Colors.orange, Colors.deepOrange],
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      controller.isAudioPlaying.value
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: Colors.white,
+                      size: 32.w,
+                    ),
+                  ),
+                );
+              }),
             ],
           ),
-
-          SizedBox(height: 20.h),
-          SizedBox(
-            height: 60.h,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: List.generate(25, (index) {
-                return Obx(() {
-                  // Animate bars when playing
-                  final isPlaying = controller.isAudioPlaying.value;
-                  final baseHeight = 8.h;
-                  final maxHeight = 40.h;
-                  
-                  // Create wave effect
-                  final animatedHeight = isPlaying 
-                      ? baseHeight + (maxHeight - baseHeight) * 
-                        ((index % 3 == 0 ? 0.7 : index % 3 == 1 ? 0.9 : 0.5))
-                      : baseHeight;
-                  
-                  return Container(
-                    width: 3.w,
-                    height: animatedHeight,
-                    margin: EdgeInsets.symmetric(horizontal: 2.w),
-                    decoration: BoxDecoration(
-                      color: isPlaying 
-                          ? (index % 2 == 0 ? Colors.orange : Colors.deepOrange)
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2.r),
-                    ),
-                  );
-                });
-              }),
-            ),
-          ),
-
-          SizedBox(height: 16.h),
-
-          // Elapsed time display (no total duration)
-          Obx(() {
-            return Text(
-              controller.formatDuration(controller.audioPosition.value),
-              style: GoogleFonts.dmSans(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            );
-          }),
-
-          SizedBox(height: 20.h),
-
-          // Play/Pause button
-          Obx(() {
-            return InkWell(
-              onTap: () {
-                controller.toggleAudioPlayback();
-              },
-              child: Container(
-                width: 60.w,
-                height: 60.w,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Colors.orange, Colors.deepOrange],
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  controller.isAudioPlaying.value
-                      ? Icons.pause
-                      : Icons.play_arrow,
-                  color: Colors.white,
-                  size: 32.w,
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
