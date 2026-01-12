@@ -8,6 +8,7 @@ class NearbyPlace {
   final String placeRating;
   final double latitude;
   final double longitude;
+  final String distanceKm;
 
   NearbyPlace({
     required this.placeId,
@@ -16,7 +17,8 @@ class NearbyPlace {
     required this.placeDescription,
     required this.placeRating,
     required this.latitude,
-    required this.longitude,//
+    required this.longitude,
+    required this.distanceKm,
   });
 
   // Factory constructor to create NearbyPlace from JSON
@@ -29,6 +31,7 @@ class NearbyPlace {
       placeRating: json['place_rating']?.toString() ?? '0.0',
       latitude: (json['latitude'] ?? 0.0).toDouble(),
       longitude: (json['longitude'] ?? 0.0).toDouble(),
+      distanceKm: json['distance_km']?.toString() ?? '0.0',
     );
   }
 
@@ -42,6 +45,7 @@ class NearbyPlace {
       'place_rating': placeRating,
       'latitude': latitude,
       'longitude': longitude,
+      'distance_km': distanceKm,
     };
   }
 
@@ -53,7 +57,7 @@ class NearbyPlace {
       description: placeDescription,
       imageUrl: placeImage,
       rating: double.tryParse(placeRating) ?? 0.0,
-      distanceKm: 0.0, // Can be calculated later if needed
+      distanceKm: double.tryParse(distanceKm) ?? 0.0,
       category: 'nearby',
     );
   }
