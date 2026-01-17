@@ -49,7 +49,7 @@ class ProfileController extends GetxController {
       selectedPlan.value = plan;
     }
   }
-
+//
   void subscribeNow() {
     if (selectedPlan.value != null) {}
   }
