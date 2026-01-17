@@ -14,8 +14,8 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
   var profileImage = Rx<File?>(null);
-  var userName = "Brooklyn Simmons".obs;
-  var userEmail = "brooklyn.sim@example.com".obs;
+  var userName = "".obs;
+  var userEmail = "".obs;
   var phoneNumber = "+880 10-46-828200".obs;
   var selectedPlan = RxnString();
 
