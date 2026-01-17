@@ -53,7 +53,12 @@ class ProfileScreen extends StatelessWidget {
                       );
                     }),
                     GestureDetector(
-                      onTap: controller.pickImage,
+                      onTap: ()async{
+                        await controller.pickImage();
+                        if(controller.profileImage.value!=null){
+                          await controller.uploadProfileImage();
+                        }
+                      },
                       child: Container(
                         padding: EdgeInsets.all(8.w),
                         decoration: const BoxDecoration(

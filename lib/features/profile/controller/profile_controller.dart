@@ -42,6 +42,61 @@ class ProfileController extends GetxController {
     }
   }
 
+  // Upload profile image to backend
+  Future<void>uploadProfileImage()async{
+    try{
+      if(profileImage.value==null){
+        EasyLoading.showError('Please select an image first');
+       debugPrint('❌ No image selected');
+        return;
+      }
+      EasyLoading.show(status: 'Uploading image...');
+      debugPrint("======");
+      debugPrint("Uploading profile image");
+      //get access token
+      final token = Get.find<StorageService>().getAccessToken();
+      if(token==null|| token.isEmpty){
+           EasyLoading.dismiss();
+        EasyLoading.showError('Authentication required');
+        debugPrint(' No access token found');
+        return;
+      }
+        debugPrint('Token: Bearer $token');
+      debugPrint('API URL: ${Url.profileImage}');
+      debugPrint('Image Path: ${profileImage.value!.path}');
+         
+      var request = http.MultipartRequest('POST', Uri.parse(Url.profileImage));
+
+      request.headers.addAll({
+      'Authorization':'Bearer $token',
+      });  
+      request.files.add( 
+     await http.MultipartFile.fromPath('image', profileImage.value!.path,
+     ),
+      ) ;
+      debugPrint('Sending request....');
+      var streamedResponse = await request.send();
+      var response = await http.Response.fromStream(streamedResponse);
+       debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Body: ${response.body}');
+     if(response.statusCode==200 || response.statusCode==201){
+       EasyLoading.dismiss();
+        EasyLoading.showSuccess('Profile image uploaded successfully!');
+
+     }else{
+       EasyLoading.dismiss();
+        EasyLoading.showError('Upload failed: ${response.statusCode}');
+        debugPrint('❌ Upload failed: ${response.statusCode}');
+        debugPrint('Error: ${response.body}');
+     }
+       debugPrint('========================================');
+    }catch(e){
+         EasyLoading.dismiss();
+      EasyLoading.showError('Error uploading image');
+      debugPrint('❌ Exception uploading image: $e');
+    }
+  }
+
   void selectSubscriptionPlan(String plan) {
     if (selectedPlan.value == plan) {
       selectedPlan.value = null; // Unselect if same plan clicked again

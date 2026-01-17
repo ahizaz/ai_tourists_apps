@@ -12,5 +12,6 @@ class Url{
   static const String chat = "$baseUrl/api/ai/chat";
   static const String playQuize = "$baseUrl/api/ai/location-quiz";
   static const String placeVoice = "$baseUrl/api/ai/place-voice";
+  static const String profileImage = "$baseUrl/profile/profile/image/";
 
 } 
