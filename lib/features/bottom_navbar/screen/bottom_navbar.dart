@@ -44,7 +44,7 @@ class BottomNavbar extends StatelessWidget {
       backgroundColor: const Color(0xffF5F5F5),
       bottomNavigationBar: Obx(
         () => Container(
-          height: 80.h,
+          height: 85.h,
           decoration: BoxDecoration(
             color: const Color(0xffF5F5F5),
             boxShadow: [
@@ -60,11 +60,17 @@ class BottomNavbar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: List.generate(5, (index) {
               final isSelected = controller.selectedIndex.value == index;
+              // Special handling for map icon (index 1) to fix alignment
+              final bool isMapIcon = index == 1;
+              
               return Expanded(
                 child: InkWell(
                   onTap: () => controller.changeIndex(index),
                   child: Container(
                     alignment: Alignment.center,
+                    padding: isMapIcon && !isSelected 
+                        ? EdgeInsets.only(bottom: 3.h) 
+                        : EdgeInsets.zero,
                     child: Image.asset(
                       isSelected ? activeIcons[index] : inactiveIcons[index],
                       width: 56.w,
