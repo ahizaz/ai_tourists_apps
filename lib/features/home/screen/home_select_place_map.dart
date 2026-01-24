@@ -3,7 +3,9 @@ import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -402,15 +404,21 @@ class HomeSelectPlaceMap extends StatelessWidget {
               topLeft: Radius.circular(24.r),
               topRight: Radius.circular(24.r),
             ),
-            child: Image.network(
-              place.imageUrl,
+            child: CachedNetworkImage(
+              imageUrl: place.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[300],
-                  child: Icon(Icons.image, size: 50.w, color: Colors.grey),
-                );
-              },
+              maxHeightDiskCache: 600,
+              maxWidthDiskCache: 800,
+              memCacheHeight: 600,
+              memCacheWidth: 800,
+              placeholder: (context, url) => Container(
+                color: Colors.grey[300],
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey[300],
+                child: Icon(Icons.image, size: 50.w, color: Colors.grey),
+              ),
             ),
           ),
         ),

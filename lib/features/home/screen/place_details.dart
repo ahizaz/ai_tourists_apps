@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PlaceDetails extends StatelessWidget {
   final Place place;
@@ -39,12 +40,21 @@ class PlaceDetails extends StatelessWidget {
               tag: 'place-${place.id}',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.r),
-                child: Image.network(
-                  place.imageUrl,
+                child: CachedNetworkImage(
+                  imageUrl: place.imageUrl,
                   height: 220.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (ctx, err, stack) => Container(
+                  maxHeightDiskCache: 500,
+                  maxWidthDiskCache: 800,
+                  memCacheHeight: 500,
+                  memCacheWidth: 800,
+                  placeholder: (context, url) => Container(
+                    height: 220.h,
+                    color: Colors.grey[200],
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  errorWidget: (context, url, error) => Container(
                     height: 220.h,
                     color: Colors.grey[200],
                     child: Icon(Icons.photo, size: 40.w, color: Colors.grey),

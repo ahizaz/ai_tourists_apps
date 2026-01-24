@@ -3,6 +3,7 @@ import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../controller/profile_controller.dart';
 
 class SavePlace extends StatelessWidget {
@@ -105,39 +106,33 @@ class SavePlace extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-                child: Image.network(
-                  place['image'],
+                child: CachedNetworkImage(
+                  imageUrl: place['image'],
                   height: 180.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      height: 180.h,
-                      width: double.infinity,
-                      color: Colors.grey[300],
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                              : null,
-                        ),
-                      ),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 180.h,
-                      width: double.infinity,
-                      color: Colors.grey[300],
-                      child: Icon(
-                        Icons.image,
-                        size: 60.sp,
-                        color: Colors.grey[400],
-                      ),
-                    );
-                  },
+                  maxHeightDiskCache: 400,
+                  maxWidthDiskCache: 800,
+                  memCacheHeight: 400,
+                  memCacheWidth: 800,
+                  placeholder: (context, url) => Container(
+                    height: 180.h,
+                    width: double.infinity,
+                    color: Colors.grey[300],
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 180.h,
+                    width: double.infinity,
+                    color: Colors.grey[300],
+                    child: Icon(
+                      Icons.image,
+                      size: 60.sp,
+                      color: Colors.grey[400],
+                    ),
+                  ),
                 ),
               ),
               Positioned(

@@ -608,4 +608,12 @@ class ProfileController extends GetxController {
       EasyLoading.showError("Something went wrong");
     }
   }
+  @override
+  void onClose(){
+   profileImage.value=null;
+   savedPlaces.clear();
+   qaAnswers.clear();
+   markers.clear();
+   super.onClose();
+  }
 }

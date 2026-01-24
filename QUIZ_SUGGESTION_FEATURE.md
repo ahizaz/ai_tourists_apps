@@ -13,7 +13,7 @@ The app now automatically suggests users to take a quiz after they complete a vi
 ### 2. **Quiz Suggestion Dialog**
 The dialog presents users with:
 - **Celebratory Icon**: A quiz icon in an orange circular background
-- **Title**: "Visit Complete! 🎉"
+- **Title**: "Visit Complete! "
 - **Message**: Encourages users to test their knowledge
 - **Two Options**:
   - **Start Quiz**: Navigates to the quiz selection screen
@@ -80,7 +80,7 @@ import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.da
 
 **Spanish:**
 ```dart
-'visit_complete': '¡Visita completada! 🎉',
+'visit_complete': '¡Visita completada! ',
 'quiz_suggestion_message': '¡Excelente trabajo explorando! ¿Te gustaría probar tus conocimientos sobre este lugar con un cuestionario divertido?',
 'maybe_later': 'Tal vez más tarde',
 ```

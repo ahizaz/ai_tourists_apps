@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
 
@@ -57,24 +58,20 @@ class PlaceCard extends StatelessWidget {
                 width: double.infinity,
                 child: Hero(
                   tag: 'place-${place.id}',
-                  child: Image.network(
-                    place.imageUrl,
+                  child: CachedNetworkImage(
+                    imageUrl: place.imageUrl,
                     fit: BoxFit.cover,
-                    loadingBuilder: (ctx, child, progress) {
-                      if (progress == null) return child;
-                      return Container(
-                        color: Colors.grey[200],
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: progress.expectedTotalBytes != null
-                                ? progress.cumulativeBytesLoaded /
-                                    progress.expectedTotalBytes!
-                                : null,
-                          ),
-                        ),
-                      );
-                    },
-                    errorBuilder: (ctx, err, stack) => Container(
+                    maxHeightDiskCache: 300,
+                    maxWidthDiskCache: 500,
+                    memCacheHeight: 300,
+                    memCacheWidth: 500,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[200],
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
                       color: Colors.grey[200],
                       child: Icon(Icons.photo, size: 40.w, color: Colors.grey),
                     ),

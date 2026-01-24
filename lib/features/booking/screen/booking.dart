@@ -8,7 +8,7 @@ class Booking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(BookingController());
+ final controller = Get.find<BookingController>();
     
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),

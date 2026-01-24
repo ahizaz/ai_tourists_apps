@@ -28,7 +28,9 @@ class AiController extends GetxController {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
+        imageQuality: 70,
+        maxWidth: 1024,
+        maxHeight: 1024,
       );
       
       if (image != null) {
@@ -47,7 +49,9 @@ class AiController extends GetxController {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 80,
+        imageQuality: 70,
+        maxWidth: 1024,
+        maxHeight: 1024,
       );
       
       if (image != null) {
@@ -313,11 +317,17 @@ class AiController extends GetxController {
   }
 
   @override
-  void onClose() {
-    messageController.dispose();
-    scrollController.dispose();
-    super.onClose();
-  }
+void onClose() {
+  // Dispose controllers to free memory
+  messageController.dispose();
+  scrollController.dispose();
+  
+ 
+  messages.clear();
+  
+  super.onClose();
+  
+}
 }
 
 class ChatMessage {
