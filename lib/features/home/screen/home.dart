@@ -11,7 +11,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final HomeController controller = Get.put(HomeController());
+   final HomeController controller = Get.find<HomeController>();
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       body: SafeArea(

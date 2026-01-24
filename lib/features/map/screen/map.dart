@@ -10,7 +10,7 @@ class MapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MapController controller = Get.put(MapController());
+final MapController controller = Get.find<MapController>();
     final TextEditingController searchController = TextEditingController();
     
     return Scaffold(

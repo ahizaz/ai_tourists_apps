@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final ProfileController controller = Get.put(ProfileController());
+   final ProfileController controller = Get.find<ProfileController>();
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       body: SingleChildScrollView(

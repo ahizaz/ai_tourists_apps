@@ -760,4 +760,13 @@ class MapController extends GetxController {
       EasyLoading.showError('Failed to save');
     }
   }
+  @override
+  void onClose(){
+  gMapController?.dispose();
+  markers.clear();
+  searchResults.clear();
+  nearbyPlaces.clear();
+  selectedPlaceDetails.clear();
+  super.onClose();
+  }
 }

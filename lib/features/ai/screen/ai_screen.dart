@@ -10,7 +10,7 @@ class AiScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AiController controller = Get.put(AiController());
+   final AiController controller = Get.find<AiController>();
 
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),

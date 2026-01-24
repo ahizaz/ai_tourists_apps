@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 
 class BottomNavbar extends StatelessWidget {
   BottomNavbar({super.key});
-  final BottomNavcontroller controller = Get.put(BottomNavcontroller());
+  final BottomNavcontroller controller = Get.find<BottomNavcontroller>();
 
   final List<Widget> screens = [
     Home(),

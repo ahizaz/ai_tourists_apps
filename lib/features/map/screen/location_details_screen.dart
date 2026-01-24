@@ -1,6 +1,7 @@
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
@@ -64,23 +65,17 @@ class LocationDetailsScreen extends StatelessWidget {
                           final photoReference = photos[index]['photo_reference'];
                           final photoUrl = controller.getPhotoUrl(photoReference);
                           
-                          return Image.network(
-                            photoUrl,
+                          return CachedNetworkImage(
+                            imageUrl: photoUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return _buildDefaultImage();
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value: loadingProgress.expectedTotalBytes != null
-                                      ? loadingProgress.cumulativeBytesLoaded /
-                                          loadingProgress.expectedTotalBytes!
-                                      : null,
-                                ),
-                              );
-                            },
+                            maxHeightDiskCache: 800,
+                            maxWidthDiskCache: 1200,
+                            memCacheHeight: 800,
+                            memCacheWidth: 1200,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => _buildDefaultImage(),
                           );
                         },
                       ),
@@ -520,16 +515,21 @@ class LocationDetailsScreen extends StatelessWidget {
                   height: 80.h,
                   color: Colors.grey[300],
                   child: place['photo'] != null
-                      ? Image.network(
-                          controller.getPhotoUrl(place['photo']),
+                      ? CachedNetworkImage(
+                          imageUrl: controller.getPhotoUrl(place['photo']),
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.image_not_supported,
-                              color: Colors.grey[500],
-                              size: 40.sp,
-                            );
-                          },
+                          maxHeightDiskCache: 150,
+                          maxWidthDiskCache: 150,
+                          memCacheHeight: 150,
+                          memCacheWidth: 150,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                          errorWidget: (context, url, error) => Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey[500],
+                            size: 40.sp,
+                          ),
                         )
                       : Icon(
                           Icons.location_on,
