@@ -1,0 +1,20 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#
+# INSTRUCTIONS:
+# 1. Copy this file and rename it to 'local.properties'
+# 2. Add your Google Maps API key below
+# 3. Update sdk.dir with your Android SDK location
+
+sdk.dir=C:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\sdk
+flutter.sdk=C:\\src\\flutter
+flutter.buildMode=debug
+flutter.versionName=1.0.0
+flutter.versionCode=1
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE

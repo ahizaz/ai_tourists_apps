@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# API Keys and Sensitive Configuration
+# DO NOT commit these files - they contain sensitive API keys
+lib/core/config/api_keys.dart
+android/local.properties
+ios/Runner/GoogleMapsConfig.swift

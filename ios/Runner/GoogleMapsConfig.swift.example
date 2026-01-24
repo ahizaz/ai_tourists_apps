@@ -1,0 +1,12 @@
+import Foundation
+
+/// Google Maps Configuration
+/// 
+/// INSTRUCTIONS:
+/// 1. Copy this file and rename it to 'GoogleMapsConfig.swift'
+/// 2. Replace the placeholder value with your actual API key
+/// 3. Never commit the actual 'GoogleMapsConfig.swift' file to version control
+
+struct GoogleMapsConfig {
+    static let apiKey = "YOUR_GOOGLE_MAPS_API_KEY_HERE"
+}
