@@ -21,7 +21,6 @@ dependencies:
   geolocator: ^13.0.1
   http: ^1.6.0
   image_picker: ^1.2.0
-  permission_handler: ^12.0.1
   pinput: ^5.0.2
   just_audio: ^0.9.42
   url_launcher: ^6.3.1

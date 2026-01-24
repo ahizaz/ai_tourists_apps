@@ -1,49 +1,49 @@
 # Location Details Feature - Google Maps Style
 
 ## Overview
-এই feature টি Google Maps এর মতো সম্পূর্ণ location details প্রদান করে। যখন কোনো location-এ click করা হয়, তখন সেই location সম্পর্কিত বিস্তারিত তথ্য এবং কাছাকাছি জায়গাগুলো দেখায়।
+This feature provides complete location details similar to Google Maps. When a location is clicked, it shows detailed information about that location and nearby places.
 
 ## Features Implemented
 
 ### 1. **Location Click Details**
-- যেকোনো location-এ click করলে details দেখায়
-- Location name, address, rating, phone number ইত্যাদি
-- Bottom sheet-এ quick preview
+- Shows details when any location is clicked
+- Location name, address, rating, phone number, etc.
+- Quick preview in bottom sheet
 
 ### 2. **Photo Gallery**
-- Google Places Photos API ব্যবহার করে location এর photos দেখায়
-- Multiple photos এর জন্য swipeable gallery
-- Default placeholder যদি photo না থাকে
+- Shows location photos using Google Places Photos API
+- Swipeable gallery for multiple photos
+- Default placeholder if no photos available
 
 ### 3. **View Details Screen**
-Complete details screen যাতে আছে:
+Complete details screen that includes:
 - **Location Photos**: Expandable image gallery
 - **Basic Information**: Name, Rating, Address, Phone
 - **Opening Hours**: Open/Closed status
-- **Website Link**: যদি থাকে
+- **Website Link**: If available
 - **Action Buttons**:
-  - Directions (Google Maps-এ open করে)
-  - Save Place (favorites-এ save করে)
+  - Directions (opens in Google Maps)
+  - Save Place (saves to favorites)
 
 ### 4. **Nearby Places**
-Location এর কাছাকাছি বিভিন্ন ধরনের জায়গা দেখায়:
+Shows different types of places near the location:
 - **Hotel** 🏨 (lodging)
 - **Restaurant** 🍽️ (restaurant)
 - **ATM** 💰 (atm)
 - **Shopping Mall** 🛍️ (shopping_mall)
 - **Hospital** 🏥 (hospital)
 
-প্রতিটি nearby place এর জন্য দেখায়:
+Shows for each nearby place:
 - Name
-- Photo (যদি থাকে)
+- Photo (if available)
 - Rating
 - Address
-- Distance (km তে)
+- Distance (in km)
 
 ### 5. **Category Selection**
-- Tap করে category select করা যায়
-- Selected category highlight হয়
-- Nearby places সেই অনুযায়ী filter হয়
+- Category can be selected by tapping
+- Selected category is highlighted
+- Nearby places are filtered accordingly
 
 ## Files Structure
 
@@ -61,23 +61,23 @@ lib/features/map/
 ### MapController Methods
 
 #### `onMapTap(LatLng position)`
-- Map-এ tap করলে call হয়
-- Reverse geocoding করে address পায়
-- Place details fetch করে
-- Nearby places load করে
+- Called when the map is tapped
+- Gets address through reverse geocoding
+- Fetches place details
+- Loads nearby places
 
 #### `searchNearbyPlaces(double lat, double lng, String type)`
-- Google Places API থেকে nearby places fetch করে
-- Distance calculate করে
-- Results sort করে distance অনুযায়ী
+- Fetches nearby places from Google Places API
+- Calculates distance
+- Sorts results by distance
 
 #### `getPhotoUrl(String photoReference)`
-- Photo reference থেকে actual photo URL তৈরি করে
-- Google Places Photos API ব্যবহার করে
+- Creates actual photo URL from photo reference
+- Uses Google Places Photos API
 
 #### `calculateDistance(lat1, lon1, lat2, lon2)`
-- Haversine formula ব্যবহার করে distance calculate করে
-- Result km তে return করে
+- Calculates distance using Haversine formula
+- Returns result in km
 
 ## UI Components
 
@@ -144,20 +144,20 @@ Nearby Places Section:
 ## Usage Example
 
 ```dart
-// Map screen-এ যান
+// Go to map screen
 Get.to(() => MapScreen());
 
-// Map-এ যেকোনো জায়গায় tap করুন
-// Bottom sheet খুলবে details সহ
+// Tap anywhere on the map
+// Bottom sheet will open with details
 
-// "View Details" বাটনে click করুন
-// Full details screen খুলবে
+// Click "View Details" button
+// Full details screen will open
 
-// Nearby category select করুন (Hotel, Restaurant, etc.)
-// সেই category এর কাছাকাছি জায়গা দেখাবে
+// Select a nearby category (Hotel, Restaurant, etc.)
+// Nearby places of that category will be shown
 
-// কোনো nearby place-এ click করুন
-// সেই place এর details দেখাবে
+// Click on any nearby place
+// Details of that place will be shown
 ```
 
 ## Features Similar to Google Maps
@@ -211,23 +211,23 @@ Make sure you have:
 
 ## Testing
 
-Test করার জন্য:
-1. App চালু করুন
-2. Map screen-এ যান
-3. Map-এ যেকোনো জায়গায় tap করুন
-4. Bottom sheet দেখুন
-5. "View Details" click করুন
-6. Different categories explore করুন
-7. Nearby places দেখুন
+To test:
+1. Launch the app
+2. Go to map screen
+3. Tap anywhere on the map
+4. View the bottom sheet
+5. Click "View Details"
+6. Explore different categories
+7. View nearby places
 
 ## Notes
 
-- API key সব API calls-এ ব্যবহৃত হয়
-- Photos API এর জন্য billing enabled থাকতে হবে
-- Distance calculate করা হয় Haversine formula দিয়ে
-- Maximum 10 nearby places দেখায় প্রতি category তে
-- Photos maximum 5টা দেখায়
-- Error handling সব API calls-এ আছে
+- API key is used in all API calls
+- Billing must be enabled for Photos API
+- Distance is calculated using Haversine formula
+- Maximum 10 nearby places shown per category
+- Maximum 5 photos shown
+- Error handling is present in all API calls
 
 ---
 
