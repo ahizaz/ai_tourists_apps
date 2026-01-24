@@ -1,5 +1,10 @@
 /// Google Maps API Configuration
 /// This file contains all API keys used in the application
+/// 
+/// INSTRUCTIONS:
+/// 1. Copy this file and rename it to 'api_keys.dart'
+/// 2. Replace the placeholder values with your actual API keys
+/// 3. Never commit the actual 'api_keys.dart' file to version control
 class ApiKeys {
   // Google Maps API Key
   // This key is used for:
@@ -7,5 +12,5 @@ class ApiKeys {
   // - Google Places API calls
   // - Google Maps Directions API
   // - Google Maps Geocoding API
-  static const String googleMapsApiKey = 'AIzaSyCGBj98ytEcJaL7kbXfnXvtAIlSp5MBAxc';
+  static const String googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
 }
