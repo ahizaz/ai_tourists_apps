@@ -2,20 +2,20 @@
 
 ## Issues Fixed
 
-### 1. ✅ View Details এ সব photos দেখায় না
-**সমস্যা:** View Details button click করলে শুধু ৫টা photos দেখাচ্ছিল, সব photos দেখাচ্ছিল না।
+### 1. ✅ View Details Not Showing All Photos
+**Problem:** When clicking the View Details button, only 5 photos were showing, not all photos.
 
-**সমাধান:**
-- `MapController.getPlaceDetails()` method update করা হয়েছে যাতে Google Places API থেকে **সব photos** fetch করে
-- `LocationDetailsScreen` এ photo gallery update করা হয়েছে যাতে সব photos PageView-এ দেখায়
-- Photo counter indicator যোগ করা হয়েছে যাতে মোট কতগুলো photos আছে তা দেখা যায়
+**Solution:**
+- Updated `MapController.getPlaceDetails()` method to fetch **all photos** from Google Places API
+- Updated photo gallery in `LocationDetailsScreen` to show all photos in PageView
+- Added photo counter indicator to show total number of photos
 
-**পরিবর্তন:**
+**Changes:**
 ```dart
-// আগে: শুধু 5টা photos limit ছিল
+// Before: Only 5 photos limit existed
 itemCount: photos.length > 5 ? 5 : photos.length,
 
-// এখন: সব photos দেখায়
+// Now: Shows all photos
 itemCount: photos.length,
 
 // Photo counter indicator
@@ -24,24 +24,24 @@ itemCount: photos.length,
 
 ---
 
-### 2. ✅ Nearby Place Click করলে Google Maps এর মতো কাজ করে না
-**সমস্যা:** Nearby place card-এ click করলে শুধু map tap হচ্ছিল, নতুন place এর details screen open হচ্ছিল না।
+### 2. ✅ Nearby Place Click Doesn't Work Like Google Maps
+**Problem:** When clicking on a nearby place card, only the map was being tapped, the new place's details screen was not opening.
 
-**সমাধান:**
-- `_buildNearbyPlaceCard()` method এ `onTap` handler সম্পূর্ণ পরিবর্তন করা হয়েছে
-- এখন nearby place click করলে:
-  1. Loading indicator দেখায়
-  2. Map camera নতুন location-এ move করে
-  3. Place ID দিয়ে full details fetch করে
-  4. সেই location এর nearby places load করে
-  5. পুরাতন screen close করে নতুন details screen open করে
+**Solution:**
+- Completely changed the `onTap` handler in `_buildNearbyPlaceCard()` method
+- Now when clicking on a nearby place:
+  1. Shows loading indicator
+  2. Moves map camera to new location
+  3. Fetches full details using Place ID
+  4. Loads nearby places for that location
+  5. Closes old screen and opens new details screen
 
 **পরিবর্তন:**
 ```dart
-// আগে: শুধু onMapTap call করত
+// Before: Only called onMapTap
 controller.onMapTap(LatLng(lat, lng));
 
-// এখন: Full Google Maps style navigation
+// Now: Full Google Maps style navigation
 onTap: () async {
   // Loading
   Get.dialog(Center(child: CircularProgressIndicator()));
@@ -66,20 +66,20 @@ onTap: () async {
 
 ---
 
-### 3. ✅ Directions Button Google Maps Open করে না
-**সমস্যা:** Directions button click করলে শুধু snackbar দেখাচ্ছিল, actual Google Maps open হচ্ছিল না।
+### 3. ✅ Directions Button Doesn't Open Google Maps
+**Problem:** When clicking the Directions button, only a snackbar was showing, actual Google Maps was not opening.
 
-**সমাধান:**
-- `url_launcher` package dependency যোগ করা হয়েছে
-- `MapController.openInGoogleMaps()` method সম্পূর্ণভাবে implement করা হয়েছে
-- এখন Google Maps app (Android/iOS) অথবা web browser-এ Google Maps open করে
+**Solution:**
+- Added `url_launcher` package dependency
+- Fully implemented `MapController.openInGoogleMaps()` method
+- Now opens Google Maps in the app (Android/iOS) or in web browser
 
 **পরিবর্তন:**
 ```dart
-// pubspec.yaml এ নতুন dependency
+// New dependency in pubspec.yaml
 url_launcher: ^6.3.1
 
-// MapController এ নতুন implementation
+// New implementation in MapController
 Future<void> openInGoogleMaps(double lat, double lng) async {
   final googleMapsUrl = Uri.parse('google.navigation:q=$lat,$lng');
   final googleMapsWebUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
@@ -98,69 +98,69 @@ Future<void> openInGoogleMaps(double lat, double lng) async {
 
 ### 1. `lib/features/map/controller/map_controller.dart`
 - ✅ Import added: `url_launcher`
-- ✅ `getPlaceDetails()` - সব photos fetch করে
-- ✅ `openInGoogleMaps()` - Actual Google Maps open করে
-- ✅ Photo count logging যোগ করা হয়েছে
+- ✅ `getPlaceDetails()` - Fetches all photos
+- ✅ `openInGoogleMaps()` - Opens actual Google Maps
+- ✅ Photo count logging added
 
 ### 2. `lib/features/map/screen/location_details_screen.dart`
-- ✅ Photo gallery - সব photos দেখায়
-- ✅ Photo counter indicator যোগ করা হয়েছে
+- ✅ Photo gallery - Shows all photos
+- ✅ Photo counter indicator added
 - ✅ `_buildNearbyPlaceCard()` - Google Maps style navigation
 
 ### 3. `lib/features/map/screen/map.dart`
-- ✅ Bottom sheet Directions button - Google Maps open করে
+- ✅ Bottom sheet Directions button - Opens Google Maps
 
 ### 4. `pubspec.yaml`
-- ✅ `url_launcher: ^6.3.1` dependency যোগ করা হয়েছে
+- ✅ `url_launcher: ^6.3.1` dependency added
 
 ---
 
 ## Testing Checklist
 
 ### View Details Photos
-- [ ] Map-এ কোনো location click করুন
-- [ ] Bottom sheet-এ "View Details" click করুন
-- [ ] Photo gallery swipe করুন - সব photos দেখতে পাবেন
-- [ ] Photo counter দেখুন (যেমন: "15 photos")
+- [ ] Click on any location on the map
+- [ ] Click "View Details" in the bottom sheet
+- [ ] Swipe through photo gallery - you'll see all photos
+- [ ] Check the photo counter (e.g., "15 photos")
 
 ### Nearby Place Navigation
-- [ ] কোনো location details screen open করুন
-- [ ] Nearby category select করুন (Hotel, Restaurant, etc.)
-- [ ] কোনো nearby place card-এ click করুন
-- [ ] Loading indicator দেখবেন
-- [ ] নতুন place এর details screen খুলবে
-- [ ] নতুন location এর nearby places load হবে
-- [ ] Map camera নতুন location-এ move করবে
+- [ ] Open any location details screen
+- [ ] Select a nearby category (Hotel, Restaurant, etc.)
+- [ ] Click on any nearby place card
+- [ ] You'll see a loading indicator
+- [ ] New place's details screen will open
+- [ ] Nearby places for the new location will load
+- [ ] Map camera will move to the new location
 
 ### Google Maps Integration
-- [ ] কোনো location details screen open করুন
-- [ ] "Directions" button click করুন
-- [ ] Google Maps app অথবা browser-এ Google Maps open হবে
-- [ ] Location সঠিক দেখাবে
+- [ ] Open any location details screen
+- [ ] Click the "Directions" button
+- [ ] Google Maps will open in the app or browser
+- [ ] Location will be shown correctly
 
 ---
 
 ## Google Maps Style Features ✅
 
-এখন app টি সম্পূর্ণভাবে Google Maps এর মতো কাজ করে:
+The app now works exactly like Google Maps:
 
-1. ✅ **Photo Gallery**: সব photos swipe করে দেখা যায়
-2. ✅ **Photo Counter**: মোট কতগুলো photos আছে তা দেখায়
-3. ✅ **Place Details**: Complete information সহ
-4. ✅ **Nearby Places**: Different categories explore করা যায়
-5. ✅ **Place Navigation**: Nearby place click করলে সেই place এর details দেখায়
-6. ✅ **Google Maps Integration**: Directions button Google Maps open করে
-7. ✅ **Smooth Transitions**: Loading indicators এবং smooth navigation
-8. ✅ **Rating & Reviews**: সব information display করে
+1. ✅ **Photo Gallery**: All photos can be viewed by swiping
+2. ✅ **Photo Counter**: Shows the total number of photos
+3. ✅ **Place Details**: Complete information included
+4. ✅ **Nearby Places**: Different categories can be explored
+5. ✅ **Place Navigation**: Clicking on nearby place shows that place's details
+6. ✅ **Google Maps Integration**: Directions button opens Google Maps
+7. ✅ **Smooth Transitions**: Loading indicators and smooth navigation
+8. ✅ **Rating & Reviews**: Displays all information
 
 ---
 
 ## Important Notes
 
-- ⚠️ **Billing**: Google Places Photos API ব্যবহার করার জন্য Google Cloud billing enable থাকতে হবে
-- ⚠️ **API Key**: নিশ্চিত করুন যে API key-তে Places API enabled আছে
-- ⚠️ **Permissions**: Android/iOS manifest এ url_launcher permissions check করুন
-- ✅ **Error Handling**: সব API calls এ proper error handling আছে
+- ⚠️ **Billing**: Google Cloud billing must be enabled to use Google Places Photos API
+- ⚠️ **API Key**: Ensure that Places API is enabled in the API key
+- ⚠️ **Permissions**: Check url_launcher permissions in Android/iOS manifest
+- ✅ **Error Handling**: Proper error handling is present in all API calls
 
 ---
 
