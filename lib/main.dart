@@ -7,11 +7,16 @@ import 'package:ai_powered_tourists_app/features/home/controller/home_controller
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load environment variables
+  await dotenv.load(fileName: ".env");
+  
   await GetStorage.init();
   await Get.putAsync(() => StorageService().init());
    Get.lazyPut(() => BottomNavcontroller(), fenix: true);
