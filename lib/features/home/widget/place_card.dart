@@ -9,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
-import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
 
 class PlaceCard extends StatelessWidget {
   final Place place;
@@ -90,25 +89,12 @@ class PlaceCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            debugPrint('PlaceCard: title tapped -> ${place.title}');
-                            try {
-                              await PlaceVoiceService.fetchAndPlay(
-                                resolvedPlace: place.title,
-                                selectedPlace: place.title,
-                              );
-                            } catch (e) {
-                              debugPrint('PlaceCard: fetchAndPlay error: $e');
-                            }
-                          },
-                          child: Text(
-                            place.title,
-                            style: GoogleFonts.dmSerifDisplay(
-                              fontSize: 16.sp,
-                              color: Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
+                        child: Text(
+                          place.title,
+                          style: GoogleFonts.dmSerifDisplay(
+                            fontSize: 16.sp,
+                            color: Colors.black87,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),

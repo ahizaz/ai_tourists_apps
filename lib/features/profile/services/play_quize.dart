@@ -11,13 +11,7 @@ import 'package:flutter/material.dart';
 class PlayQuizeService {
   static const String _endpoint = Url.playQuize;
 
-  /// Fetch location-based quiz for given coordinates and count.
-  /// Returns a list of questions in the format expected by `InteractiveQuizController`:
-  /// {
-  ///  'question': String,
-  ///  'options': List<String>,
-  ///  'correctAnswer': String,
-  /// }
+ 
   static Future<List<Map<String, dynamic>>> fetchLocationQuiz({
     required double latitude,
     required double longitude,

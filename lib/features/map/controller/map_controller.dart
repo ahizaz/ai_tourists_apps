@@ -266,7 +266,7 @@ class MapController extends GetxController {
       // Use Text Search API
       final url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'
           '?query=$query'
-          '&location=${initialLat},${initialLng}'
+          '&location=$initialLat,$initialLng'
           '&radius=50000'
           '&key=$apiKey';
 
@@ -606,7 +606,7 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      print('Error searching nearby places: $e');
+      debugPrint('Error searching nearby places: $e');
       Get.snackbar('Error', 'Failed to load nearby places');
     } finally {
       isLoadingNearbyPlaces.value = false;
@@ -655,7 +655,7 @@ class MapController extends GetxController {
         );
       }
     } catch (e) {
-      print('Error opening Google Maps: $e');
+      debugPrint('Error opening Google Maps: $e');
       Get.snackbar(
         'Error',
         'Failed to open Google Maps',

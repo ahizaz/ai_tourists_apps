@@ -210,7 +210,7 @@ class HomeController extends GetxController {
 
       // Debug print: Show actual device location coordinates
       debugPrint('========================================');
-      debugPrint('📍 DEVICE CURRENT LOCATION:');
+      debugPrint(' DEVICE CURRENT LOCATION:');
       debugPrint('Latitude: ${position.latitude}');
       debugPrint('Longitude: ${position.longitude}');
       debugPrint('Accuracy: ${position.accuracy} meters');
@@ -313,7 +313,7 @@ class HomeController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint('⚠️ Error getting building name from Places API: $e');
+      debugPrint(' Error getting building name from Places API: $e');
     }
     return null;
   }
@@ -366,7 +366,7 @@ class HomeController extends GetxController {
         }
       }
     } catch (e) {
-      debugPrint('⚠️ Error extracting building from formatted address: $e');
+      debugPrint(' Error extracting building from formatted address: $e');
     }
     return null;
   }
@@ -453,11 +453,11 @@ class HomeController extends GetxController {
           );
           if (buildingFromResults != null && buildingFromResults.isNotEmpty) {
             buildingName = buildingName ?? buildingFromResults;
-            debugPrint('🏢 Found building name from results: $buildingName');
+            debugPrint(' Found building name from results: $buildingName');
           }
 
           // Debug: Print all address components
-          debugPrint('📍 Address components received:');
+          debugPrint(' Address components received:');
           if (addressComponents != null) {
             for (var component in addressComponents) {
               debugPrint(
@@ -566,7 +566,7 @@ class HomeController extends GetxController {
               // Check if it contains Plus Code pattern (contains + and numbers/letters)
               if (!readableAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
                 currentAddress.value = readableAddress;
-                debugPrint('✅ Using parsed address: $readableAddress');
+                debugPrint(' Using parsed address: $readableAddress');
                 return;
               }
             }
@@ -625,7 +625,7 @@ class HomeController extends GetxController {
                     )) {
                       currentAddress.value = readableAddress;
                       debugPrint(
-                        '✅ Using address with extracted building: $readableAddress',
+                        ' Using address with extracted building: $readableAddress',
                       );
                       return;
                     }
@@ -640,7 +640,7 @@ class HomeController extends GetxController {
                 formattedAddress.isNotEmpty &&
                 !formattedAddress.contains(RegExp(r'[A-Z0-9]+\+[A-Z0-9]+'))) {
               currentAddress.value = formattedAddress;
-              debugPrint('✅ Using formatted address: $formattedAddress');
+              debugPrint(' Using formatted address: $formattedAddress');
               return;
             }
           }
@@ -648,7 +648,7 @@ class HomeController extends GetxController {
       }
 
       // Fallback to geocoding package if API fails (may show in device locale)
-      debugPrint('⚠️ Google API failed, using geocoding package fallback');
+      debugPrint(' Google API failed, using geocoding package fallback');
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
 
       if (placemarks.isNotEmpty) {
@@ -684,24 +684,24 @@ class HomeController extends GetxController {
         if (addressParts.isNotEmpty) {
           currentAddress.value = addressParts.join(', ');
           debugPrint(
-            '✅ Using geocoding package address: ${currentAddress.value}',
+            ' Using geocoding package address: ${currentAddress.value}',
           );
         } else {
           // Last resort: show coordinates
           currentAddress.value =
               "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
-          debugPrint('⚠️ Using coordinates as address');
+          debugPrint(' Using coordinates as address');
         }
       } else {
         currentAddress.value =
             "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
-        debugPrint('⚠️ No placemarks found, using coordinates');
+        debugPrint(' No placemarks found, using coordinates');
       }
     } catch (e) {
-      debugPrint('❌ Error getting address: $e');
+      debugPrint(' Error getting address: $e');
       currentAddress.value =
           "Near ${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)}";
-      debugPrint('📍 Final address set to: ${currentAddress.value}');
+      debugPrint(' Final address set to: ${currentAddress.value}');
     }
   }
 
@@ -722,7 +722,7 @@ class HomeController extends GetxController {
           // wttr.in returns temperature in current_condition array
           final temp = data['current_condition']?[0]?['temp_C'];
           if (temp != null && temp.toString().isNotEmpty) {
-            currentWeather.value = "${temp}°C";
+            currentWeather.value = "$temp°C";
             return;
           }
         } catch (e) {
@@ -777,7 +777,7 @@ class HomeController extends GetxController {
       final token = Get.find<StorageService>().getAccessToken();
 
       if (token == null || token.isEmpty) {
-        debugPrint('❌ No access token found');
+        debugPrint(' No access token found');
         EasyLoading.showError('Authentication required');
         return;
       }
@@ -785,7 +785,7 @@ class HomeController extends GetxController {
       isLoadingNearbyPlaces.value = true;
 
       debugPrint('========================================');
-      debugPrint('📤 SENDING LOCATION TO BACKEND:');
+      debugPrint(' SENDING LOCATION TO BACKEND:');
       debugPrint('API URL: ${Url.shownNearby}');
       debugPrint('Latitude: $lat');
       debugPrint('Longitude: $lng');
@@ -817,19 +817,19 @@ class HomeController extends GetxController {
           final nearbyResponse = NearbyPlacesResponse.fromJson(data);
           nearbyPlaces.value = nearbyResponse.data;
 
-          debugPrint('✅ Found ${nearbyPlaces.length} nearby places');
+          debugPrint(' Found ${nearbyPlaces.length} nearby places');
           for (var place in nearbyPlaces) {
             debugPrint('  - ${place.placeName} (${place.placeRating} ⭐)');
           }
         } catch (e) {
-          debugPrint('❌ Error parsing nearby places: $e');
+          debugPrint(' Error parsing nearby places: $e');
         }
       } else {
-        debugPrint('❌ Failed to send location: ${response.statusCode}');
+        debugPrint(' Failed to send location: ${response.statusCode}');
         debugPrint('Error: ${response.body}');
       }
     } catch (e) {
-      debugPrint('❌ Error sending location to backend: $e');
+      debugPrint(' Error sending location to backend: $e');
     } finally {
       isLoadingNearbyPlaces.value = false;
     }
@@ -887,7 +887,7 @@ class HomeController extends GetxController {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: const Color(0xffFF6B35).withOpacity(0.1),
+                  color: const Color(0xffFF6B35).withValues(alpha: .1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(

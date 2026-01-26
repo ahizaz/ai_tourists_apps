@@ -22,14 +22,7 @@ class PlaceDetails extends StatelessWidget {
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.bookmark_border, color: Colors.black),
-            onPressed: () {
-              // bookmark action
-            },
-          ),
-        ],
+      
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),

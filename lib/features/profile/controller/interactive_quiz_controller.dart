@@ -66,9 +66,7 @@ class InteractiveQuizController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // You can load questions from ProfileController here if needed
-    // final profileController = Get.find<ProfileController>();
-    // questions = profileController.qaQuestions;
+   
   }
 
   // Getters
@@ -101,13 +99,11 @@ class InteractiveQuizController extends GetxController {
         score.value++;
         // Success haptic feedback
         HapticFeedback.mediumImpact();
-        // Play success sound here if you have audio files
-        // AudioPlayer().play(AssetSource('sounds/success.mp3'));
+      
       } else {
         // Error haptic feedback
         HapticFeedback.heavyImpact();
-        // Play error sound here if you have audio files
-        // AudioPlayer().play(AssetSource('sounds/error.mp3'));
+     
       }
     }
   }
@@ -132,7 +128,7 @@ class InteractiveQuizController extends GetxController {
     isQuizComplete.value = false;
   }
 
-  // Method to load questions from ProfileController
+  
   void loadQuestionsFromProfile(List<Map<String, dynamic>> qaQuestions) {
     questions = qaQuestions.map((q) {
       return {

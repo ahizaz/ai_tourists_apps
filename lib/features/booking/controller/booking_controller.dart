@@ -123,8 +123,7 @@ class BookingController extends GetxController {
         duration: const Duration(seconds: 2),
       );
       
-      // TODO: Navigate to hotel list screen
-      // Get.to(() => HotelListScreen());
+     
     });
   }
 

@@ -2,7 +2,6 @@ import 'package:ai_powered_tourists_app/core/localization/app_translations.dart'
 import 'package:ai_powered_tourists_app/core/localization/localization_service.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen.dart';
 import 'package:ai_powered_tourists_app/utils/theme/custom_themes/theme.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
