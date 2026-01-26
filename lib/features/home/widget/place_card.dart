@@ -243,16 +243,22 @@ class PlaceCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 8.w),
-                       Container(
-              width: 44.w,
-              height: 44.w,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12.r),
-                border: Border.all(color: Colors.grey[200]!),
-              ),
-              child:Image.asset(IconPath.aiactive)
-            ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigate to HomeSelectPlaceMap and start AI guide
+                          Get.to(() => const HomeSelectPlaceMap(), arguments: place);
+                        },
+                        child: Container(
+                          width: 44.w,
+                          height: 44.w,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          child: Image.asset(IconPath.aiactive),
+                        ),
+                      ),
                     ],
                   )
                 ],
