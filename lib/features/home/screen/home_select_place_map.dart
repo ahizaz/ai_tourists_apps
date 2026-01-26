@@ -48,6 +48,33 @@ class HomeSelectPlaceMap extends StatelessWidget {
               }),
             ),
 
+            // Image overlay when AI guide is started
+            Obx(() {
+              if (controller.isAIGuideStarted.value && place != null) {
+                return Positioned.fill(
+                  child: CachedNetworkImage(
+                    imageUrl: place.imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[300],
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: Icon(
+                          Icons.image,
+                          size: 80.w,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+              return SizedBox.shrink();
+            }),
+
             // Back button
             Positioned(
               left: 16.w,
