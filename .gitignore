@@ -49,3 +49,8 @@ app.*.map.json
 lib/core/config/api_keys.dart
 android/local.properties
 ios/Runner/GoogleMapsConfig.swift
+
+# Environment variables
+.env
+.env.local
+.env.*.local
