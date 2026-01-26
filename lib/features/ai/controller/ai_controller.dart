@@ -253,7 +253,7 @@ class AiController extends GetxController {
       // If ProfileController not found, use default
     }
 
-    return "Excellent choice, $userName! 🏯\n\nThe Great Wall of China is one of the most iconic structures in human history. Built over centuries, with construction beginning as early as the 7th century BC, it stretches over 13,000 miles (21,000 km) across northern China!\n\n📜 Historical Context:\nOriginally built by various states for defense, it was unified and extended during the Ming Dynasty (1368-1644). The wall served to protect Chinese states from invasions and raids by nomadic groups from the Eurasian Steppe.\n\n🎯 Fun Fact:\nContrary to popular belief, the Great Wall is NOT visible from space with the naked eye! This is a common myth.\n\n✨ Today, it stands as a UNESCO World Heritage Site and receives millions of visitors each year.\n\nWould you like to know more about any other landmark?";
+    return "Excellent choice, $userName! \n\nThe Great Wall of China is one of the most iconic structures in human history. Built over centuries, with construction beginning as early as the 7th century BC, it stretches over 13,000 miles (21,000 km) across northern China!\n\n📜 Historical Context:\nOriginally built by various states for defense, it was unified and extended during the Ming Dynasty (1368-1644). The wall served to protect Chinese states from invasions and raids by nomadic groups from the Eurasian Steppe.\n\n🎯 Fun Fact:\nContrary to popular belief, the Great Wall is NOT visible from space with the naked eye! This is a common myth.\n\n✨ Today, it stands as a UNESCO World Heritage Site and receives millions of visitors each year.\n\nWould you like to know more about any other landmark?";
   }
 
   String _getTajMahalResponse() {
@@ -265,7 +265,7 @@ class AiController extends GetxController {
       // If ProfileController not found, use default
     }
 
-    return "Wonderful, $userName! 💎\n\nThe Taj Mahal is a magnificent ivory-white marble mausoleum located in Agra, India. It's truly one of the world's most romantic monuments!\n\n💕 Love Story:\nIt was commissioned in 1631 by Mughal emperor Shah Jahan to house the tomb of his beloved wife, Mumtaz Mahal, who died during childbirth.\n\n🏗️ Construction:\nIt took approximately 22 years and 20,000 artisans to complete this architectural masterpiece, which combines elements from Islamic, Persian, Ottoman Turkish, and Indian architectural styles.\n\n🌟 Recognition:\nThe Taj Mahal is considered one of the greatest examples of Mughal architecture and was designated as a UNESCO World Heritage Site in 1983. It's also one of the New Seven Wonders of the World!\n\nWhat else would you like to explore?";
+    return "Wonderful, $userName! \n\nThe Taj Mahal is a magnificent ivory-white marble mausoleum located in Agra, India. It's truly one of the world's most romantic monuments!\n\n💕 Love Story:\nIt was commissioned in 1631 by Mughal emperor Shah Jahan to house the tomb of his beloved wife, Mumtaz Mahal, who died during childbirth.\n\n🏗️ Construction:\nIt took approximately 22 years and 20,000 artisans to complete this architectural masterpiece, which combines elements from Islamic, Persian, Ottoman Turkish, and Indian architectural styles.\n\n🌟 Recognition:\nThe Taj Mahal is considered one of the greatest examples of Mughal architecture and was designated as a UNESCO World Heritage Site in 1983. It's also one of the New Seven Wonders of the World!\n\nWhat else would you like to explore?";
   }
 
   String _getPyramidResponse() {
@@ -277,7 +277,7 @@ class AiController extends GetxController {
       // If ProfileController not found, use default
     }
 
-    return "Amazing, $userName! 🏜️\n\nThe Great Pyramid of Giza is the oldest and largest of the three pyramids in the Giza pyramid complex. It's an absolute marvel of ancient engineering!\n\n👑 Royal Legacy:\nBuilt around 2560 BC during the reign of Pharaoh Khufu (Cheops), it stood as the tallest man-made structure in the world for over 3,800 years!\n\n✨ Original Appearance:\nThe pyramid was originally covered in white limestone casing stones that reflected the sun's light, making it shine like a jewel in the desert.\n\n🔢 By the Numbers:\nIt consists of approximately 2.3 million stone blocks, each weighing between 2.5 to 15 tons. The precision of its construction still amazes engineers today!\n\n🏆 Eternal Wonder:\nIt's one of the Seven Wonders of the Ancient World and the only one still standing today!\n\nCurious about other wonders?";
+    return "Amazing, $userName! \n\nThe Great Pyramid of Giza is the oldest and largest of the three pyramids in the Giza pyramid complex. It's an absolute marvel of ancient engineering!\n\n👑 Royal Legacy:\nBuilt around 2560 BC during the reign of Pharaoh Khufu (Cheops), it stood as the tallest man-made structure in the world for over 3,800 years!\n\n✨ Original Appearance:\nThe pyramid was originally covered in white limestone casing stones that reflected the sun's light, making it shine like a jewel in the desert.\n\n🔢 By the Numbers:\nIt consists of approximately 2.3 million stone blocks, each weighing between 2.5 to 15 tons. The precision of its construction still amazes engineers today!\n\n🏆 Eternal Wonder:\nIt's one of the Seven Wonders of the Ancient World and the only one still standing today!\n\nCurious about other wonders?";
   }
 
   String _getSimulatedResponse() {
@@ -301,7 +301,7 @@ class AiController extends GetxController {
       // If ProfileController not found, use default
     }
 
-    return "That's a great question, $userName! 🤔\n\nI'd love to help you discover the world's most amazing historical places! Here are some iconic sites I can tell you about:\n\n🇨🇳 The Great Wall of China\n🇮🇳 Taj Mahal in India\n🇪🇬 Egyptian Pyramids\n🇮🇹 Colosseum in Rome\n🇫🇷 Eiffel Tower in Paris\n🇵🇪 Machu Picchu in Peru\n🇯🇴 Petra in Jordan\n\nYou can ask me about any of these, or better yet - snap a photo of any historical site and I'll share its fascinating story with you! 📸✨\n\nWhat interests you most?";
+    return "That's a great question, $userName! \n\nI'd love to help you discover the world's most amazing historical places! Here are some iconic sites I can tell you about:\n\n🇨🇳 The Great Wall of China\n🇮🇳 Taj Mahal in India\n🇪🇬 Egyptian Pyramids\n🇮🇹 Colosseum in Rome\n🇫🇷 Eiffel Tower in Paris\n🇵🇪 Machu Picchu in Peru\n🇯🇴 Petra in Jordan\n\nYou can ask me about any of these, or better yet - snap a photo of any historical site and I'll share its fascinating story with you! 📸✨\n\nWhat interests you most?";
   }
 
   void _scrollToBottom() {

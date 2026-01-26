@@ -153,7 +153,7 @@ class _AnswerFeedbackOverlayState extends State<AnswerFeedbackOverlay>
               ),
               SizedBox(height: 24.h),
               Text(
-                'Oops! 😅',
+                'Oops! ',
                 style: GoogleFonts.inter(
                   fontSize: 32.sp,
                   fontWeight: FontWeight.w700,
