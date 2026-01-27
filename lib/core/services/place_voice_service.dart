@@ -21,6 +21,9 @@ class PlaceVoiceService {
     required String resolvedPlace,
     String? selectedPlace,
     String? userIdentifier,
+    String? aiVoice,
+    String? aiVoiceType,
+    String? gender,
   }) async {
     try {
       EasyLoading.show(status: 'Generating voice...');
@@ -35,6 +38,17 @@ class PlaceVoiceService {
         body['user_identifier'] = userIdentifier;
       } else if (selectedPlace != null && selectedPlace.isNotEmpty) {
         body['selected_place'] = selectedPlace;
+      }
+
+      // Include optional AI voice/gender parameters if provided
+      if (aiVoice != null && aiVoice.isNotEmpty) {
+        body['ai_voice'] = aiVoice.toLowerCase();
+      }
+      if (aiVoiceType != null && aiVoiceType.isNotEmpty) {
+        body['ai_voice_type'] = aiVoiceType.toLowerCase();
+      }
+      if (gender != null && gender.isNotEmpty) {
+        body['gender'] = gender.toLowerCase();
       }
 
       debugPrint('PlaceVoiceService: request body -> ${jsonEncode(body)}');
@@ -126,6 +140,9 @@ class PlaceVoiceService {
     required String resolvedPlace,
     String? selectedPlace,
     String? userIdentifier,
+    String? aiVoice,
+    String? aiVoiceType,
+    String? gender,
   }) async {
     try {
       EasyLoading.show(status: 'Generating voice...');
@@ -139,6 +156,17 @@ class PlaceVoiceService {
         body['user_identifier'] = userIdentifier;
       } else if (selectedPlace != null && selectedPlace.isNotEmpty) {
         body['selected_place'] = selectedPlace;
+      }
+
+      // Include optional AI voice/gender parameters if provided
+      if (aiVoice != null && aiVoice.isNotEmpty) {
+        body['ai_voice'] = aiVoice.toLowerCase();
+      }
+      if (aiVoiceType != null && aiVoiceType.isNotEmpty) {
+        body['ai_voice_type'] = aiVoiceType.toLowerCase();
+      }
+      if (gender != null && gender.isNotEmpty) {
+        body['gender'] = gender.toLowerCase();
       }
 
       final accessToken = Get.find<StorageService>().getAccessToken();

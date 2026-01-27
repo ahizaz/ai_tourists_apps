@@ -15,6 +15,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:ai_powered_tourists_app/core/services/place_voice_service.dart';
 import 'package:ai_powered_tourists_app/core/services/system_volume.dart';
+import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:http/http.dart' as http;
@@ -1253,10 +1254,24 @@ class HomeController extends GetxController {
 
       // Fetch audio URL from service (does not play)
       final userIdentifier = Get.find<StorageService>().getUserIdentifier();
+      // Forward selected AI voice/gender from ProfileController if available
+      String? aiVoice;
+      String? gender;
+      try {
+        final profileCtrl = Get.find<ProfileController>();
+        aiVoice = profileCtrl.voice.value;
+        gender = profileCtrl.gender.value;
+        debugPrint('HomeController: forwarding aiVoice=$aiVoice gender=$gender');
+      } catch (_) {
+        debugPrint('HomeController: ProfileController not found; not forwarding voice/gender');
+      }
+
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(
         resolvedPlace: resolved,
         selectedPlace: place.title,
         userIdentifier: userIdentifier,
+        aiVoice: aiVoice,
+        gender: gender,
       );
 
       if (audioUrl == null) {

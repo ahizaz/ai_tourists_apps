@@ -79,6 +79,23 @@ class AiAssistantController extends GetxController {
         debugPrint("🎉 Profile Created Successfully");
 
         // Remove temporary token after successful profile creation
+        // Try to extract and save user identifier from response (if present)
+        try {
+          final respData = jsonDecode(response.body);
+          if (respData is Map && respData['data'] != null) {
+            final d = respData['data'];
+            if (d is Map && d['user_identifier'] != null) {
+              final userId = d['user_identifier'].toString();
+              if (userId.isNotEmpty) {
+                Get.find<StorageService>().saveUserIdentifier(userId);
+                debugPrint('✅ Saved user_identifier from profile creation: $userId');
+              }
+            }
+          }
+        } catch (e) {
+          debugPrint('Could not parse/save user_identifier from profile response: $e');
+        }
+
         Get.find<StorageService>().removeAccessToken();
         debugPrint(
           "🗑️ Temporary token removed - User must login to get permanent token",
