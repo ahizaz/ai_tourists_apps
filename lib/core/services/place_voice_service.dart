@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 
 import '../urls/urls.dart';
 
@@ -17,23 +19,36 @@ class PlaceVoiceService {
   /// - `selectedPlace`: the place selected by the user in the app
   static Future<void> fetchAndPlay({
     required String resolvedPlace,
-    required String selectedPlace,
+    String? selectedPlace,
+    String? userIdentifier,
   }) async {
     try {
       EasyLoading.show(status: 'Generating voice...');
 
-      debugPrint('PlaceVoiceService: resolvedPlace="$resolvedPlace" selectedPlace="$selectedPlace"');
+      debugPrint('PlaceVoiceService: resolvedPlace="$resolvedPlace" selectedPlace="$selectedPlace" userIdentifier="$userIdentifier"');
 
-      final body = {
+      final body = <String, dynamic>{
         'resolved_place': resolvedPlace,
-        'selected_place': selectedPlace,
       };
+
+      if (userIdentifier != null && userIdentifier.isNotEmpty) {
+        body['user_identifier'] = userIdentifier;
+      } else if (selectedPlace != null && selectedPlace.isNotEmpty) {
+        body['selected_place'] = selectedPlace;
+      }
 
       debugPrint('PlaceVoiceService: request body -> ${jsonEncode(body)}');
 
+      final accessToken = Get.find<StorageService>().getAccessToken();
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      debugPrint('PlaceVoiceService: request headers -> $headers');
       final resp = await http.post(
         Uri.parse(Url.placeVoice),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: jsonEncode(body),
       );
 
@@ -109,21 +124,33 @@ class PlaceVoiceService {
   /// Returns the full resolved audio URL (absolute) or `null` if none.
   static Future<String?> fetchAudioUrl({
     required String resolvedPlace,
-    required String selectedPlace,
+    String? selectedPlace,
+    String? userIdentifier,
   }) async {
     try {
       EasyLoading.show(status: 'Generating voice...');
 
-      debugPrint('PlaceVoiceService.fetchAudioUrl: resolvedPlace="$resolvedPlace" selectedPlace="$selectedPlace"');
+      debugPrint('PlaceVoiceService.fetchAudioUrl: resolvedPlace="$resolvedPlace" selectedPlace="$selectedPlace" userIdentifier="$userIdentifier"');
 
-      final body = {
+      final body = <String, dynamic>{
         'resolved_place': resolvedPlace,
-        'selected_place': selectedPlace,
       };
+      if (userIdentifier != null && userIdentifier.isNotEmpty) {
+        body['user_identifier'] = userIdentifier;
+      } else if (selectedPlace != null && selectedPlace.isNotEmpty) {
+        body['selected_place'] = selectedPlace;
+      }
 
+      final accessToken = Get.find<StorageService>().getAccessToken();
+      final headers = <String, String>{'Content-Type': 'application/json'};
+      if (accessToken != null && accessToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $accessToken';
+      }
+
+      debugPrint('PlaceVoiceService: request headers -> $headers');
       final resp = await http.post(
         Uri.parse(Url.placeVoice),
-        headers: {'Content-Type': 'application/json'},
+        headers: headers,
         body: jsonEncode(body),
       );
 
