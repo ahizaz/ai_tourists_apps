@@ -1252,9 +1252,11 @@ class HomeController extends GetxController {
       );
 
       // Fetch audio URL from service (does not play)
+      final userIdentifier = Get.find<StorageService>().getUserIdentifier();
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(
         resolvedPlace: resolved,
         selectedPlace: place.title,
+        userIdentifier: userIdentifier,
       );
 
       if (audioUrl == null) {

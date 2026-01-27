@@ -74,6 +74,34 @@ class SignInController extends GetxController {
             Get.find<StorageService>().saveAccessToken(accessToken);
             debugPrint("✅ Access Token saved successfully");
 
+            // Try to extract and save a user identifier from the response if present
+            try {
+              String? userId;
+              // Common response shapes: data.user.id, data.data.id, data.id, data.user_id
+              if (data['data'] != null) {
+                final d = data['data'];
+                if (d is Map && d['user'] != null) {
+                  final u = d['user'];
+                  if (u is Map) {
+                    if (u['id'] != null) userId = u['id'].toString();
+                    else if (u['uuid'] != null) userId = u['uuid'].toString();
+                    else if (u['identifier'] != null) userId = u['identifier'].toString();
+                  }
+                }
+                if (userId == null && d is Map && d['id'] != null) userId = d['id'].toString();
+                if (userId == null && d is Map && d['user_id'] != null) userId = d['user_id'].toString();
+              }
+              if (userId == null && data['id'] != null) userId = data['id'].toString();
+              if (userId == null && data['user_id'] != null) userId = data['user_id'].toString();
+
+              if (userId != null && userId.isNotEmpty) {
+                Get.find<StorageService>().saveUserIdentifier(userId);
+                debugPrint('✅ User identifier saved: $userId');
+              }
+            } catch (e) {
+              debugPrint('Could not extract user identifier from sign-in response: $e');
+            }
+
             // Save refresh token if available
             if (data['data']['refresh'] != null &&
                 data['data']['refresh'].toString().isNotEmpty) {

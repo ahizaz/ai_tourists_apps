@@ -82,6 +82,25 @@ class StorageService extends GetxService {
     debugPrint("🗑️ User email removed from SharedPreferences");
   }
 
+  // User identifier (UUID or server-side id)
+  void saveUserIdentifier(String id) {
+    _box.write('user_identifier', id);
+    debugPrint("💾 User identifier saved to SharedPreferences: $id");
+  }
+
+  String? getUserIdentifier() {
+    final id = _box.read('user_identifier');
+    if (id != null) {
+      debugPrint("📖 User identifier retrieved from SharedPreferences: $id");
+    }
+    return id;
+  }
+
+  void removeUserIdentifier() {
+    _box.remove('user_identifier');
+    debugPrint("🗑️ User identifier removed from SharedPreferences");
+  }
+
   // User Login Status
   bool isLoggedIn() {
     final token = getAccessToken();
