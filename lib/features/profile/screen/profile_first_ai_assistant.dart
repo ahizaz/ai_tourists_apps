@@ -61,13 +61,13 @@ class ProfileFirstAiAssistant extends StatelessWidget {
                       children: [
                         OptionTile(
                           label: 'Male',
-                          selected: ctrl.gender.value == 'Male',
+                          selected: ctrl.gender.value?.toLowerCase() == 'male',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Male'),
                         ),
                         OptionTile(
                           label: 'Female',
-                          selected: ctrl.gender.value == 'Female',
+                          selected: ctrl.gender.value?.toLowerCase() == 'female',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Female'),
                         ),

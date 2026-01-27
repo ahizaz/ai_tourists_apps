@@ -61,13 +61,13 @@ class FirstAiAssistant extends StatelessWidget {
                       children: [
                         OptionTile(
                           label: 'male'.tr,
-                          selected: ctrl.gender.value == 'Male',
+                          selected: ctrl.gender.value?.toLowerCase() == 'male',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Male'),
                         ),
                         OptionTile(
                           label: 'female'.tr,
-                          selected: ctrl.gender.value == 'Female',
+                          selected: ctrl.gender.value?.toLowerCase() == 'female',
                           isCheckbox: false,
                           onTap: () => ctrl.selectGender('Female'),
                         ),
