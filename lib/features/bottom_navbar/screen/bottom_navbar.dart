@@ -7,6 +7,7 @@ import 'package:ai_powered_tourists_app/features/profile/screen/profile_screen.d
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
 class BottomNavbar extends StatelessWidget {
@@ -44,7 +45,7 @@ class BottomNavbar extends StatelessWidget {
       backgroundColor: const Color(0xffF5F5F5),
       bottomNavigationBar: Obx(
         () => Container(
-          height: 85.h,
+          height: 96.h,
           decoration: BoxDecoration(
             color: const Color(0xffF5F5F5),
             boxShadow: [
@@ -68,14 +69,18 @@ class BottomNavbar extends StatelessWidget {
                   onTap: () => controller.changeIndex(index),
                   child: Container(
                     alignment: Alignment.center,
-                    padding: isMapIcon && !isSelected 
-                        ? EdgeInsets.only(bottom: 3.h) 
-                        : EdgeInsets.zero,
-                    child: Image.asset(
-                      isSelected ? activeIcons[index] : inactiveIcons[index],
-                      width: 56.w,
-                      height: 56.h,
-                      fit: BoxFit.contain,
+                    // Use Transform to move the map icon visually without
+                    // changing the layout size so other icons remain aligned.
+                    child: Transform.translate(
+                      offset: isMapIcon
+                          ? Offset(0, isSelected ? -2.h : 6.h)
+                          : Offset.zero,
+                      child: SvgPicture.asset(
+                        isSelected ? activeIcons[index] : inactiveIcons[index],
+                        width: 64.w,
+                        height: 64.h,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
