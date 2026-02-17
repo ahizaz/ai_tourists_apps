@@ -44,6 +44,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Keystore and key properties
+/android/key.properties
+/android/app/keystore.jks
+
 # API Keys and Sensitive Configuration
 # DO NOT commit these files - they contain sensitive API keys
 lib/core/config/api_keys.dart

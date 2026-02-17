@@ -1,4 +1,4 @@
-package com.example.ai_powered_tourists_app
+package com.dalil.ai_powered_tourists_app
 
 import android.content.Context
 import android.media.AudioManager

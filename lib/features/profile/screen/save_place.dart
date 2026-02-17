@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -263,7 +264,12 @@ class SavePlace extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12.r),
                 border: Border.all(color: Colors.grey[200]!),
               ),
-              child:Image.asset(IconPath.aiactive)
+              child: SvgPicture.asset(
+                IconPath.aiactive,
+                width: 28.w,
+                height: 28.h,
+                fit: BoxFit.contain,
+              ),
             ),
                   ],
                 ),

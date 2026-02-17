@@ -2,7 +2,7 @@ class IconPath{
    IconPath._();
    static const firstdotsplash = "assets/icons/first_dot_splash.png";
 
- 
+   static const applogo ="assets/icons/applogo.png";
    static const activehomeicon = "assets/icons/home_active.svg";
    static const inactivehomeicon = "assets/icons/home_inactive.svg";
    static const aiactive = "assets/icons/ai_active.svg";
