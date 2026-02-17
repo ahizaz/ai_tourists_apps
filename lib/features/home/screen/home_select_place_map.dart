@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeSelectPlaceMap extends StatelessWidget {
   const HomeSelectPlaceMap({super.key});
@@ -244,7 +245,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12.r),
                     ),
                     child: Center(
-                      child: Image.asset(
+                      child: SvgPicture.asset(
                         IconPath.mapactive,
                         height: 22.h,
                         width: 22.w,
@@ -268,7 +269,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.r),
                       ),
                       child: Center(
-                        child: Image.asset(
+                        child: SvgPicture.asset(
                           IconPath.aiactive,
                           height: 22.h,
                           width: 22.w,

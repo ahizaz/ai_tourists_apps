@@ -73,7 +73,7 @@ class BottomNavbar extends StatelessWidget {
                     // changing the layout size so other icons remain aligned.
                     child: Transform.translate(
                       offset: isMapIcon
-                          ? Offset(0, isSelected ? -2.h : 6.h)
+                          ? Offset(0, isSelected ? -2.h : 5.h)
                           : Offset.zero,
                       child: SvgPicture.asset(
                         isSelected ? activeIcons[index] : inactiveIcons[index],

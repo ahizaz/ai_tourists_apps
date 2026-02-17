@@ -4,6 +4,7 @@ import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -225,7 +226,12 @@ class PlaceCard extends StatelessWidget {
                             color: Colors.grey[100],
                             borderRadius: BorderRadius.circular(8.r),
                           ),
-                          child: Image.asset(IconPath.mapinactive,width: 30.w,height: 30.w,fit: BoxFit.cover,),
+                          child: SvgPicture.asset(
+                            IconPath.mapinactive,
+                            width: 30.w,
+                            height: 30.w,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       SizedBox(width: 8.w),
@@ -242,7 +248,11 @@ class PlaceCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12.r),
                             border: Border.all(color: Colors.grey[200]!),
                           ),
-                          child: Image.asset(IconPath.aiactive),
+                          child: SvgPicture.asset(
+                            IconPath.aiactive,
+                            width: 22.w,
+                            height: 22.h,
+                          ),
                         ),
                       ),
                     ],
