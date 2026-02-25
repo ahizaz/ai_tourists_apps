@@ -1,5 +1,5 @@
 class Url{
-  static const String baseUrl = "https://6zpmb4x8-8011.inc1.devtunnels.ms/"; 
+  static const String baseUrl = "https://dalil-nl.cloud"; 
   static const String signup = "$baseUrl/auth/signup/";
   static const String verifyotp = "$baseUrl/auth/verify-otp/";
   static const String profilecreation = "$baseUrl/profile/profile/";
