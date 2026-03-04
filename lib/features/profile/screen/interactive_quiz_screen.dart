@@ -337,9 +337,10 @@ class InteractiveQuizScreen extends StatelessWidget {
           scale: value,
           child: Padding(
             padding: EdgeInsets.all(24.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
                 Text(
                   emoji,
                   style: TextStyle(fontSize: 100.sp),
@@ -471,7 +472,8 @@ class InteractiveQuizScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          ),  // SingleChildScrollView
+        ),  // Padding
         );
       },
     );

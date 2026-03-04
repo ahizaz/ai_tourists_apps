@@ -2,6 +2,7 @@ import 'package:ai_powered_tourists_app/core/localization/app_translations.dart'
 import 'package:ai_powered_tourists_app/core/localization/localization_service.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen.dart';
 import 'package:ai_powered_tourists_app/utils/theme/custom_themes/theme.dart';
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -37,7 +38,11 @@ class AITourists extends StatelessWidget {
           GlobalCupertinoLocalizations.delegate,
         ],
         home: SplashScreen(),
-        builder: EasyLoading.init(),
+        builder: (context,child){
+          DevicePreview.appBuilder(context,child);
+          child = EasyLoading.init()(context,child);
+          return child;
+        }
       )),
     );
   }

@@ -37,11 +37,7 @@ class AiController extends GetxController {
         await _handleImageSelected(File(image.path));
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to pick image from gallery',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Failed to pick image from gallery');
     }
   }
 
@@ -58,11 +54,7 @@ class AiController extends GetxController {
         await _handleImageSelected(File(image.path));
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to capture image from camera',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      EasyLoading.showError('Failed to capture image from camera');
     }
   }
 
@@ -77,18 +69,16 @@ class AiController extends GetxController {
     
     _scrollToBottom();
     
-    // Simulate AI processing
-    isLoading.value = true;
+    EasyLoading.show(status: 'Thinking...');
     await Future.delayed(const Duration(seconds: 2));
     
-    // Add AI response (you can integrate with actual AI API later)
     messages.add(ChatMessage(
       text: _getSimulatedResponse(),
       isUser: false,
       timestamp: DateTime.now(),
     ));
     
-    isLoading.value = false;
+    EasyLoading.dismiss();
     _scrollToBottom();
   }
 
@@ -111,7 +101,7 @@ class AiController extends GetxController {
   }
 
   Future<void> _generateAIResponse(String userMessage) async {
-    isLoading.value = true;
+    EasyLoading.show(status: 'Thinking...');
     await Future.delayed(const Duration(seconds: 2));
     
     String response;
@@ -136,19 +126,16 @@ class AiController extends GetxController {
       timestamp: DateTime.now(),
     ));
     
-    isLoading.value = false;
+    EasyLoading.dismiss();
     _scrollToBottom();
   }
 
   Future<void> _callAiApi(String userMessage) async {
-    isLoading.value = true;
-
     try {
       // Get token
       final token = Get.find<StorageService>().getAccessToken();
       if (token == null || token.isEmpty) {
         EasyLoading.showError('Authentication required');
-        isLoading.value = false;
         return;
       }
 
@@ -221,8 +208,6 @@ class AiController extends GetxController {
         timestamp: DateTime.now(),
       ));
       _scrollToBottom();
-    } finally {
-      isLoading.value = false;
     }
   }
 
