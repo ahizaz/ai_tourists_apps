@@ -708,27 +708,32 @@ class HomeController extends GetxController {
 
   // Get weather for location using wttr.in API (free, no API key needed)
   Future<void> getWeatherForLocation(double lat, double lng) async {
+    const timeout = Duration(milliseconds: 4);
     try {
       // Use wttr.in API with coordinates to get real weather data
       // Format: https://wttr.in/{lat},{lng}?format=j1
       final url = Uri.parse('https://wttr.in/$lat,$lng?format=j1');
-      final response = await http.get(
-        url,
-        headers: {'User-Agent': 'Mozilla/5.0'}, // Some APIs require user agent
-      );
+      try {
+        final response = await http.get(
+          url,
+          headers: {'User-Agent': 'Mozilla/5.0'}, // Some APIs require user agent
+        ).timeout(timeout);
 
-      if (response.statusCode == 200) {
-        try {
-          final data = json.decode(response.body);
-          // wttr.in returns temperature in current_condition array
-          final temp = data['current_condition']?[0]?['temp_C'];
-          if (temp != null && temp.toString().isNotEmpty) {
-            currentWeather.value = "$temp°C";
-            return;
+        if (response.statusCode == 200) {
+          try {
+            final data = json.decode(response.body);
+            // wttr.in returns temperature in current_condition array
+            final temp = data['current_condition']?[0]?['temp_C'];
+            if (temp != null && temp.toString().isNotEmpty) {
+              currentWeather.value = "$temp°C";
+              return;
+            }
+          } catch (e) {
+            debugPrint('Error parsing weather response: $e');
           }
-        } catch (e) {
-          debugPrint('Error parsing weather response: $e');
         }
+      } catch (e) {
+        debugPrint('wttr.in API timeout/error: $e');
       }
 
       // Fallback: Try alternative weather API (Open-Meteo - free, no key needed)
@@ -736,7 +741,7 @@ class HomeController extends GetxController {
         final url = Uri.parse(
           'https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lng&current=temperature_2m&temperature_unit=celsius',
         );
-        final response = await http.get(url);
+        final response = await http.get(url).timeout(timeout);
 
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
@@ -747,7 +752,7 @@ class HomeController extends GetxController {
           }
         }
       } catch (e) {
-        debugPrint('Open-Meteo API error: $e');
+        debugPrint('Open-Meteo API timeout/error: $e');
       }
 
       // Final fallback: Use location-based estimation
