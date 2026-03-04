@@ -13,11 +13,12 @@ class ProfileLastAiAssistant extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
-      body: Padding(
+      body: SingleChildScrollView(
+        child: Padding(
         padding:  EdgeInsets.symmetric(horizontal: 12.w),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
                  SizedBox(height: 135.h),
                  Center(
@@ -28,76 +29,37 @@ class ProfileLastAiAssistant extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(height: 12.h,),
-                 Center(
-                  child: Text(
-                    "Discover your next adventure with ",
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 20.sp,
-                      color: const Color(0xff252525),
-                    ),
+                SizedBox(height: 12.h),
+                Text(
+                  "Discover your next adventure with our AI-powered travel guide app!",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 20.sp,
+                    color: const Color(0xff252525),
                   ),
                 ),
-                    Center(
-                  child: Text(
-                    "our AI-powered travel guide app!",
-                    style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w400,
-                      fontSize: 20.sp,
-                      color: const Color(0xff252525),
-                    ),
+                SizedBox(height: 65.h),
+                Text(
+                  "Your intelligent companion for exploring and managing travel experiences.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16.sp,
+                    color: const Color(0xff505050),
                   ),
                 ),
-                SizedBox(height: 65.h,),
-                Center(child: Text("Your intelligent companion for exploring and",   style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                    SizedBox(height: 5.h,),
-                     Center(child: Text("managing travel experiences.",   style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                    SizedBox(height: 8.h,),
-              Center(child: Text("Effortlessly explore and manage points of ",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                      SizedBox(height: 4.h,),
-              Center(child: Text("interest for your travels, including",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                         SizedBox(height: 4.h,),
-              Center(child: Text("iattractions, restaurants, and activities.",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                               SizedBox(height: 4.h,),
-              Center(child: Text("Contribute unique insights and experiences ",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                                  SizedBox(height: 4.h,),
-              Center(child: Text("to enhance our travel database and earn  ",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                                   SizedBox(height: 4.h,),
-              Center(child: Text("rewards  ",style: GoogleFonts.inter(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14.sp,
-                      color: const Color(0xff505050),
-                    ),),),
-                    Spacer(),
+                SizedBox(height: 8.h),
+                Text(
+                  "Effortlessly explore and manage points of interest for your travels, including attractions, restaurants, and activities. Contribute unique insights and experiences to enhance our travel database and earn rewards.",
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 14.sp,
+                    color: const Color(0xff505050),
+                  ),
+                ),
+                    SizedBox(height: 20.h),
                      InkWell(
                   onTap: () {
                     Get.back();
@@ -140,6 +102,7 @@ class ProfileLastAiAssistant extends StatelessWidget {
              
           ],
         ),
+      ),
       ),
     );
   }
