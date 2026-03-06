@@ -2,6 +2,7 @@ import 'package:ai_powered_tourists_app/core/common/widgets/custom_password_fiel
 import 'package:ai_powered_tourists_app/core/common/widgets/custom_textField.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_in/screen/sign_in.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/sign_up/controller/sign_up_controller.dart';
+import 'package:ai_powered_tourists_app/features/settings/screen/terms_condition.dart';
 
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
@@ -79,7 +80,7 @@ class SignUp extends StatelessWidget {
                         SizedBox(width: 6.w,),
                         InkWell(
                           onTap: (){
-                            
+                            Get.to(() => const TermsConditionScreen());
                           },
                           child: Text("terms_and_condition".tr,style: GoogleFonts.inter( 
                             fontSize: 14.sp,
