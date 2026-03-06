@@ -77,13 +77,18 @@ class SignUp extends StatelessWidget {
                           ),
                         ),
                         SizedBox(width: 6.w,),
-                        Text("terms_and_condition".tr,style: GoogleFonts.inter( 
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xff505050),
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0xff878787)
-                        ),
+                        InkWell(
+                          onTap: (){
+                            
+                          },
+                          child: Text("terms_and_condition".tr,style: GoogleFonts.inter( 
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xff505050),
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color(0xff878787)
+                          ),
+                          ),
                         ),
                    
                      
