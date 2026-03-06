@@ -711,8 +711,34 @@ class MapController extends GetxController {
 
       EasyLoading.show(status: 'Saving...');
 
+      // Normalize raw Google Places data to the format the backend expects
+      final normalizedName = (placeData['place_name'] ?? placeData['name'] ?? '').toString();
+      final normalizedAddress = (placeData['place_address'] ?? placeData['fullAddress'] ?? placeData['vicinity'] ?? '').toString();
+      final normalizedDescription = (placeData['place_description'] ?? normalizedAddress).toString();
+      final normalizedImage = (placeData['place_image'] ?? '').toString();
+      final rawRating = (placeData['place_rating'] ?? placeData['rating'] ?? '').toString();
+      final normalizedRating = (rawRating == 'N/A' || rawRating == 'null') ? '' : rawRating;
+      final normalizedLat = placeData['latitude'] ?? placeData['lat'] ?? 0.0;
+      final normalizedLng = placeData['longitude'] ?? placeData['lng'] ?? 0.0;
+
+      final rawPlaceId = (placeData['place_id'] ?? placeData['id'] ?? '').toString().trim();
+      final normalizedPlaceId = rawPlaceId.isNotEmpty
+          ? rawPlaceId
+          : 'custom_${normalizedLat.toStringAsFixed(6)}_${normalizedLng.toStringAsFixed(6)}';
+
+      final payload = <String, dynamic>{
+        'place_id': normalizedPlaceId,
+        'place_name': normalizedName,
+        'place_description': normalizedDescription.isNotEmpty ? normalizedDescription : normalizedName,
+        if (normalizedAddress.isNotEmpty) 'place_address': normalizedAddress,
+        if (normalizedImage.isNotEmpty) 'place_image': normalizedImage,
+        if (normalizedRating.isNotEmpty) 'place_rating': normalizedRating,
+        'latitude': normalizedLat,
+        'longitude': normalizedLng,
+      };
+
       debugPrint('API: ${Url.savePlace}');
-      debugPrint('Saving place data: ${placeData.toString()}');
+      debugPrint('Sending normalized payload: ${payload.toString()}');
 
       final response = await http.post(
         Uri.parse(Url.savePlace),
@@ -720,7 +746,7 @@ class MapController extends GetxController {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode(placeData),
+        body: jsonEncode(payload),
       );
 
       debugPrint('Save place status: ${response.statusCode}');
@@ -731,7 +757,7 @@ class MapController extends GetxController {
         EasyLoading.showSuccess('Place saved');
         Get.snackbar(
           'Saved',
-          '${placeData['place_name'] ?? 'Place'} saved successfully',
+          '${normalizedName.isNotEmpty ? normalizedName : 'Place'} saved successfully',
           snackPosition: SnackPosition.BOTTOM,
         );
 
