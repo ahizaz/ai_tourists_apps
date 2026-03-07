@@ -364,17 +364,10 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 4.h),
-              Text(
-                'AI is ready to guide you with history, culture',
-                style: GoogleFonts.inter(
-                  fontSize: 16.sp,
-                  color: Color(0xff878787),
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
               Center(
                 child: Text(
-                  'and secrets of this landmark.',
+                  'AI is ready to guide you with history, culture and secrets of this landmark.',
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontSize: 16.sp,
                     color: Color(0xff878787),
