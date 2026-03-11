@@ -307,7 +307,7 @@ class HomeController extends GetxController {
             );
 
             if (isRelevantPlace) {
-              debugPrint('🏢 Places API found: $placeName (types: $types)');
+              debugPrint(' Places API found: $placeName (types: $types)');
               return placeName;
             }
           }
@@ -423,7 +423,7 @@ class HomeController extends GetxController {
   Future<void> getAddressFromCoordinates(double lat, double lng) async {
     try {
       // Debug print coordinates being used
-      debugPrint('🔍 Fetching address for coordinates: $lat, $lng');
+      debugPrint(' Fetching address for coordinates: $lat, $lng');
 
       // Use Google Geocoding API with language=en to ensure English address
       final apiKey = ApiKeys.googleMapsApiKey;
@@ -440,7 +440,7 @@ class HomeController extends GetxController {
           // First, try to get building name from Google Places API Nearby Search
           String? buildingName = await _getBuildingNameFromPlacesAPI(lat, lng);
           if (buildingName != null && buildingName.isNotEmpty) {
-            debugPrint('🏢 Found building name from Places API: $buildingName');
+            debugPrint(' Found building name from Places API: $buildingName');
           }
 
           // Parse address components to build a readable street address
@@ -557,9 +557,7 @@ class HomeController extends GetxController {
               }
             }
 
-            // State/Province (only if we have specific location, otherwise it's redundant)
-            // Skip administrative area if we already have city/sublocality
-            // Country (only add if different country or if address is very short)
+       
 
             // Only use formatted address if we don't have street info and it's not a Plus Code
             if (addressParts.isNotEmpty) {
