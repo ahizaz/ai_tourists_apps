@@ -151,23 +151,31 @@ class PlaceDetails extends StatelessWidget {
             SizedBox(width: 12.w),
 
             // distance
-            Row(
-              children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 16.w,
-                  color: Colors.grey,
-                ),
-                SizedBox(width: 6.w),
-                Text(
-                  '${place.distanceKm}km',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 13.sp,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ],
-            ),
+      // distance
+    // distance
+Flexible(
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(
+        Icons.location_on_outlined,
+        size: 16.w,
+        color: Colors.grey,
+      ),
+      SizedBox(width: 6.w),
+      Flexible(                        // ← add this
+        child: Text(
+          '${place.distanceKm}km',
+          overflow: TextOverflow.ellipsis,
+          style: GoogleFonts.dmSans(
+            fontSize: 13.sp,
+            color: Colors.grey[700],
+          ),
+        ),
+      ),
+    ],
+  ),
+),
 
             Spacer(),
 
