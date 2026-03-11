@@ -51,7 +51,7 @@ class AccountScreen extends StatelessWidget {
                 context,
                 'email_label'.tr,
                 controller.userEmail.value,
-                (value) => controller.userEmail.value = value,
+                (value) => controller.setUserEmail(value),
               ),
             )),
           ],

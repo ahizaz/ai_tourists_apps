@@ -36,17 +36,17 @@ class Home extends StatelessWidget {
                       ),
                     ),
                     const Spacer(),
-                    GestureDetector(
-                      onTap: () => debugPrint('Open notifications'),
-                      child: Image(
-                        image: AssetImage(
-                          IconPath.notificationicon,
-                        ),
-                        width: 44.w,
-                        height: 44.h,
-                        fit: BoxFit.cover,
-                      ),
-                    )
+                    // GestureDetector(
+                    //   onTap: () => debugPrint('Open notifications'),
+                    //   child: Image(
+                    //     image: AssetImage(
+                    //       IconPath.notificationicon,
+                    //     ),
+                    //     width: 44.w,
+                    //     height: 44.h,
+                    //     fit: BoxFit.cover,
+                    //   ),
+                    // )
                   ],
                 ),
                 SizedBox(height: 22.h),

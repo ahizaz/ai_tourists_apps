@@ -15,23 +15,23 @@ class SplashController extends GetxController {
     await Future.delayed(const Duration(milliseconds: 500));
 
     try {
-      debugPrint("🔍 Checking for saved access token...");
+      debugPrint(" Checking for saved access token...");
       final token = Get.find<StorageService>().getAccessToken();
 
       if (token != null && token.isNotEmpty) {
-        debugPrint("✅ Auto-Login: Token found in SharedPreferences");
-        debugPrint("🔑 Token: $token");
-        debugPrint("🚀 Auto-Login: Navigating to home");
+        debugPrint(" Auto-Login: Token found in SharedPreferences");
+        debugPrint(" Token: $token");
+        debugPrint(" Auto-Login: Navigating to home");
 
         // User is already logged in, go to home
         Get.offAll(() => BottomNavbar());
       } else {
-        debugPrint("❌ Auto-Login: No token found in SharedPreferences");
-        debugPrint("👉 User needs to login");
+        debugPrint(" Auto-Login: No token found in SharedPreferences");
+        debugPrint(" User needs to login");
         // No token, stay on splash screen - user will manually navigate
       }
     } catch (e) {
-      debugPrint("❌ Auto-Login Error: $e");
+      debugPrint(" Auto-Login Error: $e");
       // Error checking token, stay on splash screen
     }
   }
