@@ -17,16 +17,16 @@ class AiAssistant extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.w),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 150.h),
+            const Spacer(),
             Center(
               child: Image(
                 image: AssetImage(ImagePath.aiassistant),
-                height: 220.h,
-                width: 170.w,
-                fit: BoxFit.cover,
+                height: 220.r,
+                width: 220.r,
+                fit: BoxFit.contain,
               ),
             ),
             SizedBox(height: 20.h),
@@ -45,6 +45,7 @@ class AiAssistant extends StatelessWidget {
                 ).createShader(bounds),
                 child: Text(
                   "Create Your Custom AI Assistant",
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontWeight: FontWeight.w600,
                     fontSize: 20.sp,
@@ -53,29 +54,20 @@ class AiAssistant extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 5.h),
+            SizedBox(height: 8.h),
             Center(
               child: Text(
-                "Personalize your experience choose how your AI ",
+                "Personalize your experience, choose how your AI guide speaks, sounds, and helps you explore.",
+                textAlign: TextAlign.center,
                 style: GoogleFonts.inter(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xff878787),
+                  height: 1.6,
                 ),
               ),
             ),
-            SizedBox(height: 6.h),
-            Center(
-              child: Text(
-                "guide speaks, sounds, and helps you explore. ",
-                style: GoogleFonts.inter(
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w400,
-                  color: const Color(0xff878787),
-                ),
-              ),
-            ),
-            SizedBox(height: 50.h),
+            const Spacer(),
             InkWell(
               onTap: () {
                 Get.put(AiAssistantController()); // Register the controller here
@@ -110,6 +102,7 @@ class AiAssistant extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 30.h,)
           ],
         ),
       ),
