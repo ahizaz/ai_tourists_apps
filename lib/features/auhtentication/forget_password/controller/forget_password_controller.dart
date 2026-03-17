@@ -14,33 +14,33 @@ class ForgetPasswordController extends GetxController {
   void onInit() {
     super.onInit();
 
-    debugPrint("✅ ForgetPasswordController Init");
+    debugPrint("ForgetPasswordController Init");
 
     forgetpassword.addListener(() {
       final text = forgetpassword.text.trim();
       isEmailValid.value = text.isNotEmpty;
-      debugPrint("✏️ Input Changed: $text");
+      debugPrint(" Input Changed: $text");
     });
   }
 
   void onNextPressed() async {
     final input = forgetpassword.text.trim();
 
-    debugPrint("➡️ Next Button Pressed");
-    debugPrint("📩 User Input: $input");
+    debugPrint("Next Button Pressed");
+    debugPrint(" User Input: $input");
 
     if (input.isEmpty) {
       EasyLoading.showError('Input is empty');
-      debugPrint("❌ Input Empty");
+      debugPrint(" Input Empty");
       return;
     }
 
     EasyLoading.show(status: 'Sending OTP...');
-    debugPrint("⏳ EasyLoading Showed");
+    debugPrint(" EasyLoading Showed");
 
     try {
-      debugPrint("🌐 API URL: ${Url.forgetpassword}");
-      debugPrint("📤 Request Body: { email: $input }");
+      debugPrint(" API URL: ${Url.forgetpassword}");
+      debugPrint(" Request Body: { email: $input }");
 
       final response = await http.post(
         Uri.parse(Url.forgetpassword),
@@ -52,8 +52,8 @@ class ForgetPasswordController extends GetxController {
         }),
       );
 
-      debugPrint("✅ Status Code: ${response.statusCode}");
-      debugPrint("📥 Response Body: ${response.body}");
+      debugPrint(" Status Code: ${response.statusCode}");
+      debugPrint(" Response Body: ${response.body}");
 
       final data = jsonDecode(response.body);
 
@@ -63,26 +63,26 @@ class ForgetPasswordController extends GetxController {
 
         final userEmail = input;
         forgetpassword.clear();
-        debugPrint("🧹 TextField Cleared");
+        debugPrint(" TextField Cleared");
 
         Get.to(() => ForgetVerification(email: userEmail));
-        debugPrint("➡️ Navigated to ForgetVerification with email: $userEmail");
+        debugPrint(" Navigated to ForgetVerification with email: $userEmail");
       } else {
         EasyLoading.dismiss();
         EasyLoading.showError(data['message'] ?? 'Request Failed');
-        debugPrint("❌ API Failed");
+        debugPrint(" API Failed");
       }
     } catch (e) {
       EasyLoading.dismiss();
       EasyLoading.showError('Server Error');
-      debugPrint("🔥 Exception Error: $e");
+      debugPrint(" Exception Error: $e");
     }
   }
 
   @override
   void onClose() {
     forgetpassword.dispose();
-    debugPrint("🛑 ForgetPasswordController Disposed");
+    debugPrint(" ForgetPasswordController Disposed");
     super.onClose();
   }
 }

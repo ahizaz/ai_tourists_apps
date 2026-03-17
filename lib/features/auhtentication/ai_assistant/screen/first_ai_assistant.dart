@@ -95,6 +95,7 @@ class FirstAiAssistant extends StatelessWidget {
                   ),
                 ),
               ),
+              
             ],
           ),
         ),
