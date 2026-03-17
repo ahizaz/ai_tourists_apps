@@ -11,7 +11,6 @@ import 'package:flutter/material.dart';
 class PlayQuizeService {
   static const String _endpoint = Url.playQuize;
 
- 
   static Future<List<Map<String, dynamic>>> fetchLocationQuiz({
     required double latitude,
     required double longitude,
@@ -27,8 +26,11 @@ class PlayQuizeService {
           final p = placemarks.first;
           final parts = <String>[];
           if ((p.locality ?? '').isNotEmpty) parts.add(p.locality!);
-          if ((p.subAdministrativeArea ?? '').isNotEmpty) parts.add(p.subAdministrativeArea!);
-          if ((p.administrativeArea ?? '').isNotEmpty && !parts.contains(p.administrativeArea)) parts.add(p.administrativeArea!);
+          if ((p.subAdministrativeArea ?? '').isNotEmpty)
+            parts.add(p.subAdministrativeArea!);
+          if ((p.administrativeArea ?? '').isNotEmpty &&
+              !parts.contains(p.administrativeArea))
+            parts.add(p.administrativeArea!);
           if (parts.isNotEmpty) {
             resolvedPlace = parts.join(', ');
           } else if ((p.name ?? '').isNotEmpty) {
@@ -40,7 +42,9 @@ class PlayQuizeService {
       }
 
       final token = Get.find<StorageService>().getAccessToken();
-      debugPrint('Calling PlayQuiz API for place: $resolvedPlace, count: $count');
+      debugPrint(
+        'Calling PlayQuiz API for place: $resolvedPlace, count: $count',
+      );
 
       final uri = Uri.parse(_endpoint);
       final response = await http.post(
@@ -48,11 +52,13 @@ class PlayQuizeService {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+          if (token != null && token.isNotEmpty)
+            'Authorization': 'Bearer $token',
         },
         body: json.encode({
           'resolved_place': resolvedPlace,
           'count': count,
+          'topics': ['food'],
         }),
       );
 
@@ -63,17 +69,26 @@ class PlayQuizeService {
         final Map<String, dynamic> body = json.decode(response.body);
         final List<dynamic> quizData = body['quiz'] ?? [];
 
-        final List<Map<String, dynamic>> parsed = quizData.map<Map<String, dynamic>>((q) {
-          final List<dynamic> opts = q['options'] ?? [];
-          final int correctIndex = (q['correct_index'] is int) ? q['correct_index'] as int : int.tryParse(q['correct_index']?.toString() ?? '') ?? 0;
-          final correctAnswer = (opts.isNotEmpty && correctIndex >= 0 && correctIndex < opts.length) ? opts[correctIndex] : (opts.isNotEmpty ? opts.first : '');
+        final List<Map<String, dynamic>> parsed = quizData
+            .map<Map<String, dynamic>>((q) {
+              final List<dynamic> opts = q['options'] ?? [];
+              final int correctIndex = (q['correct_index'] is int)
+                  ? q['correct_index'] as int
+                  : int.tryParse(q['correct_index']?.toString() ?? '') ?? 0;
+              final correctAnswer =
+                  (opts.isNotEmpty &&
+                      correctIndex >= 0 &&
+                      correctIndex < opts.length)
+                  ? opts[correctIndex]
+                  : (opts.isNotEmpty ? opts.first : '');
 
-          return {
-            'question': q['question']?.toString() ?? '',
-            'options': opts.map((o) => o.toString()).toList(),
-            'correctAnswer': correctAnswer.toString(),
-          };
-        }).toList();
+              return {
+                'question': q['question']?.toString() ?? '',
+                'options': opts.map((o) => o.toString()).toList(),
+                'correctAnswer': correctAnswer.toString(),
+              };
+            })
+            .toList();
 
         return parsed;
       } else {
