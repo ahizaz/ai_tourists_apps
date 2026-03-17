@@ -25,19 +25,19 @@ class AiAssistantController extends GetxController {
 
   void selectVoiceType(String? t) {
     voiceType.value = t;
-    debugPrint("🔵 Voice Type Selected: $t");
+    debugPrint(" Voice Type Selected: $t");
   }
 
   Future<void> createProfile() async {
-    debugPrint("🚀 Create Profile Started");
-    debugPrint("📤 Gender: ${gender.value}");
-    debugPrint("📤 Voice: ${voice.value}");
-    debugPrint("📤 Voice Type: ${voiceType.value}");
+    debugPrint(" Create Profile Started");
+    debugPrint(" Gender: ${gender.value}");
+    debugPrint(" Voice: ${voice.value}");
+    debugPrint(" Voice Type: ${voiceType.value}");
 
     if (gender.value == null ||
         voice.value == null ||
         voiceType.value == null) {
-      debugPrint("❌ Missing fields");
+      debugPrint(" Missing fields");
       EasyLoading.showError("Please complete all selections");
       return;
     }
@@ -52,7 +52,7 @@ class AiAssistantController extends GetxController {
 
     final accessToken = Get.find<StorageService>().getAccessToken();
     if (accessToken == null) {
-      debugPrint("❌ No access token found");
+      debugPrint(" No access token found");
       EasyLoading.showError("Authentication required");
       return;
     }
@@ -76,7 +76,7 @@ class AiAssistantController extends GetxController {
       EasyLoading.dismiss();
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint("🎉 Profile Created Successfully");
+        debugPrint("Profile Created Successfully");
 
         // Remove temporary token after successful profile creation
         // Try to extract and save user identifier from response (if present)
@@ -88,7 +88,7 @@ class AiAssistantController extends GetxController {
               final userId = d['user_identifier'].toString();
               if (userId.isNotEmpty) {
                 Get.find<StorageService>().saveUserIdentifier(userId);
-                debugPrint('✅ Saved user_identifier from profile creation: $userId');
+                debugPrint(' Saved user_identifier from profile creation: $userId');
               }
             }
           }
@@ -110,8 +110,8 @@ class AiAssistantController extends GetxController {
         EasyLoading.showError(data["message"] ?? "Failed to create profile");
       }
     } catch (e, s) {
-      debugPrint("🔥 ERROR: $e");
-      debugPrint("📛 STACK TRACE: $s");
+      debugPrint(" ERROR: $e");
+      debugPrint(" STACK TRACE: $s");
       EasyLoading.showError("Something went wrong");
     }
   }
@@ -120,6 +120,6 @@ class AiAssistantController extends GetxController {
     gender.value = null;
     voice.value = null;
     voiceType.value = null;
-    debugPrint("🔄 All values reset");
+    debugPrint("All values reset");
   }
 }

@@ -104,7 +104,7 @@ class LastAiAssistant extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 50.h),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
