@@ -13,7 +13,7 @@ class QuizeOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ProfileController());
-    
+
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
@@ -29,24 +29,26 @@ class QuizeOptions extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-             Text(
+            Text(
               'Select Question Quantity',
-          style: GoogleFonts.inter( 
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w400,
-            color: Color(0xff252525)
-          ),
+              style: GoogleFonts.inter(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w400,
+                color: Color(0xff252525),
+              ),
             ),
             const SizedBox(height: 16),
-            Obx(() => Row(
-              children: [
-                _buildQuantityOption(controller, '10 Q&A', 10),
-                const SizedBox(width: 16),
-                _buildQuantityOption(controller, '20 Q&A', 20),
-                const SizedBox(width: 16),
-                _buildQuantityOption(controller, '30 Q&A', 30),
-              ],
-            )),
+            Obx(
+              () => Row(
+                children: [
+                  _buildQuantityOption(controller, '10 Q&A', 10),
+                  const SizedBox(width: 16),
+                  _buildQuantityOption(controller, '20 Q&A', 20),
+                  const SizedBox(width: 16),
+                  _buildQuantityOption(controller, '30 Q&A', 30),
+                ],
+              ),
+            ),
             const SizedBox(height: 32),
             const Text(
               'Select Q&A Subject',
@@ -58,93 +60,119 @@ class QuizeOptions extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: Obx(() => ListView(
-                children: [
-                  _buildSubjectOption(
-                    controller,
-                    'History',
-                    'Test your knowledge of ancient events, empires, and heritage',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSubjectOption(
-                    controller,
-                    'Culture',
-                    'Discover local customs, art, and stories from around the world.',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSubjectOption(
-                    controller,
-                    'Food',
-                    'Guess famous dishes, flavors, and culinary traditions',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildSubjectOption(
-                    controller,
-                    'Landmarks',
-                    'Challenge yourself to identify iconic places and monuments',
-                  ),
-                ],
-              )),
+              child: Obx(
+                () => ListView(
+                  children: [
+                    _buildSubjectOption(
+                      controller,
+                      'History',
+                      'Test your knowledge of ancient events, empires, and heritage',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSubjectOption(
+                      controller,
+                      'Culture',
+                      'Discover local customs, art, and stories from around the world.',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSubjectOption(
+                      controller,
+                      'Food',
+                      'Guess famous dishes, flavors, and culinary traditions',
+                    ),
+                    // const SizedBox(height: 12),
+                    // _buildSubjectOption(
+                    //   controller,
+                    //   'Landmarks',
+                    //   'Challenge yourself to identify iconic places and monuments',
+                    // ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 16),
-            Obx(() => SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: controller.canStartQuiz
-                    ? () async {
-                        final selectedCount = controller.selectedQuantity.value ?? 10;
-                        final lat = controller.cameraPosition.value.target.latitude;
-                        final lng = controller.cameraPosition.value.target.longitude;
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: controller.canStartQuiz
+                      ? () async {
+                          final selectedCount =
+                              controller.selectedQuantity.value ?? 10;
+                          final lat =
+                              controller.cameraPosition.value.target.latitude;
+                          final lng =
+                              controller.cameraPosition.value.target.longitude;
 
-                        debugPrint('Requesting quiz for ($lat, $lng) count: $selectedCount');
+                          debugPrint(
+                            'Requesting quiz for ($lat, $lng) count: $selectedCount',
+                          );
 
-                        final quizData = await PlayQuizeService.fetchLocationQuiz(
-                          latitude: lat,
-                          longitude: lng,
-                          count: selectedCount,
-                        );
+                          final selectedSubjectValue =
+                              controller.selectedSubject.value;
+                          final topics = selectedSubjectValue != null
+                              ? [selectedSubjectValue.trim().toLowerCase()]
+                              : ['food'];
 
-                        if (quizData.isNotEmpty) {
-                          final quizController = Get.put(InteractiveQuizController());
-                          quizController.questions = quizData;
-                          Get.to(() => const InteractiveQuizScreen());
-                        } else {
-                          Get.snackbar('Quiz', 'Failed to load quiz. Please try again.');
+                          final quizData =
+                              await PlayQuizeService.fetchLocationQuiz(
+                                latitude: lat,
+                                longitude: lng,
+                                count: selectedCount,
+                                topics: topics,
+                              );
+
+                          if (quizData.isNotEmpty) {
+                            final quizController = Get.put(
+                              InteractiveQuizController(),
+                            );
+                            quizController.questions = quizData;
+                            Get.to(() => const InteractiveQuizScreen());
+                          } else {
+                            Get.snackbar(
+                              'Quiz',
+                              'Failed to load quiz. Please try again.',
+                            );
+                          }
                         }
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: controller.canStartQuiz
-                      ? const Color(0xffFF6B35)
-                      : Colors.grey.shade300,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                      : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: controller.canStartQuiz
+                        ? const Color(0xffFF6B35)
+                        : Colors.grey.shade300,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'Start Q&A',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: controller.canStartQuiz
-                        ? Colors.white
-                        : Colors.grey.shade600,
+                  child: Text(
+                    'Start Q&A',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: controller.canStartQuiz
+                          ? Colors.white
+                          : Colors.grey.shade600,
+                    ),
                   ),
                 ),
               ),
-            )),
-            SizedBox(height: 20.h,),
+            ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildQuantityOption(ProfileController controller, String label, int value) {
+  Widget _buildQuantityOption(
+    ProfileController controller,
+    String label,
+    int value,
+  ) {
     final isSelected = controller.selectedQuantity.value == value;
-    
+
     return Expanded(
       child: GestureDetector(
         onTap: () => controller.selectQuantity(value),
@@ -178,21 +206,21 @@ class QuizeOptions extends StatelessWidget {
                 height: 20,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected ? const Color(0xff8BC34A) : Colors.transparent,
+                  color: isSelected
+                      ? const Color(0xff8BC34A)
+                      : Colors.transparent,
                   border: Border.all(
-                    color: isSelected ? const Color(0xff8BC34A) : Colors.grey.shade400,
+                    color: isSelected
+                        ? const Color(0xff8BC34A)
+                        : Colors.grey.shade400,
                     width: 2,
                   ),
                 ),
                 child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        size: 14,
-                        color: Colors.white,
-                      )
+                    ? const Icon(Icons.check, size: 14, color: Colors.white)
                     : null,
               ),
-              SizedBox(height: 20.h,),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
@@ -200,13 +228,14 @@ class QuizeOptions extends StatelessWidget {
     );
   }
 
-
-
-
-///
-  Widget _buildSubjectOption(ProfileController controller, String title, String description) {
+  ///
+  Widget _buildSubjectOption(
+    ProfileController controller,
+    String title,
+    String description,
+  ) {
     final isSelected = controller.selectedSubject.value == title;
-    
+
     return GestureDetector(
       onTap: () => controller.selectSubject(title),
       child: Container(
@@ -251,18 +280,18 @@ class QuizeOptions extends StatelessWidget {
               height: 24,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected ? const Color(0xff8BC34A) : Colors.transparent,
+                color: isSelected
+                    ? const Color(0xff8BC34A)
+                    : Colors.transparent,
                 border: Border.all(
-                  color: isSelected ? const Color(0xff8BC34A) : Colors.grey.shade400,
+                  color: isSelected
+                      ? const Color(0xff8BC34A)
+                      : Colors.grey.shade400,
                   width: 2,
                 ),
               ),
               child: isSelected
-                  ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors.white,
-                    )
+                  ? const Icon(Icons.check, size: 16, color: Colors.white)
                   : null,
             ),
           ],

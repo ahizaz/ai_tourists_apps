@@ -15,6 +15,7 @@ class PlayQuizeService {
     required double latitude,
     required double longitude,
     required int count,
+    List<String>? topics,
   }) async {
     EasyLoading.show(status: 'Preparing quiz...');
     try {
@@ -58,7 +59,7 @@ class PlayQuizeService {
         body: json.encode({
           'resolved_place': resolvedPlace,
           'count': count,
-          'topics': ['food'],
+          'topics': topics ?? ['food'],
         }),
       );
 
