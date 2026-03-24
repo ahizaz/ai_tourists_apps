@@ -44,7 +44,7 @@ class ProfileFirstAiAssistant extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      'AI Preferences gander',
+                      'AI Preferences gender',
                       style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B)),
                     ),
                   ),
@@ -52,7 +52,7 @@ class ProfileFirstAiAssistant extends StatelessWidget {
               ),
               Align(alignment: Alignment.centerRight, child: Text('1/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('AI Gander', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(alignment: Alignment.centerLeft, child: Text('AI Gender', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
