@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/interactive_quiz_controller.dart';
 import '../widgets/answer_feedback_overlay.dart';
+import 'package:ai_powered_tourists_app/utils/share_helper.dart';
 
 class InteractiveQuizScreen extends StatelessWidget {
   const InteractiveQuizScreen({super.key});
@@ -424,6 +425,37 @@ class InteractiveQuizScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 40.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56.h,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await ShareHelper.shareQuizResult(
+                        quizTitle: 'Interactive Quiz',
+                        score: score,
+                        total: total,
+                        appLink: null,
+                      );
+                    },
+                    icon: const Icon(Icons.share, color: Color(0xffFF6B35)),
+                    label: Text(
+                      'SHARE RESULT',
+                      style: GoogleFonts.inter(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xffFF6B35),
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xffFF6B35), width: 2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.r),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 16.h),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
