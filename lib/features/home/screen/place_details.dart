@@ -192,7 +192,7 @@ Flexible(
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Text(
-                  'Start de Visit',
+                  'Start the Visit',
                   style: GoogleFonts.dmSans(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
