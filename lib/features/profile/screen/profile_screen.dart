@@ -136,7 +136,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.saveplace,
-                title: "save_place".tr,
+                title: "Saved Place".tr,
                 onTap: () {
                   Get.to(() => SavePlace());
                 },
