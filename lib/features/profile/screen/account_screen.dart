@@ -47,12 +47,8 @@ class AccountScreen extends StatelessWidget {
             Obx(() => _buildInfoRow(
               label: 'email_label'.tr,
               value: controller.userEmail.value,
-              onTap: () => _showEditDialog(
-                context,
-                'email_label'.tr,
-                controller.userEmail.value,
-                (value) => controller.setUserEmail(value),
-              ),
+              // Email edit is disabled as per product requirement.
+              onTap: null,
             )),
           ],
         ),
@@ -63,7 +59,7 @@ class AccountScreen extends StatelessWidget {
   Widget _buildInfoRow({
     required String label,
     required String value,
-    required VoidCallback onTap,
+    VoidCallback? onTap,
   }) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12),
@@ -96,10 +92,13 @@ class AccountScreen extends StatelessWidget {
               ),
             ],
           ),
-          IconButton(
-            icon: Icon(Icons.edit_outlined, size: 20, color: Colors.grey),
-            onPressed: onTap,
-          ),
+          if (onTap != null)
+            IconButton(
+              icon: Icon(Icons.edit_outlined, size: 20, color: Colors.grey),
+              onPressed: onTap,
+            )
+          else
+            const SizedBox(width: 20, height: 20),
         ],
       ),
     );

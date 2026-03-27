@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:ai_powered_tourists_app/core/urls/urls.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/splash_screen/screen/splash_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -14,6 +16,8 @@ import 'package:image_picker/image_picker.dart';
 
 class ProfileController extends GetxController {
   var profileImage = Rx<File?>(null);
+  var profileImageBytes = Rx<Uint8List?>(null);
+  final RxnString profileImageFileName = RxnString();
   var userName = "".obs;
   var userEmail = "".obs;
   var phoneNumber = "+880 10-46-828200".obs;
@@ -38,14 +42,29 @@ class ProfileController extends GetxController {
       source: ImageSource.gallery,
     );
     if (pickedFile != null) {
-      profileImage.value = File(pickedFile.path);
+      // Persist bytes so it survives leaving/re-opening the app (web uses localStorage).
+      final bytes = await pickedFile.readAsBytes();
+      profileImageBytes.value = bytes;
+      profileImageFileName.value = pickedFile.name;
+
+      // Keep File for platforms where it is supported (upload uses it).
+      if (!kIsWeb) {
+        profileImage.value = File(pickedFile.path);
+      }
+
+      try {
+        final base64Image = base64Encode(bytes);
+        Get.find<StorageService>().saveProfileImageBase64(base64Image);
+      } catch (e) {
+        debugPrint('Error saving profile image: $e');
+      }
     }
   }
 
   // Upload profile image to backend
   Future<void>uploadProfileImage()async{
     try{
-      if(profileImage.value==null){
+      if(profileImage.value==null && profileImageBytes.value==null){
         EasyLoading.showError('Please select an image first');
        debugPrint('❌ No image selected');
         return;
@@ -63,17 +82,30 @@ class ProfileController extends GetxController {
       }
         debugPrint('Token: Bearer $token');
       debugPrint('API URL: ${Url.profileImage}');
-      debugPrint('Image Path: ${profileImage.value!.path}');
+      debugPrint('Image Path/Bytes: ${profileImage.value?.path ?? 'bytes'}');
          
       var request = http.MultipartRequest('POST', Uri.parse(Url.profileImage));
 
       request.headers.addAll({
       'Authorization':'Bearer $token',
       });  
-      request.files.add( 
-     await http.MultipartFile.fromPath('image', profileImage.value!.path,
-     ),
-      ) ;
+      if (profileImage.value != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'image',
+            profileImage.value!.path,
+            filename: profileImageFileName.value,
+          ),
+        );
+      } else {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'image',
+            profileImageBytes.value!,
+            filename: profileImageFileName.value ?? 'profile_image.png',
+          ),
+        );
+      }
       debugPrint('Sending request....');
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
@@ -539,6 +571,12 @@ class ProfileController extends GetxController {
       if (storedEmail != null && storedEmail.isNotEmpty) {
         userEmail.value = storedEmail;
       }
+
+      // Restore persisted profile image bytes from local storage.
+      final savedBase64 = storage.getProfileImageBase64();
+      if (savedBase64 != null && savedBase64.isNotEmpty) {
+        profileImageBytes.value = base64Decode(savedBase64);
+      }
     } catch (e) {
       debugPrint('Error loading profile info from storage: $e');
     }
@@ -611,6 +649,8 @@ class ProfileController extends GetxController {
   @override
   void onClose(){
    profileImage.value=null;
+   profileImageBytes.value=null;
+   profileImageFileName.value=null;
    savedPlaces.clear();
    qaAnswers.clear();
    markers.clear();
