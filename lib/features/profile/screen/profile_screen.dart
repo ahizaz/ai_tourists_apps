@@ -34,6 +34,18 @@ class ProfileScreen extends StatelessWidget {
                   children: [
                     Obx(() {
                       final imageFile = controller.profileImage.value;
+                      final imageBytes = controller.profileImageBytes.value;
+                      final decorationImage = imageBytes != null
+                          ? DecorationImage(
+                              fit: BoxFit.cover,
+                              image: MemoryImage(imageBytes),
+                            )
+                          : (imageFile != null
+                              ? DecorationImage(
+                                  fit: BoxFit.cover,
+                                  image: FileImage(imageFile),
+                                )
+                              : null);
                       return Container(
                         width: 120.w,
                         height: 120.w,
@@ -43,19 +55,15 @@ class ProfileScreen extends StatelessWidget {
                             color: const Color(0xffFDDAD1),
                             width: 8.w,
                           ),
-                          image: imageFile != null
-                              ? DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: FileImage(imageFile),
-                                )
-                              : null,
+                          image: decorationImage,
                         ),
                       );
                     }),
                     GestureDetector(
                       onTap: ()async{
                         await controller.pickImage();
-                        if(controller.profileImage.value!=null){
+                        if (controller.profileImage.value != null ||
+                            controller.profileImageBytes.value != null) {
                           await controller.uploadProfileImage();
                         }
                       },

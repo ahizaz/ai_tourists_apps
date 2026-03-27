@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 
 class StorageService extends GetxService {
   late GetStorage _box;
+  static const String _profileImageBase64Key = 'profile_image_base64';
 
   Future<StorageService> init() async {
     await GetStorage.init();
@@ -117,5 +118,19 @@ class StorageService extends GetxService {
 
   void clearAll() {
     _box.erase();
+  }
+
+  // Profile image persistence (web: localStorage via get_storage)
+  void saveProfileImageBase64(String base64) {
+    _box.write(_profileImageBase64Key, base64);
+    debugPrint("💾 Profile image saved to SharedPreferences");
+  }
+
+  String? getProfileImageBase64() {
+    return _box.read(_profileImageBase64Key);
+  }
+
+  void removeProfileImageBase64() {
+    _box.remove(_profileImageBase64Key);
   }
 }
