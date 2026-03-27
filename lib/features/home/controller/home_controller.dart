@@ -706,7 +706,9 @@ class HomeController extends GetxController {
 
   // Get weather for location using wttr.in API (free, no API key needed)
   Future<void> getWeatherForLocation(double lat, double lng) async {
-    const timeout = Duration(milliseconds: 4);
+    // Very small timeout caused weather requests to fail immediately.
+    // Use a realistic timeout so we actually get temperature data.
+    const timeout = Duration(seconds: 8);
     try {
       // Use wttr.in API with coordinates to get real weather data
       // Format: https://wttr.in/{lat},{lng}?format=j1
@@ -722,8 +724,9 @@ class HomeController extends GetxController {
             final data = json.decode(response.body);
             // wttr.in returns temperature in current_condition array
             final temp = data['current_condition']?[0]?['temp_C'];
-            if (temp != null && temp.toString().isNotEmpty) {
-              currentWeather.value = "$temp°C";
+            final tempStr = temp?.toString();
+            if (tempStr != null && tempStr.isNotEmpty && tempStr != 'null') {
+              currentWeather.value = "${tempStr}°C";
               return;
             }
           } catch (e) {
@@ -745,29 +748,20 @@ class HomeController extends GetxController {
           final data = json.decode(response.body);
           final temp = data['current']?['temperature_2m'];
           if (temp != null) {
-            currentWeather.value = "${temp.toStringAsFixed(0)}°C";
-            return;
+            // `temperature_2m` is usually numeric.
+            final tempNum = temp is num ? temp.toDouble() : double.tryParse(temp.toString());
+            if (tempNum != null) {
+              currentWeather.value = "${tempNum.toStringAsFixed(0)}°C";
+              return;
+            }
           }
         }
       } catch (e) {
         debugPrint('Open-Meteo API timeout/error: $e');
       }
 
-      // Final fallback: Use location-based estimation
-      double estimatedTemp = 25.0; // Default
-      if (lat > 60) {
-        estimatedTemp = 5.0; // Cold regions
-      } else if (lat > 40) {
-        estimatedTemp = 15.0; // Temperate
-      } else if (lat > 20) {
-        estimatedTemp = 25.0; // Warm
-      } else if (lat > -20) {
-        estimatedTemp = 28.0; // Tropical
-      } else {
-        estimatedTemp = 10.0; // Southern regions
-      }
-
-      currentWeather.value = "${estimatedTemp.toStringAsFixed(0)}°C";
+      // If both APIs fail, don't show a misleading hardcoded temperature.
+      currentWeather.value = "N/A";
     } catch (e) {
       debugPrint('Error getting weather: $e');
       currentWeather.value = "N/A";
