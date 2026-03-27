@@ -1,7 +1,9 @@
 import 'package:ai_powered_tourists_app/features/profile/screen/interactive_quiz_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controller/profile_controller.dart';
 import '../controller/interactive_quiz_controller.dart';
@@ -100,10 +102,33 @@ class QuizeOptions extends StatelessWidget {
                       ? () async {
                           final selectedCount =
                               controller.selectedQuantity.value ?? 10;
-                          final lat =
-                              controller.cameraPosition.value.target.latitude;
-                          final lng =
-                              controller.cameraPosition.value.target.longitude;
+                          final serviceEnabled =
+                              await Geolocator.isLocationServiceEnabled();
+                          if (!serviceEnabled) {
+                            EasyLoading.showError(
+                              'Please enable location services and try again.',
+                            );
+                            return;
+                          }
+
+                          var permission = await Geolocator.checkPermission();
+                          if (permission == LocationPermission.denied) {
+                            permission =
+                                await Geolocator.requestPermission();
+                          }
+                          if (permission == LocationPermission.denied ||
+                              permission == LocationPermission.deniedForever) {
+                            EasyLoading.showError(
+                              'Location permission is required to start quiz.',
+                            );
+                            return;
+                          }
+
+                          final position = await Geolocator.getCurrentPosition(
+                            desiredAccuracy: LocationAccuracy.high,
+                          );
+                          final lat = position.latitude;
+                          final lng = position.longitude;
 
                           debugPrint(
                             'Requesting quiz for ($lat, $lng) count: $selectedCount',
