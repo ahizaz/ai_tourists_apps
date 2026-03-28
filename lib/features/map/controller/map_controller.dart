@@ -347,14 +347,21 @@ class MapController extends GetxController {
             ));
           }
           
-          // Show snackbar with results count
-          if (data['results'].length > 0) {
+          // Show snackbar with results count. Google Places NearbySearch
+          // returns up to 20 results per page. If a next_page_token
+          // is present it means there are more results available — show
+          // a '+' to indicate there are additional pages.
+          if (data['results'] != null && data['results'].length > 0) {
+            final resultsCount = data['results'].length as int;
+            final hasMore = data['next_page_token'] != null && data['next_page_token'].toString().isNotEmpty;
+            final displayCount = hasMore ? '${resultsCount}+' : '$resultsCount';
             final countLabel = category == 'Attractions'
                 ? 'attractions'
                 : '${category.toLowerCase()}s';
+
             Get.snackbar(
               'Results',
-              'Found ${data['results'].length} $countLabel nearby',
+              'Found $displayCount $countLabel nearby',
               snackPosition: SnackPosition.BOTTOM,
               duration: Duration(seconds: 2),
             );
