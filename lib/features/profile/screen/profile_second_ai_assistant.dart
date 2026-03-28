@@ -52,7 +52,7 @@ class ProfileSecondAiAssistant extends StatelessWidget {
               ),
               Align(alignment: Alignment.centerRight, child: Text('2/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('AI Voice', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(alignment: Alignment.centerLeft, child: Text('Ai Speech Type', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
