@@ -75,6 +75,7 @@ final MapController controller = Get.find<MapController>();
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [ 
+                        _buildChip('Attractions', controller),
                         _buildChip('Hotel', controller),
                         _buildChip('Restaurant', controller),
                         _buildChip('ATMs', controller),
