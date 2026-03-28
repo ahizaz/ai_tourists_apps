@@ -295,15 +295,25 @@ class MapController extends GetxController {
     }
   }
 
+  String _placeTypeForCategoryChip(String category) {
+    switch (category) {
+      case 'Attractions':
+        return 'tourist_attraction';
+      default:
+        return category.toLowerCase();
+    }
+  }
+
   // Search by category
   Future<void> searchByCategory(String category) async {
     try {
       isSearching.value = true;
-      
+
+      final placeType = _placeTypeForCategoryChip(category);
       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
           '?location=${cameraPosition.value.target.latitude},${cameraPosition.value.target.longitude}'
           '&radius=5000'
-          '&type=${category.toLowerCase()}'
+          '&type=$placeType'
           '&key=$apiKey';
 
       final response = await http.get(Uri.parse(url));
@@ -339,9 +349,12 @@ class MapController extends GetxController {
           
           // Show snackbar with results count
           if (data['results'].length > 0) {
+            final countLabel = category == 'Attractions'
+                ? 'attractions'
+                : '${category.toLowerCase()}s';
             Get.snackbar(
               'Results',
-              'Found ${data['results'].length} ${category.toLowerCase()}s nearby',
+              'Found ${data['results'].length} $countLabel nearby',
               snackPosition: SnackPosition.BOTTOM,
               duration: Duration(seconds: 2),
             );
