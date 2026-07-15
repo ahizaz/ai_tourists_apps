@@ -10,13 +10,13 @@ class QuizShareButton extends StatelessWidget {
   final double? size;
 
   const QuizShareButton({
-    Key? key,
+    super.key,
     required this.quizTitle,
     required this.score,
     required this.total,
     this.appLink,
     this.size,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
