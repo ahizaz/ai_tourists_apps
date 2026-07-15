@@ -141,21 +141,20 @@ class HomeSelectPlaceMap extends StatelessWidget {
             ),
 
             // Center marker indicator (red dot)
-            // Align(
-            //   alignment: Alignment.center,
-            //   child: IgnorePointer(
-            //     ignoring: true,
-            //     child: Container(
-            //       width: 28.w,
-            //       height: 28.w,
-            //       decoration: BoxDecoration(
-            //         color: Colors.red.withValues(alpha: .9),
-            //         shape: BoxShape.circle,
-            //         border: Border.all(color: Colors.white, width: 3),
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Align(
+              alignment: Alignment.center,
+              child: IgnorePointer(
+                ignoring: true,
+                child: Container(
+                  width: 28.w,
+                  height: 28.w,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
 
             // Bottom floating action button - My Location
             Positioned(
