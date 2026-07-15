@@ -4,15 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-final MapController controller = Get.find<MapController>();
+    final MapController controller = Get.find<MapController>();
     final TextEditingController searchController = TextEditingController();
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -63,7 +62,9 @@ final MapController controller = Get.find<MapController>();
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
                         hintText: 'search_location'.tr,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -74,7 +75,7 @@ final MapController controller = Get.find<MapController>();
                     height: 40,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
-                      children: [ 
+                      children: [
                         _buildChip('Attractions', controller),
                         _buildChip('Hotel', controller),
                         _buildChip('Restaurant', controller),
@@ -84,10 +85,11 @@ final MapController controller = Get.find<MapController>();
                       ],
                     ),
                   ),
-                  
+
                   // Search results dropdown
                   Obx(() {
-                    if (controller.searchResults.isEmpty) return SizedBox.shrink();
+                    if (controller.searchResults.isEmpty)
+                      return SizedBox.shrink();
                     return Container(
                       margin: EdgeInsets.only(top: 8),
                       decoration: BoxDecoration(
@@ -129,6 +131,7 @@ final MapController controller = Get.find<MapController>();
             ),
 
             // Center indicator (red dot) to mimic the screenshot center marker
+            // Center indicator
             Align(
               alignment: Alignment.center,
               child: IgnorePointer(
@@ -137,15 +140,14 @@ final MapController controller = Get.find<MapController>();
                   width: 28,
                   height: 28,
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: .9),
+                    color: Colors.transparent,
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 3),
+                    border: Border.all(color: Colors.transparent, width: 0),
                   ),
                 ),
               ),
             ),
 
-          
             Positioned(
               right: 16,
               bottom: 24,
@@ -156,11 +158,11 @@ final MapController controller = Get.find<MapController>();
                 child: const Icon(Icons.my_location),
               ),
             ),
-            
+
             // Place details bottom sheet
             Obx(() {
               if (!controller.showPlaceDetails.value) return SizedBox.shrink();
-              
+
               return Positioned(
                 left: 0,
                 right: 0,
@@ -168,7 +170,9 @@ final MapController controller = Get.find<MapController>();
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black26,
@@ -187,11 +191,13 @@ final MapController controller = Get.find<MapController>();
                         children: [
                           Expanded(
                             child: Text(
-                              controller.selectedPlaceDetails['name'] ?? 'Unknown',
+                              controller.selectedPlaceDetails['name'] ??
+                                  'Unknown',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                fontFamily: null, // Use default font, not monospace
+                                fontFamily:
+                                    null, // Use default font, not monospace
                               ),
                             ),
                           ),
@@ -210,7 +216,8 @@ final MapController controller = Get.find<MapController>();
                             Icon(Icons.star, color: Colors.amber, size: 20),
                             SizedBox(width: 4),
                             Text(
-                              controller.selectedPlaceDetails['rating'].toString(),
+                              controller.selectedPlaceDetails['rating']
+                                  .toString(),
                               style: TextStyle(fontSize: 16),
                             ),
                           ],
@@ -222,13 +229,14 @@ final MapController controller = Get.find<MapController>();
                           SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              controller.selectedPlaceDetails['fullAddress'] ?? '',
+                              controller.selectedPlaceDetails['fullAddress'] ??
+                                  '',
                               style: TextStyle(color: Colors.grey[700]),
                             ),
                           ),
                         ],
                       ),
-                      if (controller.selectedPlaceDetails['phone'] != null && 
+                      if (controller.selectedPlaceDetails['phone'] != null &&
                           controller.selectedPlaceDetails['phone'] != 'N/A')
                         Padding(
                           padding: EdgeInsets.only(top: 8),
@@ -250,9 +258,12 @@ final MapController controller = Get.find<MapController>();
                             child: ElevatedButton.icon(
                               onPressed: () {
                                 // Open detailed view
-                                Get.to(() => LocationDetailsScreen(
-                                  locationData: controller.selectedPlaceDetails,
-                                ));
+                                Get.to(
+                                  () => LocationDetailsScreen(
+                                    locationData:
+                                        controller.selectedPlaceDetails,
+                                  ),
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
@@ -271,8 +282,10 @@ final MapController controller = Get.find<MapController>();
                             child: ElevatedButton.icon(
                               onPressed: () {
                                 // Open Google Maps directions
-                                final lat = controller.selectedPlaceDetails['latitude'];
-                                final lng = controller.selectedPlaceDetails['longitude'];
+                                final lat =
+                                    controller.selectedPlaceDetails['latitude'];
+                                final lng = controller
+                                    .selectedPlaceDetails['longitude'];
                                 if (lat != null && lng != null) {
                                   controller.openInGoogleMaps(lat, lng);
                                 }
@@ -297,7 +310,9 @@ final MapController controller = Get.find<MapController>();
                         child: OutlinedButton.icon(
                           onPressed: () {
                             // Save functionality
-                            controller.savePlace(controller.selectedPlaceDetails);
+                            controller.savePlace(
+                              controller.selectedPlaceDetails,
+                            );
                           },
                           style: OutlinedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 12),
@@ -329,7 +344,9 @@ final MapController controller = Get.find<MapController>();
         },
         style: OutlinedButton.styleFrom(
           backgroundColor: Colors.white70,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           side: BorderSide(color: Colors.grey.shade300),
         ),
         child: Text(
