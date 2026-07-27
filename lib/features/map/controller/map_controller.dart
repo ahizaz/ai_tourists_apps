@@ -1,54 +1,75 @@
 // import 'dart:convert';
 // import 'dart:math';
+
 // import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
+// import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
+// import 'package:ai_powered_tourists_app/core/urls/urls.dart';
 // import 'package:ai_powered_tourists_app/features/home/controller/home_controller.dart';
 // import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 // import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:flutter_easyloading/flutter_easyloading.dart';
 // import 'package:geocoding/geocoding.dart';
 // import 'package:geolocator/geolocator.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
 // import 'package:http/http.dart' as http;
-// import 'package:ai_powered_tourists_app/core/urls/urls.dart';
-// import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
-// import 'package:flutter_easyloading/flutter_easyloading.dart';
 // import 'package:url_launcher/url_launcher.dart';
 
 // class MapController extends GetxController {
-//   // API Key - Using centralized configuration
 //   final String apiKey = ApiKeys.googleMapsApiKey;
-  
-//   // Static coordinates (example: Kuala Lumpur, Malaysia)
+
 //   final double initialLat = 3.139003;
 //   final double initialLng = 101.686855;
 
-//   // Observable camera position
+//   // Google Map-এর default POI labels সরিয়ে দেওয়া হচ্ছে।
+//   // কারণ google_maps_flutter থেকে default POI click handle করা যায় না।
+//   // এর পরিবর্তে Places API থেকে clickable marker দেখানো হবে।
+//   static const String _interactivePoiMapStyle = '''
+//   [
+//     {
+//       "featureType": "poi",
+//       "elementType": "labels",
+//       "stylers": [
+//         {
+//           "visibility": "off"
+//         }
+//       ]
+//     }
+//   ]
+//   ''';
+
 //   final Rx<CameraPosition> cameraPosition = CameraPosition(
 //     target: LatLng(3.139003, 101.686855),
 //     zoom: 15,
 //   ).obs;
 
-//   // Observable set of markers
+//   CameraPosition visibleCameraPosition = CameraPosition(
+//     target: LatLng(3.139003, 101.686855),
+//     zoom: 15,
+//   );
+
 //   final RxSet<Marker> markers = <Marker>{}.obs;
 
-//   // GoogleMap Controller
 //   GoogleMapController? gMapController;
 
-//   // Selected place details
-//   final RxMap<String, dynamic> selectedPlaceDetails = <String, dynamic>{}.obs;
+//   final RxMap<String, dynamic> selectedPlaceDetails =
+//       <String, dynamic>{}.obs;
+
 //   final RxBool showPlaceDetails = false.obs;
 //   final RxBool isLoadingPlaceDetails = false.obs;
 
-//   // Search results
-//   final RxList<Map<String, dynamic>> searchResults = <Map<String, dynamic>>[].obs;
+//   final RxList<Map<String, dynamic>> searchResults =
+//       <Map<String, dynamic>>[].obs;
+
 //   final RxBool isSearching = false.obs;
 
-//   // Nearby places
-//   final RxList<Map<String, dynamic>> nearbyPlaces = <Map<String, dynamic>>[].obs;
+//   final RxList<Map<String, dynamic>> nearbyPlaces =
+//       <Map<String, dynamic>>[].obs;
+
 //   final RxBool isLoadingNearbyPlaces = false.obs;
 //   final RxString selectedNearbyCategory = 'lodging'.obs;
+//   final RxString selectedMapCategory = 'Attractions'.obs;
 
-//   // User's current location
 //   final RxDouble userLat = 0.0.obs;
 //   final RxDouble userLng = 0.0.obs;
 //   final RxBool hasUserLocation = false.obs;
@@ -56,70 +77,104 @@
 //   @override
 //   void onInit() {
 //     super.onInit();
-    
-//     // Check if HomeController already has location, use that instead of defaulting to Malaysia
+
 //     try {
 //       final homeController = Get.find<HomeController>();
-//       if (homeController.currentLat.value != 0.0 && homeController.currentLng.value != 0.0) {
-//         // Use location from HomeController
+
+//       if (homeController.currentLat.value != 0.0 &&
+//           homeController.currentLng.value != 0.0) {
 //         userLat.value = homeController.currentLat.value;
 //         userLng.value = homeController.currentLng.value;
 //         hasUserLocation.value = true;
+
 //         cameraPosition.value = CameraPosition(
-//           target: LatLng(userLat.value, userLng.value),
+//           target: LatLng(
+//             userLat.value,
+//             userLng.value,
+//           ),
 //           zoom: 16.0,
 //         );
+
+//         visibleCameraPosition = cameraPosition.value;
 //         return;
 //       }
 //     } catch (e) {
-//       // HomeController not found, continue to get location
 //       debugPrint('HomeController not found, getting location: $e');
 //     }
-    
-//     // Automatically get user's location on init
+
 //     getUserLocation();
 //   }
 
-//   // Called when the GoogleMap is created
-//   void onMapCreated(GoogleMapController controller) {
+//   Future<void> onMapCreated(GoogleMapController controller) async {
 //     gMapController = controller;
+
+//     await controller.setMapStyle(_interactivePoiMapStyle);
+
+//     // Map open হওয়ার সঙ্গে সঙ্গে attraction marker দেখাবে।
+//     if (markers.isEmpty) {
+//       await searchByCategory(
+//         'Attractions',
+//         showResultMessage: false,
+//       );
+//     }
 //   }
 
-//   // Handle map tap - get place details
+//   // User map drag করলে visible location update হবে।
+//   void onCameraMove(CameraPosition position) {
+//     visibleCameraPosition = position;
+//   }
+
+//   // Map-এর সাধারণ কোনো location-এ tap করলে details load করবে।
 //   Future<void> onMapTap(LatLng position) async {
 //     try {
-//       // Debug: Print clicked location coordinates
 //       debugPrint('========================================');
-//       debugPrint('📍 CLICKED LOCATION:');
+//       debugPrint('CLICKED LOCATION');
 //       debugPrint('Latitude: ${position.latitude}');
 //       debugPrint('Longitude: ${position.longitude}');
 //       debugPrint('========================================');
-      
+
 //       isLoadingPlaceDetails.value = true;
-      
-//       // Add marker at tapped location
+//       showPlaceDetails.value = false;
+
+//       selectedPlaceDetails.assignAll({
+//         'name': 'Selected Location',
+//         'fullAddress': 'Loading address...',
+//         'rating': 'N/A',
+//         'phone': 'N/A',
+//         'photos': <dynamic>[],
+//         'latitude': position.latitude,
+//         'longitude': position.longitude,
+//       });
+
 //       markers.clear();
-//       markers.add(Marker(
-//         markerId: MarkerId('tapped_location'),
-//         position: position,
-//         infoWindow: InfoWindow(
-//           title: 'Loading...',
-//           snippet: 'Fetching location details',
+
+//       markers.add(
+//         Marker(
+//           markerId: const MarkerId('tapped_location'),
+//           position: position,
+//           infoWindow: const InfoWindow(
+//             title: 'Loading...',
+//             snippet: 'Fetching location details',
+//           ),
 //         ),
-//       ));
+//       );
 
-//       // Move camera to tapped location
-//       await moveCamera(position.latitude, position.longitude, zoom: 16);
+//       await moveCamera(
+//         position.latitude,
+//         position.longitude,
+//         zoom: 16,
+//       );
 
-//       // First, try to get nearby places from Google Places API
-//       final placeId = await getNearbyPlaceDetails(position.latitude, position.longitude);
-      
+//       final placeId = await getNearbyPlaceDetails(
+//         position.latitude,
+//         position.longitude,
+//       );
+
 //       if (placeId != null) {
-//         // If we found a place_id, get full details
 //         await getPlaceDetails(placeId);
 //       } else {
-//         // Fallback to reverse geocoding if no nearby place found
-//         List<Placemark> placemarks = await placemarkFromCoordinates(
+//         final List<Placemark> placemarks =
+//             await placemarkFromCoordinates(
 //           position.latitude,
 //           position.longitude,
 //         );
@@ -127,9 +182,8 @@
 //         if (placemarks.isNotEmpty) {
 //           final place = placemarks.first;
 //           final locationName = _getLocationName(place);
-          
-//           // Set basic details from geocoding
-//           selectedPlaceDetails.value = {
+
+//           selectedPlaceDetails.assignAll({
 //             'name': locationName,
 //             'street': place.street ?? '',
 //             'locality': place.locality ?? '',
@@ -142,109 +196,136 @@
 //             'fullAddress': _formatAddress(place),
 //             'rating': 'N/A',
 //             'phone': 'N/A',
-//             'photos': [],
-//           };
+//             'photos': <dynamic>[],
+//           });
 //         }
 //       }
-      
-//       // Update marker with final place info
-//       markers.clear();
-//       markers.add(Marker(
-//         markerId: MarkerId('selected_location'),
-//         position: position,
-//         infoWindow: InfoWindow(
-//           title: selectedPlaceDetails['name'] ?? 'Selected Location',
-//           snippet: selectedPlaceDetails['fullAddress'] ?? '',
-//         ),
-//         onTap: () {
-//           showPlaceDetails.value = true;
-//         },
-//       ));
 
-//       // Load nearby places (default: hotels)
+//       markers.clear();
+
+//       markers.add(
+//         Marker(
+//           markerId: const MarkerId('selected_location'),
+//           position: position,
+//           consumeTapEvents: true,
+//           infoWindow: InfoWindow(
+//             title:
+//                 selectedPlaceDetails['name'] ?? 'Selected Location',
+//             snippet:
+//                 selectedPlaceDetails['fullAddress'] ?? '',
+//           ),
+//           onTap: () {
+//             showPlaceDetails.value = true;
+//           },
+//         ),
+//       );
+
+//       // Information card open করবে।
+//       showPlaceDetails.value = true;
+
 //       await searchNearbyPlaces(
 //         position.latitude,
 //         position.longitude,
 //         selectedNearbyCategory.value,
 //       );
-
-//       showPlaceDetails.value = true;
 //     } catch (e) {
-//       Get.snackbar('Error', 'Failed to get location details: $e');
+//       Get.snackbar(
+//         'Error',
+//         'Failed to get location details: $e',
+//       );
 //     } finally {
 //       isLoadingPlaceDetails.value = false;
 //     }
 //   }
 
-//   // Get nearby place details from Google Places API
-//   Future<String?> getNearbyPlaceDetails(double lat, double lng) async {
+//   Future<String?> getNearbyPlaceDetails(
+//     double lat,
+//     double lng,
+//   ) async {
 //     try {
-//       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+//       final url =
+//           'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
 //           '?location=$lat,$lng'
 //           '&radius=50'
 //           '&key=$apiKey';
 
 //       final response = await http.get(Uri.parse(url));
-      
+
 //       if (response.statusCode == 200) {
 //         final data = json.decode(response.body);
-//         if (data['results'] != null && data['results'].isNotEmpty) {
+
+//         if (data['results'] != null &&
+//             data['results'].isNotEmpty) {
 //           final place = data['results'][0];
-          
-//           // Return the place_id if found
+
 //           if (place['place_id'] != null) {
-//             return place['place_id'];
+//             return place['place_id'].toString();
 //           }
 //         }
 //       }
 //     } catch (e) {
 //       debugPrint('Error getting nearby places: $e');
 //     }
+
 //     return null;
 //   }
 
-//   // Get detailed place information
 //   Future<void> getPlaceDetails(String placeId) async {
 //     try {
-//       final url = 'https://maps.googleapis.com/maps/api/place/details/json'
+//       final url =
+//           'https://maps.googleapis.com/maps/api/place/details/json'
 //           '?place_id=$placeId'
-//           '&fields=name,formatted_address,formatted_phone_number,rating,opening_hours,website,types,geometry,photos,reviews,price_level,url'
+//           '&fields=name,formatted_address,formatted_phone_number,'
+//           'rating,opening_hours,website,types,geometry,photos,'
+//           'reviews,price_level,url'
 //           '&key=$apiKey';
 
 //       final response = await http.get(Uri.parse(url));
-      
+
 //       if (response.statusCode == 200) {
 //         final data = json.decode(response.body);
+
 //         if (data['result'] != null) {
 //           final result = data['result'];
 //           final geometry = result['geometry'];
-          
-//           // Get all photos, not just first few
+
 //           List<dynamic> allPhotos = [];
+
 //           if (result['photos'] != null) {
 //             allPhotos = List<dynamic>.from(result['photos']);
 //           }
-          
-//           // Update selected place details with all information
-//           selectedPlaceDetails.value = {
-//             'name': result['name'] ?? 'Unknown Location',
-//             'fullAddress': result['formatted_address'] ?? 'Address not available',
-//             'phone': result['formatted_phone_number'] ?? 'N/A',
+
+//           selectedPlaceDetails.assignAll({
+//             'name':
+//                 result['name'] ?? 'Unknown Location',
+//             'fullAddress':
+//                 result['formatted_address'] ??
+//                     'Address not available',
+//             'phone':
+//                 result['formatted_phone_number'] ?? 'N/A',
 //             'rating': result['rating'] ?? 'N/A',
 //             'website': result['website'] ?? 'N/A',
 //             'types': result['types'] ?? [],
-//             'openingHours': result['opening_hours']?['weekday_text'] ?? [],
-//             'isOpen': result['opening_hours']?['open_now'] ?? false,
-//             'photos': allPhotos, // Store all photos
+//             'openingHours':
+//                 result['opening_hours']?['weekday_text'] ?? [],
+//             'isOpen':
+//                 result['opening_hours']?['open_now'] ?? false,
+//             'photos': allPhotos,
 //             'reviews': result['reviews'] ?? [],
 //             'priceLevel': result['price_level'] ?? 'N/A',
-//             'latitude': geometry?['location']?['lat'] ?? selectedPlaceDetails['latitude'],
-//             'longitude': geometry?['location']?['lng'] ?? selectedPlaceDetails['longitude'],
+//             'latitude':
+//                 geometry?['location']?['lat'] ??
+//                     selectedPlaceDetails['latitude'],
+//             'longitude':
+//                 geometry?['location']?['lng'] ??
+//                     selectedPlaceDetails['longitude'],
 //             'place_id': placeId,
-//             'url': result['url'] ?? '', // Google Maps URL
-//           };
-          
-//           debugPrint('Loaded ${allPhotos.length} photos for ${result['name']}');
+//             'url': result['url'] ?? '',
+//           });
+
+//           debugPrint(
+//             'Loaded ${allPhotos.length} photos for ${result['name']}',
+//           );
 //         }
 //       }
 //     } catch (e) {
@@ -252,9 +333,60 @@
 //     }
 //   }
 
-//   // Search for places
+//   // Map-এর custom marker click করলে এই method call হবে।
+//   Future<void> openPlaceFromMap({
+//     required String placeId,
+//     required String name,
+//     required String address,
+//     required double lat,
+//     required double lng,
+//     dynamic rating,
+//   }) async {
+//     try {
+//       isLoadingPlaceDetails.value = true;
+//       searchResults.clear();
+
+//       // Full API response আসার আগেই basic information দেখাবে।
+//       selectedPlaceDetails.assignAll({
+//         'name': name,
+//         'fullAddress': address,
+//         'rating': rating ?? 'N/A',
+//         'phone': 'N/A',
+//         'photos': <dynamic>[],
+//         'latitude': lat,
+//         'longitude': lng,
+//         'place_id': placeId,
+//       });
+
+//       showPlaceDetails.value = true;
+
+//       await moveCamera(
+//         lat,
+//         lng,
+//         zoom: 16,
+//       );
+
+//       await getPlaceDetails(placeId);
+
+//       selectedPlaceDetails['name'] ??= name;
+//       selectedPlaceDetails['fullAddress'] ??= address;
+//       selectedPlaceDetails['latitude'] ??= lat;
+//       selectedPlaceDetails['longitude'] ??= lng;
+//       selectedPlaceDetails['place_id'] ??= placeId;
+
+//       selectedPlaceDetails.refresh();
+//     } catch (e) {
+//       Get.snackbar(
+//         'Error',
+//         'Failed to load place details: $e',
+//       );
+//     } finally {
+//       isLoadingPlaceDetails.value = false;
+//     }
+//   }
+
 //   Future<void> searchPlaces(String query) async {
-//     if (query.isEmpty) {
+//     if (query.trim().isEmpty) {
 //       searchResults.clear();
 //       isSearching.value = false;
 //       return;
@@ -262,34 +394,56 @@
 
 //     try {
 //       isSearching.value = true;
-      
-//       // Use Text Search API
-//       final url = 'https://maps.googleapis.com/maps/api/place/textsearch/json'
-//           '?query=$query'
-//           '&location=$initialLat,$initialLng'
+
+//       final currentLat =
+//           visibleCameraPosition.target.latitude;
+
+//       final currentLng =
+//           visibleCameraPosition.target.longitude;
+
+//       final encodedQuery = Uri.encodeQueryComponent(query.trim());
+
+//       final url =
+//           'https://maps.googleapis.com/maps/api/place/textsearch/json'
+//           '?query=$encodedQuery'
+//           '&location=$currentLat,$currentLng'
 //           '&radius=50000'
 //           '&key=$apiKey';
 
 //       final response = await http.get(Uri.parse(url));
-      
+
 //       if (response.statusCode == 200) {
 //         final data = json.decode(response.body);
+
 //         if (data['results'] != null) {
-//           searchResults.value = List<Map<String, dynamic>>.from(
-//             data['results'].map((place) => {
-//               'name': place['name'],
-//               'address': place['formatted_address'],
-//               'lat': place['geometry']['location']['lat'],
-//               'lng': place['geometry']['location']['lng'],
-//               'place_id': place['place_id'],
-//               'rating': place['rating']?.toString() ?? 'N/A',
-//               'types': place['types'] ?? [],
-//             })
+//           searchResults.assignAll(
+//             List<Map<String, dynamic>>.from(
+//               data['results'].map(
+//                 (place) => {
+//                   'name': place['name'],
+//                   'address':
+//                       place['formatted_address'] ??
+//                           place['vicinity'] ??
+//                           '',
+//                   'lat':
+//                       place['geometry']['location']['lat'],
+//                   'lng':
+//                       place['geometry']['location']['lng'],
+//                   'place_id': place['place_id'],
+//                   'rating':
+//                       place['rating']?.toString() ?? 'N/A',
+//                   'types': place['types'] ?? [],
+//                 },
+//               ),
+//             ),
 //           );
 //         }
 //       }
 //     } catch (e) {
-//       Get.snackbar('Error', 'Failed to search: $e');
+//       Get.snackbar(
+//         'Error',
+//         'Failed to search: $e',
+//       );
 //     } finally {
 //       isSearching.value = false;
 //     }
@@ -299,299 +453,514 @@
 //     switch (category) {
 //       case 'Attractions':
 //         return 'tourist_attraction';
+
+//       case 'Hotel':
+//         return 'lodging';
+
+//       case 'Restaurant':
+//         return 'restaurant';
+
+//       case 'ATMs':
+//         return 'atm';
+
+//       case 'Shopping Mall':
+//         return 'shopping_mall';
+
+//       case 'Hospital':
+//         return 'hospital';
+
 //       default:
 //         return category.toLowerCase();
 //     }
 //   }
 
-//   // Search by category
-//   Future<void> searchByCategory(String category) async {
+//   Future<void> searchByCategory(
+//     String category, {
+//     bool showResultMessage = true,
+//   }) async {
 //     try {
 //       isSearching.value = true;
+//       selectedMapCategory.value = category;
 
-//       final placeType = _placeTypeForCategoryChip(category);
-//       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
-//           '?location=${cameraPosition.value.target.latitude},${cameraPosition.value.target.longitude}'
+//       final placeType =
+//           _placeTypeForCategoryChip(category);
+
+//       final currentLat =
+//           visibleCameraPosition.target.latitude;
+
+//       final currentLng =
+//           visibleCameraPosition.target.longitude;
+
+//       final url =
+//           'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+//           '?location=$currentLat,$currentLng'
 //           '&radius=5000'
 //           '&type=$placeType'
 //           '&key=$apiKey';
 
 //       final response = await http.get(Uri.parse(url));
-      
+
 //       if (response.statusCode == 200) {
 //         final data = json.decode(response.body);
+
 //         if (data['results'] != null) {
-//           // Clear existing markers
 //           markers.clear();
-          
-//           // Add markers for each result
-//           for (var place in data['results']) {
-//             final lat = place['geometry']['location']['lat'];
-//             final lng = place['geometry']['location']['lng'];
-//             final placeId = place['place_id'];
-            
-//             markers.add(Marker(
-//               markerId: MarkerId(placeId),
-//               position: LatLng(lat, lng),
-//               infoWindow: InfoWindow(
-//                 title: place['name'],
-//                 snippet: place['vicinity'],
+
+//           for (final place in data['results']) {
+//             final double lat =
+//                 (place['geometry']['location']['lat'] as num)
+//                     .toDouble();
+
+//             final double lng =
+//                 (place['geometry']['location']['lng'] as num)
+//                     .toDouble();
+
+//             final String placeId =
+//                 place['place_id'].toString();
+
+//             final String placeName =
+//                 (place['name'] ?? 'Unknown Location')
+//                     .toString();
+
+//             final String placeAddress =
+//                 (place['vicinity'] ??
+//                         place['formatted_address'] ??
+//                         '')
+//                     .toString();
+
+//             markers.add(
+//               Marker(
+//                 markerId: MarkerId(placeId),
+//                 position: LatLng(lat, lng),
+//                 consumeTapEvents: true,
+//                 infoWindow: InfoWindow(
+//                   title: placeName,
+//                   snippet: placeAddress,
+//                 ),
+//                 onTap: () async {
+//                   await openPlaceFromMap(
+//                     placeId: placeId,
+//                     name: placeName,
+//                     address: placeAddress,
+//                     lat: lat,
+//                     lng: lng,
+//                     rating: place['rating'],
+//                   );
+//                 },
 //               ),
-//               onTap: () async {
-//                 // Move camera to marker position
-//                 await moveCamera(lat, lng, zoom: 16);
-//                 // Get full place details
-//                 await getPlaceDetails(placeId);
-//                 showPlaceDetails.value = true;
-//               },
-//             ));
+//             );
 //           }
-          
-//           // Show snackbar with results count. Google Places NearbySearch
-//           // returns up to 20 results per page. If a next_page_token
-//           // is present it means there are more results available — show
-//           // a '+' to indicate there are additional pages.
-//           if (data['results'] != null && data['results'].length > 0) {
-//             final resultsCount = data['results'].length as int;
-//             final hasMore = data['next_page_token'] != null && data['next_page_token'].toString().isNotEmpty;
-//             final displayCount = hasMore ? '${resultsCount}+' : '$resultsCount';
-//             final countLabel = category == 'Attractions'
-//                 ? 'attractions'
-//                 : '${category.toLowerCase()}s';
+
+//           if (showResultMessage &&
+//               data['results'].isNotEmpty) {
+//             final resultsCount =
+//                 data['results'].length as int;
+
+//             final hasMore =
+//                 data['next_page_token'] != null &&
+//                     data['next_page_token']
+//                         .toString()
+//                         .isNotEmpty;
+
+//             final displayCount =
+//                 hasMore ? '$resultsCount+' : '$resultsCount';
+
+//             final countLabel =
+//                 category == 'Attractions'
+//                     ? 'attractions'
+//                     : category.toLowerCase();
 
 //             Get.snackbar(
 //               'Results',
 //               'Found $displayCount $countLabel nearby',
 //               snackPosition: SnackPosition.BOTTOM,
-//               duration: Duration(seconds: 2),
+//               duration: const Duration(seconds: 2),
 //             );
 //           }
 //         }
 //       }
 //     } catch (e) {
-//       Get.snackbar('Error', 'Failed to search category: $e');
+//       Get.snackbar(
+//         'Error',
+//         'Failed to search category: $e',
+//       );
 //     } finally {
 //       isSearching.value = false;
 //     }
 //   }
 
-//   // Select a search result
-//   Future<void> selectSearchResult(Map<String, dynamic> result) async {
-//     final lat = result['lat'];
-//     final lng = result['lng'];
-//     final placeId = result['place_id'];
-    
-//     // Move camera to location
-//     await moveCamera(lat, lng, zoom: 16);
-    
-//     // Clear existing markers and add new one
-//     markers.clear();
-//     markers.add(Marker(
-//       markerId: MarkerId(placeId),
-//       position: LatLng(lat, lng),
-//       infoWindow: InfoWindow(
-//         title: result['name'],
-//         snippet: result['address'],
-//       ),
-//       onTap: () {
-//         showPlaceDetails.value = true;
-//       },
-//     ));
-    
-//     // Get full place details
-//     await getPlaceDetails(placeId);
-    
-//     // Show place details
-//     showPlaceDetails.value = true;
-    
-//     // Clear search results
-//     searchResults.clear();
-//   }
+//   Future<void> selectSearchResult(
+//     Map<String, dynamic> result,
+//   ) async {
+//     try {
+//       final double lat =
+//           (result['lat'] as num).toDouble();
 
-//   // Animate camera to new position
-//   Future<void> moveCamera(double lat, double lng, {double zoom = 15}) async {
-//     final newPos = CameraPosition(target: LatLng(lat, lng), zoom: zoom);
-//     cameraPosition.value = newPos;
-//     if (gMapController != null) {
-//       await gMapController!.animateCamera(CameraUpdate.newCameraPosition(newPos));
+//       final double lng =
+//           (result['lng'] as num).toDouble();
+
+//       final String placeId =
+//           result['place_id'].toString();
+
+//       final String name =
+//           (result['name'] ?? 'Unknown Location')
+//               .toString();
+
+//       final String address =
+//           (result['address'] ?? '').toString();
+
+//       markers.clear();
+
+//       markers.add(
+//         Marker(
+//           markerId: MarkerId(placeId),
+//           position: LatLng(lat, lng),
+//           consumeTapEvents: true,
+//           infoWindow: InfoWindow(
+//             title: name,
+//             snippet: address,
+//           ),
+//           onTap: () async {
+//             await openPlaceFromMap(
+//               placeId: placeId,
+//               name: name,
+//               address: address,
+//               lat: lat,
+//               lng: lng,
+//               rating: result['rating'],
+//             );
+//           },
+//         ),
+//       );
+
+//       searchResults.clear();
+
+//       await openPlaceFromMap(
+//         placeId: placeId,
+//         name: name,
+//         address: address,
+//         lat: lat,
+//         lng: lng,
+//         rating: result['rating'],
+//       );
+//     } catch (e) {
+//       Get.snackbar(
+//         'Error',
+//         'Failed to select location: $e',
+//       );
 //     }
 //   }
 
-//   // Get user's current location (simplified version to just get lat/lng)
+//   Future<void> moveCamera(
+//     double lat,
+//     double lng, {
+//     double zoom = 15,
+//   }) async {
+//     final newPosition = CameraPosition(
+//       target: LatLng(lat, lng),
+//       zoom: zoom,
+//     );
+
+//     cameraPosition.value = newPosition;
+//     visibleCameraPosition = newPosition;
+
+//     if (gMapController != null) {
+//       await gMapController!.animateCamera(
+//         CameraUpdate.newCameraPosition(newPosition),
+//       );
+//     }
+//   }
+
 //   Future<void> getUserLocation() async {
 //     try {
-//       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//       final bool serviceEnabled =
+//           await Geolocator.isLocationServiceEnabled();
+
 //       if (!serviceEnabled) {
 //         debugPrint('Location services are disabled');
 //         return;
 //       }
 
-//       LocationPermission permission = await Geolocator.checkPermission();
+//       LocationPermission permission =
+//           await Geolocator.checkPermission();
+
 //       if (permission == LocationPermission.denied) {
-//         permission = await Geolocator.requestPermission();
+//         permission =
+//             await Geolocator.requestPermission();
+
 //         if (permission == LocationPermission.denied) {
 //           debugPrint('Location permission denied');
 //           return;
 //         }
 //       }
 
-//       if (permission == LocationPermission.deniedForever) {
-//         debugPrint('Location permission permanently denied');
+//       if (permission ==
+//           LocationPermission.deniedForever) {
+//         debugPrint(
+//           'Location permission permanently denied',
+//         );
 //         return;
 //       }
 
-//       // Get current position
-//       Position position = await Geolocator.getCurrentPosition(
+//       final Position position =
+//           await Geolocator.getCurrentPosition(
 //         desiredAccuracy: LocationAccuracy.high,
 //       );
-      
-//       // Update observable variables
+
 //       userLat.value = position.latitude;
 //       userLng.value = position.longitude;
 //       hasUserLocation.value = true;
-      
-//       debugPrint('User location: ${position.latitude}, ${position.longitude}');
-      
+
+//       cameraPosition.value = CameraPosition(
+//         target: LatLng(
+//           position.latitude,
+//           position.longitude,
+//         ),
+//         zoom: 16,
+//       );
+
+//       visibleCameraPosition = cameraPosition.value;
+
+//       debugPrint(
+//         'User location: ${position.latitude}, ${position.longitude}',
+//       );
 //     } catch (e) {
 //       debugPrint('Failed to get user location: $e');
 //       hasUserLocation.value = false;
 //     }
 //   }
 
-//   // Get current location
 //   Future<void> getCurrentLocation() async {
 //     try {
-//       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//       final bool serviceEnabled =
+//           await Geolocator.isLocationServiceEnabled();
+
 //       if (!serviceEnabled) {
-//         Get.snackbar('Error', 'Location services are disabled');
+//         Get.snackbar(
+//           'Error',
+//           'Location services are disabled',
+//         );
 //         return;
 //       }
 
-//       LocationPermission permission = await Geolocator.checkPermission();
+//       LocationPermission permission =
+//           await Geolocator.checkPermission();
+
 //       if (permission == LocationPermission.denied) {
-//         permission = await Geolocator.requestPermission();
+//         permission =
+//             await Geolocator.requestPermission();
+
 //         if (permission == LocationPermission.denied) {
-//           Get.snackbar('Error', 'Location permission denied');
+//           Get.snackbar(
+//             'Error',
+//             'Location permission denied',
+//           );
 //           return;
 //         }
 //       }
 
-//       if (permission == LocationPermission.deniedForever) {
-//         Get.snackbar('Error', 'Location permission permanently denied. Please enable in settings.');
+//       if (permission ==
+//           LocationPermission.deniedForever) {
+//         Get.snackbar(
+//           'Error',
+//           'Location permission permanently denied. Please enable it from settings.',
+//         );
 //         return;
 //       }
 
-//       Position position = await Geolocator.getCurrentPosition(
+//       final Position position =
+//           await Geolocator.getCurrentPosition(
 //         desiredAccuracy: LocationAccuracy.high,
 //       );
-      
-//       // Update observable variables
+
 //       userLat.value = position.latitude;
 //       userLng.value = position.longitude;
 //       hasUserLocation.value = true;
-      
-//       // Move camera to current location
-//       await moveCamera(position.latitude, position.longitude, zoom: 16);
-      
-//       // Try to get nearby place details
-//       final placeId = await getNearbyPlaceDetails(position.latitude, position.longitude);
-      
+
+//       await moveCamera(
+//         position.latitude,
+//         position.longitude,
+//         zoom: 16,
+//       );
+
+//       final placeId = await getNearbyPlaceDetails(
+//         position.latitude,
+//         position.longitude,
+//       );
+
 //       if (placeId != null) {
-//         // Get full place details
 //         await getPlaceDetails(placeId);
-        
-//         // Add marker with place details
+
 //         markers.clear();
-//         markers.add(Marker(
-//           markerId: MarkerId('current_location'),
-//           position: LatLng(position.latitude, position.longitude),
-//           infoWindow: InfoWindow(
-//             title: selectedPlaceDetails['name'] ?? 'Current Location',
-//             snippet: selectedPlaceDetails['fullAddress'] ?? '',
+
+//         markers.add(
+//           Marker(
+//             markerId:
+//                 const MarkerId('current_location'),
+//             position: LatLng(
+//               position.latitude,
+//               position.longitude,
+//             ),
+//             consumeTapEvents: true,
+//             infoWindow: InfoWindow(
+//               title:
+//                   selectedPlaceDetails['name'] ??
+//                       'Current Location',
+//               snippet:
+//                   selectedPlaceDetails['fullAddress'] ??
+//                       '',
+//             ),
+//             icon:
+//                 BitmapDescriptor.defaultMarkerWithHue(
+//               BitmapDescriptor.hueBlue,
+//             ),
+//             onTap: () {
+//               showPlaceDetails.value = true;
+//             },
 //           ),
-//           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-//           onTap: () {
-//             showPlaceDetails.value = true;
-//           },
-//         ));
+//         );
+
+//         showPlaceDetails.value = true;
 //       } else {
-//         // Fallback to simple marker
+//         selectedPlaceDetails.assignAll({
+//           'name': 'Current Location',
+//           'fullAddress': '',
+//           'rating': 'N/A',
+//           'phone': 'N/A',
+//           'photos': <dynamic>[],
+//           'latitude': position.latitude,
+//           'longitude': position.longitude,
+//         });
+
 //         markers.clear();
-//         markers.add(Marker(
-//           markerId: MarkerId('current_location'),
-//           position: LatLng(position.latitude, position.longitude),
-//           infoWindow: InfoWindow(title: 'Current Location'),
-//           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-//         ));
+
+//         markers.add(
+//           Marker(
+//             markerId:
+//                 const MarkerId('current_location'),
+//             position: LatLng(
+//               position.latitude,
+//               position.longitude,
+//             ),
+//             consumeTapEvents: true,
+//             infoWindow: const InfoWindow(
+//               title: 'Current Location',
+//             ),
+//             icon:
+//                 BitmapDescriptor.defaultMarkerWithHue(
+//               BitmapDescriptor.hueBlue,
+//             ),
+//             onTap: () {
+//               showPlaceDetails.value = true;
+//             },
+//           ),
+//         );
 //       }
 //     } catch (e) {
-//       Get.snackbar('Error', 'Failed to get current location: $e');
+//       Get.snackbar(
+//         'Error',
+//         'Failed to get current location: $e',
+//       );
 //     }
 //   }
 
-//   // Helper method to get proper location name (not Plus Code)
 //   String _getLocationName(Placemark place) {
-//     // Try to get a meaningful location name
-//     // Priority: subLocality > locality > administrativeArea > street
 //     if (place.subLocality?.isNotEmpty ?? false) {
 //       return place.subLocality!;
 //     }
+
 //     if (place.locality?.isNotEmpty ?? false) {
 //       return place.locality!;
 //     }
-//     if (place.administrativeArea?.isNotEmpty ?? false) {
+
+//     if (place.administrativeArea?.isNotEmpty ??
+//         false) {
 //       return place.administrativeArea!;
 //     }
+
 //     if (place.street?.isNotEmpty ?? false) {
-//       // Check if it's not a Plus Code (Plus Codes contain '+')
 //       if (!place.street!.contains('+')) {
 //         return place.street!;
 //       }
 //     }
-//     // If all else fails, use a generic name
+
 //     return 'Selected Location';
 //   }
 
-//   // Helper method to format address
 //   String _formatAddress(Placemark place) {
-//     List<String> parts = [];
-//     if (place.street?.isNotEmpty ?? false) parts.add(place.street!);
-//     if (place.subLocality?.isNotEmpty ?? false) parts.add(place.subLocality!);
-//     if (place.locality?.isNotEmpty ?? false) parts.add(place.locality!);
-//     if (place.administrativeArea?.isNotEmpty ?? false) parts.add(place.administrativeArea!);
-//     if (place.country?.isNotEmpty ?? false) parts.add(place.country!);
+//     final List<String> parts = [];
+
+//     if (place.street?.isNotEmpty ?? false) {
+//       parts.add(place.street!);
+//     }
+
+//     if (place.subLocality?.isNotEmpty ?? false) {
+//       parts.add(place.subLocality!);
+//     }
+
+//     if (place.locality?.isNotEmpty ?? false) {
+//       parts.add(place.locality!);
+//     }
+
+//     if (place.administrativeArea?.isNotEmpty ??
+//         false) {
+//       parts.add(place.administrativeArea!);
+//     }
+
+//     if (place.country?.isNotEmpty ?? false) {
+//       parts.add(place.country!);
+//     }
+
 //     return parts.join(', ');
 //   }
 
-//   // Get photo URL from photo reference
-//   String getPhotoUrl(String photoReference, {int maxWidth = 800}) {
+//   String getPhotoUrl(
+//     String photoReference, {
+//     int maxWidth = 800,
+//   }) {
 //     return 'https://maps.googleapis.com/maps/api/place/photo'
 //         '?maxwidth=$maxWidth'
 //         '&photo_reference=$photoReference'
 //         '&key=$apiKey';
 //   }
-  
-//   // Get multiple photo URLs
-//   List<String> getPhotoUrls(List<dynamic> photos, {int maxCount = 5, int maxWidth = 800}) {
-//     List<String> urls = [];
-//     final count = photos.length > maxCount ? maxCount : photos.length;
-    
+
+//   List<String> getPhotoUrls(
+//     List<dynamic> photos, {
+//     int maxCount = 5,
+//     int maxWidth = 800,
+//   }) {
+//     final List<String> urls = [];
+
+//     final count =
+//         photos.length > maxCount
+//             ? maxCount
+//             : photos.length;
+
 //     for (int i = 0; i < count; i++) {
 //       if (photos[i]['photo_reference'] != null) {
-//         urls.add(getPhotoUrl(photos[i]['photo_reference'], maxWidth: maxWidth));
+//         urls.add(
+//           getPhotoUrl(
+//             photos[i]['photo_reference'],
+//             maxWidth: maxWidth,
+//           ),
+//         );
 //       }
 //     }
-    
+
 //     return urls;
 //   }
 
-//   // Search nearby places by type
-//   Future<void> searchNearbyPlaces(double lat, double lng, String type) async {
+//   Future<void> searchNearbyPlaces(
+//     double lat,
+//     double lng,
+//     String type,
+//   ) async {
 //     try {
 //       isLoadingNearbyPlaces.value = true;
 //       nearbyPlaces.clear();
 
-//       final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
+//       final url =
+//           'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
 //           '?location=$lat,$lng'
 //           '&radius=5000'
 //           '&type=$type'
@@ -601,52 +970,95 @@
 
 //       if (response.statusCode == 200) {
 //         final data = json.decode(response.body);
-        
+
 //         if (data['results'] != null) {
-//           nearbyPlaces.value = List<Map<String, dynamic>>.from(
-//             data['results'].take(10).map((place) {
-//               final placeLat = place['geometry']['location']['lat'];
-//               final placeLng = place['geometry']['location']['lng'];
-//               final distance = _calculateDistance(lat, lng, placeLat, placeLng);
-              
-//               return {
-//                 'name': place['name'],
-//                 'vicinity': place['vicinity'],
-//                 'address': place['formatted_address'] ?? place['vicinity'],
-//                 'rating': place['rating'],
-//                 'latitude': placeLat,
-//                 'longitude': placeLng,
-//                 'place_id': place['place_id'],
-//                 'photo': place['photos']?[0]?['photo_reference'],
-//                 'distance': distance.toStringAsFixed(1),
-//                 'isOpen': place['opening_hours']?['open_now'],
-//               };
-//             })
+//           nearbyPlaces.assignAll(
+//             List<Map<String, dynamic>>.from(
+//               data['results'].take(10).map(
+//                 (place) {
+//                   final double placeLat =
+//                       (place['geometry']['location']['lat']
+//                               as num)
+//                           .toDouble();
+
+//                   final double placeLng =
+//                       (place['geometry']['location']['lng']
+//                               as num)
+//                           .toDouble();
+
+//                   final distance = _calculateDistance(
+//                     lat,
+//                     lng,
+//                     placeLat,
+//                     placeLng,
+//                   );
+
+//                   return {
+//                     'name': place['name'],
+//                     'vicinity': place['vicinity'],
+//                     'address':
+//                         place['formatted_address'] ??
+//                             place['vicinity'],
+//                     'rating': place['rating'],
+//                     'latitude': placeLat,
+//                     'longitude': placeLng,
+//                     'place_id': place['place_id'],
+//                     'photo':
+//                         place['photos']?[0]
+//                             ?['photo_reference'],
+//                     'distance':
+//                         distance.toStringAsFixed(1),
+//                     'isOpen':
+//                         place['opening_hours']
+//                             ?['open_now'],
+//                   };
+//                 },
+//               ),
+//             ),
 //           );
 //         }
 //       }
 //     } catch (e) {
-//       debugPrint('Error searching nearby places: $e');
-//       Get.snackbar('Error', 'Failed to load nearby places');
+//       debugPrint(
+//         'Error searching nearby places: $e',
+//       );
+
+//       Get.snackbar(
+//         'Error',
+//         'Failed to load nearby places',
+//       );
 //     } finally {
 //       isLoadingNearbyPlaces.value = false;
 //     }
 //   }
 
-//   // Calculate distance between two coordinates (in km)
-//   double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-//     const double earthRadius = 6371; // km
-    
-//     final dLat = _degreesToRadians(lat2 - lat1);
-//     final dLon = _degreesToRadians(lon2 - lon1);
-    
-//     final a = (sin(dLat / 2) * sin(dLat / 2)) +
-//         cos(_degreesToRadians(lat1)) *
-//         cos(_degreesToRadians(lat2)) *
-//         (sin(dLon / 2) * sin(dLon / 2));
-    
-//     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    
+//   double _calculateDistance(
+//     double lat1,
+//     double lon1,
+//     double lat2,
+//     double lon2,
+//   ) {
+//     const double earthRadius = 6371;
+
+//     final dLat =
+//         _degreesToRadians(lat2 - lat1);
+
+//     final dLon =
+//         _degreesToRadians(lon2 - lon1);
+
+//     final a =
+//         (sin(dLat / 2) * sin(dLat / 2)) +
+//             cos(_degreesToRadians(lat1)) *
+//                 cos(_degreesToRadians(lat2)) *
+//                 (sin(dLon / 2) *
+//                     sin(dLon / 2));
+
+//     final c =
+//         2 * atan2(
+//           sqrt(a),
+//           sqrt(1 - a),
+//         );
+
 //     return earthRadius * c;
 //   }
 
@@ -654,19 +1066,30 @@
 //     return degrees * pi / 180;
 //   }
 
-//   // Open in Google Maps
-//   Future<void> openInGoogleMaps(double lat, double lng) async {
+//   Future<void> openInGoogleMaps(
+//     double lat,
+//     double lng,
+//   ) async {
 //     try {
-//       // Try to open in Google Maps app first (works on Android/iOS)
-//       final googleMapsUrl = Uri.parse('google.navigation:q=$lat,$lng');
-//       final googleMapsWebUrl = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-      
-//       // Try Google Maps app URL first
+//       final googleMapsUrl =
+//           Uri.parse(
+//         'google.navigation:q=$lat,$lng',
+//       );
+
+//       final googleMapsWebUrl =
+//           Uri.parse(
+//         'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+//       );
+
 //       if (await canLaunchUrl(googleMapsUrl)) {
 //         await launchUrl(googleMapsUrl);
-//       } else if (await canLaunchUrl(googleMapsWebUrl)) {
-//         // Fallback to web URL
-//         await launchUrl(googleMapsWebUrl, mode: LaunchMode.externalApplication);
+//       } else if (await canLaunchUrl(
+//         googleMapsWebUrl,
+//       )) {
+//         await launchUrl(
+//           googleMapsWebUrl,
+//           mode: LaunchMode.externalApplication,
+//         );
 //       } else {
 //         Get.snackbar(
 //           'Error',
@@ -676,6 +1099,7 @@
 //       }
 //     } catch (e) {
 //       debugPrint('Error opening Google Maps: $e');
+
 //       Get.snackbar(
 //         'Error',
 //         'Failed to open Google Maps',
@@ -684,19 +1108,23 @@
 //     }
 //   }
 
-//   // Save place by calling backend API
-//   Future<void> savePlace(Map<String, dynamic> placeData) async {
+//   Future<void> savePlace(
+//     Map<String, dynamic> placeData,
+//   ) async {
 //     try {
-//       final token = Get.find<StorageService>().getAccessToken();
+//       final token =
+//           Get.find<StorageService>().getAccessToken();
 
 //       if (token == null || token.isEmpty) {
-//         debugPrint('❌ No access token found');
-//         EasyLoading.showError('Authentication required');
+//         debugPrint('No access token found');
+//         EasyLoading.showError(
+//           'Authentication required',
+//         );
 //         return;
 //       }
 
-//       // Ensure ProfileController is available and its saved list is loaded
 //       ProfileController profile;
+
 //       try {
 //         if (Get.isRegistered<ProfileController>()) {
 //           profile = Get.find<ProfileController>();
@@ -708,57 +1136,123 @@
 //           await profile.fetchSavedPlaces();
 //         }
 //       } catch (e) {
-//         debugPrint('Error accessing ProfileController: $e');
-//         // proceed without local check if profile fails
+//         debugPrint(
+//           'Error accessing ProfileController: $e',
+//         );
 //       }
 
-//       // Check if place already saved locally (by name)
-//       final placeName = (placeData['place_name'] ?? placeData['name'] ?? '').toString();
+//       final placeName =
+//           (placeData['place_name'] ??
+//                   placeData['name'] ??
+//                   '')
+//               .toString();
+
 //       if (placeName.isNotEmpty) {
 //         try {
 //           if (Get.isRegistered<ProfileController>()) {
-//             final p = Get.find<ProfileController>();
-//             if (p.isPlaceSaved(placeName)) {
+//             final profileController =
+//                 Get.find<ProfileController>();
+
+//             if (profileController.isPlaceSaved(
+//               placeName,
+//             )) {
 //               EasyLoading.showInfo('Already saved');
-//               Get.snackbar('Info', '$placeName already saved', snackPosition: SnackPosition.BOTTOM);
+
+//               Get.snackbar(
+//                 'Info',
+//                 '$placeName already saved',
+//                 snackPosition:
+//                     SnackPosition.BOTTOM,
+//               );
+
 //               return;
 //             }
 //           }
 //         } catch (e) {
-//           debugPrint('Error checking saved places: $e');
+//           debugPrint(
+//             'Error checking saved places: $e',
+//           );
 //         }
 //       }
 
 //       EasyLoading.show(status: 'Saving...');
 
-//       // Normalize raw Google Places data to the format the backend expects
-//       final normalizedName = (placeData['place_name'] ?? placeData['name'] ?? '').toString();
-//       final normalizedAddress = (placeData['place_address'] ?? placeData['fullAddress'] ?? placeData['vicinity'] ?? '').toString();
-//       final normalizedDescription = (placeData['place_description'] ?? normalizedAddress).toString();
-//       final normalizedImage = (placeData['place_image'] ?? '').toString();
-//       final rawRating = (placeData['place_rating'] ?? placeData['rating'] ?? '').toString();
-//       final normalizedRating = (rawRating == 'N/A' || rawRating == 'null') ? '' : rawRating;
-//       final normalizedLat = placeData['latitude'] ?? placeData['lat'] ?? 0.0;
-//       final normalizedLng = placeData['longitude'] ?? placeData['lng'] ?? 0.0;
+//       final normalizedName =
+//           (placeData['place_name'] ??
+//                   placeData['name'] ??
+//                   '')
+//               .toString();
 
-//       final rawPlaceId = (placeData['place_id'] ?? placeData['id'] ?? '').toString().trim();
-//       final normalizedPlaceId = rawPlaceId.isNotEmpty
-//           ? rawPlaceId
-//           : 'custom_${normalizedLat.toStringAsFixed(6)}_${normalizedLng.toStringAsFixed(6)}';
+//       final normalizedAddress =
+//           (placeData['place_address'] ??
+//                   placeData['fullAddress'] ??
+//                   placeData['vicinity'] ??
+//                   '')
+//               .toString();
+
+//       final normalizedDescription =
+//           (placeData['place_description'] ??
+//                   normalizedAddress)
+//               .toString();
+
+//       final normalizedImage =
+//           (placeData['place_image'] ?? '')
+//               .toString();
+
+//       final rawRating =
+//           (placeData['place_rating'] ??
+//                   placeData['rating'] ??
+//                   '')
+//               .toString();
+
+//       final normalizedRating =
+//           rawRating == 'N/A' ||
+//                   rawRating == 'null'
+//               ? ''
+//               : rawRating;
+
+//       final normalizedLat =
+//           placeData['latitude'] ??
+//               placeData['lat'] ??
+//               0.0;
+
+//       final normalizedLng =
+//           placeData['longitude'] ??
+//               placeData['lng'] ??
+//               0.0;
+
+//       final rawPlaceId =
+//           (placeData['place_id'] ??
+//                   placeData['id'] ??
+//                   '')
+//               .toString()
+//               .trim();
+
+//       final normalizedPlaceId =
+//           rawPlaceId.isNotEmpty
+//               ? rawPlaceId
+//               : 'custom_${normalizedLat.toStringAsFixed(6)}_'
+//                   '${normalizedLng.toStringAsFixed(6)}';
 
 //       final payload = <String, dynamic>{
 //         'place_id': normalizedPlaceId,
 //         'place_name': normalizedName,
-//         'place_description': normalizedDescription.isNotEmpty ? normalizedDescription : normalizedName,
-//         if (normalizedAddress.isNotEmpty) 'place_address': normalizedAddress,
-//         if (normalizedImage.isNotEmpty) 'place_image': normalizedImage,
-//         if (normalizedRating.isNotEmpty) 'place_rating': normalizedRating,
+//         'place_description':
+//             normalizedDescription.isNotEmpty
+//                 ? normalizedDescription
+//                 : normalizedName,
+//         if (normalizedAddress.isNotEmpty)
+//           'place_address': normalizedAddress,
+//         if (normalizedImage.isNotEmpty)
+//           'place_image': normalizedImage,
+//         if (normalizedRating.isNotEmpty)
+//           'place_rating': normalizedRating,
 //         'latitude': normalizedLat,
 //         'longitude': normalizedLng,
 //       };
 
 //       debugPrint('API: ${Url.savePlace}');
-//       debugPrint('Sending normalized payload: ${payload.toString()}');
+//       debugPrint('Sending payload: $payload');
 
 //       final response = await http.post(
 //         Uri.parse(Url.savePlace),
@@ -769,31 +1263,45 @@
 //         body: jsonEncode(payload),
 //       );
 
-//       debugPrint('Save place status: ${response.statusCode}');
-//       debugPrint('Save place body: ${response.body}');
+//       debugPrint(
+//         'Save place status: ${response.statusCode}',
+//       );
 
-//       if (response.statusCode == 200 || response.statusCode == 201) {
+//       debugPrint(
+//         'Save place body: ${response.body}',
+//       );
+
+//       if (response.statusCode == 200 ||
+//           response.statusCode == 201) {
 //         EasyLoading.dismiss();
 //         EasyLoading.showSuccess('Place saved');
+
 //         Get.snackbar(
 //           'Saved',
 //           '${normalizedName.isNotEmpty ? normalizedName : 'Place'} saved successfully',
 //           snackPosition: SnackPosition.BOTTOM,
 //         );
 
-//         // Refresh Profile saved places so UI updates immediately
 //         try {
 //           if (Get.isRegistered<ProfileController>()) {
-//             final profile = Get.find<ProfileController>();
-//             profile.hasLoadedSavedPlaces.value = false;
-//             await profile.fetchSavedPlaces();
+//             final profileController =
+//                 Get.find<ProfileController>();
+
+//             profileController
+//                 .hasLoadedSavedPlaces
+//                 .value = false;
+
+//             await profileController.fetchSavedPlaces();
 //           }
 //         } catch (e) {
-//           debugPrint('Error refreshing saved places: $e');
+//           debugPrint(
+//             'Error refreshing saved places: $e',
+//           );
 //         }
 //       } else {
 //         EasyLoading.dismiss();
 //         EasyLoading.showError('Failed to save');
+
 //         Get.snackbar(
 //           'Error',
 //           'Failed to save place',
@@ -802,22 +1310,30 @@
 //       }
 //     } catch (e) {
 //       EasyLoading.dismiss();
-//       debugPrint('Exception saving place: $e');
+
+//       debugPrint(
+//         'Exception saving place: $e',
+//       );
+
 //       EasyLoading.showError('Failed to save');
 //     }
 //   }
+
 //   @override
-//   void onClose(){
-//   gMapController?.dispose();
-//   markers.clear();
-//   searchResults.clear();
-//   nearbyPlaces.clear();
-//   selectedPlaceDetails.clear();
-//   super.onClose();
+//   void onClose() {
+//     gMapController?.dispose();
+//     markers.clear();
+//     searchResults.clear();
+//     nearbyPlaces.clear();
+//     selectedPlaceDetails.clear();
+//     super.onClose();
 //   }
 // }
+
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
@@ -840,8 +1356,7 @@ class MapController extends GetxController {
   final double initialLng = 101.686855;
 
   // Google Map-এর default POI labels সরিয়ে দেওয়া হচ্ছে।
-  // কারণ google_maps_flutter থেকে default POI click handle করা যায় না।
-  // এর পরিবর্তে Places API থেকে clickable marker দেখানো হবে।
+  // Places API থেকে clickable marker এবং নাম দেখানো হবে।
   static const String _interactivePoiMapStyle = '''
   [
     {
@@ -868,10 +1383,13 @@ class MapController extends GetxController {
 
   final RxSet<Marker> markers = <Marker>{}.obs;
 
+  // একই নামের marker icon বারবার তৈরি না করে cache-এ রাখা হবে।
+  final Map<String, BitmapDescriptor> _namedMarkerIconCache =
+      <String, BitmapDescriptor>{};
+
   GoogleMapController? gMapController;
 
-  final RxMap<String, dynamic> selectedPlaceDetails =
-      <String, dynamic>{}.obs;
+  final RxMap<String, dynamic> selectedPlaceDetails = <String, dynamic>{}.obs;
 
   final RxBool showPlaceDetails = false.obs;
   final RxBool isLoadingPlaceDetails = false.obs;
@@ -885,6 +1403,7 @@ class MapController extends GetxController {
       <Map<String, dynamic>>[].obs;
 
   final RxBool isLoadingNearbyPlaces = false.obs;
+
   final RxString selectedNearbyCategory = 'lodging'.obs;
   final RxString selectedMapCategory = 'Attractions'.obs;
 
@@ -906,10 +1425,7 @@ class MapController extends GetxController {
         hasUserLocation.value = true;
 
         cameraPosition.value = CameraPosition(
-          target: LatLng(
-            userLat.value,
-            userLng.value,
-          ),
+          target: LatLng(userLat.value, userLng.value),
           zoom: 16.0,
         );
 
@@ -928,21 +1444,16 @@ class MapController extends GetxController {
 
     await controller.setMapStyle(_interactivePoiMapStyle);
 
-    // Map open হওয়ার সঙ্গে সঙ্গে attraction marker দেখাবে।
+    // Map open হওয়ার সঙ্গে সঙ্গে attraction markers দেখাবে।
     if (markers.isEmpty) {
-      await searchByCategory(
-        'Attractions',
-        showResultMessage: false,
-      );
+      await searchByCategory('Attractions', showResultMessage: false);
     }
   }
 
-  // User map drag করলে visible location update হবে।
   void onCameraMove(CameraPosition position) {
     visibleCameraPosition = position;
   }
 
-  // Map-এর সাধারণ কোনো location-এ tap করলে details load করবে।
   Future<void> onMapTap(LatLng position) async {
     try {
       debugPrint('========================================');
@@ -977,11 +1488,7 @@ class MapController extends GetxController {
         ),
       );
 
-      await moveCamera(
-        position.latitude,
-        position.longitude,
-        zoom: 16,
-      );
+      await moveCamera(position.latitude, position.longitude, zoom: 16);
 
       final placeId = await getNearbyPlaceDetails(
         position.latitude,
@@ -991,8 +1498,7 @@ class MapController extends GetxController {
       if (placeId != null) {
         await getPlaceDetails(placeId);
       } else {
-        final List<Placemark> placemarks =
-            await placemarkFromCoordinates(
+        final List<Placemark> placemarks = await placemarkFromCoordinates(
           position.latitude,
           position.longitude,
         );
@@ -1027,10 +1533,8 @@ class MapController extends GetxController {
           position: position,
           consumeTapEvents: true,
           infoWindow: InfoWindow(
-            title:
-                selectedPlaceDetails['name'] ?? 'Selected Location',
-            snippet:
-                selectedPlaceDetails['fullAddress'] ?? '',
+            title: selectedPlaceDetails['name'] ?? 'Selected Location',
+            snippet: selectedPlaceDetails['fullAddress'] ?? '',
           ),
           onTap: () {
             showPlaceDetails.value = true;
@@ -1038,7 +1542,6 @@ class MapController extends GetxController {
         ),
       );
 
-      // Information card open করবে।
       showPlaceDetails.value = true;
 
       await searchNearbyPlaces(
@@ -1047,19 +1550,13 @@ class MapController extends GetxController {
         selectedNearbyCategory.value,
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to get location details: $e',
-      );
+      Get.snackbar('Error', 'Failed to get location details: $e');
     } finally {
       isLoadingPlaceDetails.value = false;
     }
   }
 
-  Future<String?> getNearbyPlaceDetails(
-    double lat,
-    double lng,
-  ) async {
+  Future<String?> getNearbyPlaceDetails(double lat, double lng) async {
     try {
       final url =
           'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
@@ -1072,8 +1569,7 @@ class MapController extends GetxController {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        if (data['results'] != null &&
-            data['results'].isNotEmpty) {
+        if (data['results'] != null && data['results'].isNotEmpty) {
           final place = data['results'][0];
 
           if (place['place_id'] != null) {
@@ -1114,35 +1610,31 @@ class MapController extends GetxController {
           }
 
           selectedPlaceDetails.assignAll({
-            'name':
-                result['name'] ?? 'Unknown Location',
+            'name': result['name'] ?? 'Unknown Location',
             'fullAddress':
-                result['formatted_address'] ??
-                    'Address not available',
-            'phone':
-                result['formatted_phone_number'] ?? 'N/A',
+                result['formatted_address'] ?? 'Address not available',
+            'phone': result['formatted_phone_number'] ?? 'N/A',
             'rating': result['rating'] ?? 'N/A',
             'website': result['website'] ?? 'N/A',
             'types': result['types'] ?? [],
-            'openingHours':
-                result['opening_hours']?['weekday_text'] ?? [],
-            'isOpen':
-                result['opening_hours']?['open_now'] ?? false,
+            'openingHours': result['opening_hours']?['weekday_text'] ?? [],
+            'isOpen': result['opening_hours']?['open_now'] ?? false,
             'photos': allPhotos,
             'reviews': result['reviews'] ?? [],
             'priceLevel': result['price_level'] ?? 'N/A',
             'latitude':
                 geometry?['location']?['lat'] ??
-                    selectedPlaceDetails['latitude'],
+                selectedPlaceDetails['latitude'],
             'longitude':
                 geometry?['location']?['lng'] ??
-                    selectedPlaceDetails['longitude'],
+                selectedPlaceDetails['longitude'],
             'place_id': placeId,
             'url': result['url'] ?? '',
           });
 
           debugPrint(
-            'Loaded ${allPhotos.length} photos for ${result['name']}',
+            'Loaded ${allPhotos.length} photos for '
+            '${result['name']}',
           );
         }
       }
@@ -1151,7 +1643,6 @@ class MapController extends GetxController {
     }
   }
 
-  // Map-এর custom marker click করলে এই method call হবে।
   Future<void> openPlaceFromMap({
     required String placeId,
     required String name,
@@ -1164,7 +1655,6 @@ class MapController extends GetxController {
       isLoadingPlaceDetails.value = true;
       searchResults.clear();
 
-      // Full API response আসার আগেই basic information দেখাবে।
       selectedPlaceDetails.assignAll({
         'name': name,
         'fullAddress': address,
@@ -1178,11 +1668,7 @@ class MapController extends GetxController {
 
       showPlaceDetails.value = true;
 
-      await moveCamera(
-        lat,
-        lng,
-        zoom: 16,
-      );
+      await moveCamera(lat, lng, zoom: 16);
 
       await getPlaceDetails(placeId);
 
@@ -1194,10 +1680,7 @@ class MapController extends GetxController {
 
       selectedPlaceDetails.refresh();
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to load place details: $e',
-      );
+      Get.snackbar('Error', 'Failed to load place details: $e');
     } finally {
       isLoadingPlaceDetails.value = false;
     }
@@ -1213,11 +1696,9 @@ class MapController extends GetxController {
     try {
       isSearching.value = true;
 
-      final currentLat =
-          visibleCameraPosition.target.latitude;
+      final currentLat = visibleCameraPosition.target.latitude;
 
-      final currentLng =
-          visibleCameraPosition.target.longitude;
+      final currentLng = visibleCameraPosition.target.longitude;
 
       final encodedQuery = Uri.encodeQueryComponent(query.trim());
 
@@ -1240,16 +1721,11 @@ class MapController extends GetxController {
                 (place) => {
                   'name': place['name'],
                   'address':
-                      place['formatted_address'] ??
-                          place['vicinity'] ??
-                          '',
-                  'lat':
-                      place['geometry']['location']['lat'],
-                  'lng':
-                      place['geometry']['location']['lng'],
+                      place['formatted_address'] ?? place['vicinity'] ?? '',
+                  'lat': place['geometry']['location']['lat'],
+                  'lng': place['geometry']['location']['lng'],
                   'place_id': place['place_id'],
-                  'rating':
-                      place['rating']?.toString() ?? 'N/A',
+                  'rating': place['rating']?.toString() ?? 'N/A',
                   'types': place['types'] ?? [],
                 },
               ),
@@ -1258,10 +1734,7 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to search: $e',
-      );
+      Get.snackbar('Error', 'Failed to search: $e');
     } finally {
       isSearching.value = false;
     }
@@ -1292,6 +1765,151 @@ class MapController extends GetxController {
     }
   }
 
+  // Google Maps InfoWindow শুধু marker tap করলে দেখা যায়।
+  // তাই custom marker bitmap-এর মধ্যে place name আঁকা হচ্ছে।
+  // এর ফলে attraction-এর নাম map-এ সবসময় visible থাকবে।
+  Future<BitmapDescriptor> _buildNamedMarkerIcon(String placeName) async {
+    final String label = placeName.trim().isEmpty
+        ? 'Unknown Location'
+        : placeName.trim();
+
+    final BitmapDescriptor? cachedIcon = _namedMarkerIconCache[label];
+
+    if (cachedIcon != null) {
+      return cachedIcon;
+    }
+
+    const double minMarkerWidth = 96;
+    const double maxMarkerWidth = 190;
+    const double markerHeight = 72;
+    const double labelHeight = 30;
+    const double horizontalPadding = 12;
+    const double pixelRatio = 3;
+
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(
+          color: Color(0xFF222222),
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+      ellipsis: '…',
+    )..layout(maxWidth: maxMarkerWidth - (horizontalPadding * 2));
+
+    final double markerWidth = max(
+      minMarkerWidth,
+      textPainter.width + (horizontalPadding * 2),
+    ).clamp(minMarkerWidth, maxMarkerWidth).toDouble();
+
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+
+    final ui.Canvas canvas = ui.Canvas(recorder)..scale(pixelRatio);
+
+    final ui.Rect labelRect = ui.Rect.fromLTWH(0, 0, markerWidth, labelHeight);
+
+    final ui.Path labelPath = ui.Path()
+      ..addRRect(
+        ui.RRect.fromRectAndRadius(labelRect, const ui.Radius.circular(8)),
+      );
+
+    canvas.drawShadow(labelPath, const Color(0x55000000), 3, true);
+
+    canvas.drawPath(
+      labelPath,
+      ui.Paint()
+        ..color = Colors.white
+        ..style = ui.PaintingStyle.fill,
+    );
+
+    canvas.drawPath(
+      labelPath,
+      ui.Paint()
+        ..color = const Color(0x22000000)
+        ..style = ui.PaintingStyle.stroke
+        ..strokeWidth = 1,
+    );
+
+    textPainter.paint(
+      canvas,
+      Offset(
+        (markerWidth - textPainter.width) / 2,
+        (labelHeight - textPainter.height) / 2,
+      ),
+    );
+
+    final double pinCenterX = markerWidth / 2;
+
+    final ui.Path pinPath = ui.Path()
+      ..moveTo(pinCenterX, markerHeight - 2)
+      ..cubicTo(pinCenterX - 2, 63, pinCenterX - 13, 55, pinCenterX - 13, 44)
+      ..cubicTo(pinCenterX - 13, 36.8, pinCenterX - 7.2, 31, pinCenterX, 31)
+      ..cubicTo(
+        pinCenterX + 7.2,
+        31,
+        pinCenterX + 13,
+        36.8,
+        pinCenterX + 13,
+        44,
+      )
+      ..cubicTo(
+        pinCenterX + 13,
+        55,
+        pinCenterX + 2,
+        63,
+        pinCenterX,
+        markerHeight - 2,
+      )
+      ..close();
+
+    canvas.drawShadow(pinPath, const Color(0x66000000), 3, true);
+
+    canvas.drawPath(
+      pinPath,
+      ui.Paint()
+        ..color = const Color(0xFFE53935)
+        ..style = ui.PaintingStyle.fill,
+    );
+
+    canvas.drawCircle(
+      Offset(pinCenterX, 44),
+      4.5,
+      ui.Paint()
+        ..color = Colors.white
+        ..style = ui.PaintingStyle.fill,
+    );
+
+    final ui.Image markerImage = await recorder.endRecording().toImage(
+      (markerWidth * pixelRatio).ceil(),
+      (markerHeight * pixelRatio).ceil(),
+    );
+
+    final ByteData? pngData = await markerImage.toByteData(
+      format: ui.ImageByteFormat.png,
+    );
+
+    markerImage.dispose();
+
+    if (pngData == null) {
+      return BitmapDescriptor.defaultMarker;
+    }
+
+    final Uint8List bytes = pngData.buffer.asUint8List();
+
+    final BitmapDescriptor markerIcon = BitmapDescriptor.bytes(
+      bytes,
+      width: markerWidth,
+      height: markerHeight,
+    );
+
+    _namedMarkerIconCache[label] = markerIcon;
+
+    return markerIcon;
+  }
+
   Future<void> searchByCategory(
     String category, {
     bool showResultMessage = true,
@@ -1300,14 +1918,11 @@ class MapController extends GetxController {
       isSearching.value = true;
       selectedMapCategory.value = category;
 
-      final placeType =
-          _placeTypeForCategoryChip(category);
+      final placeType = _placeTypeForCategoryChip(category);
 
-      final currentLat =
-          visibleCameraPosition.target.latitude;
+      final currentLat = visibleCameraPosition.target.latitude;
 
-      final currentLng =
-          visibleCameraPosition.target.longitude;
+      final currentLng = visibleCameraPosition.target.longitude;
 
       final url =
           'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
@@ -1325,36 +1940,33 @@ class MapController extends GetxController {
           markers.clear();
 
           for (final place in data['results']) {
-            final double lat =
-                (place['geometry']['location']['lat'] as num)
-                    .toDouble();
+            final double lat = (place['geometry']['location']['lat'] as num)
+                .toDouble();
 
-            final double lng =
-                (place['geometry']['location']['lng'] as num)
-                    .toDouble();
+            final double lng = (place['geometry']['location']['lng'] as num)
+                .toDouble();
 
-            final String placeId =
-                place['place_id'].toString();
+            final String placeId = place['place_id'].toString();
 
-            final String placeName =
-                (place['name'] ?? 'Unknown Location')
-                    .toString();
+            final String placeName = (place['name'] ?? 'Unknown Location')
+                .toString();
 
             final String placeAddress =
-                (place['vicinity'] ??
-                        place['formatted_address'] ??
-                        '')
+                (place['vicinity'] ?? place['formatted_address'] ?? '')
                     .toString();
+
+            // Place name-সহ custom marker তৈরি করা হচ্ছে।
+            final BitmapDescriptor namedMarkerIcon =
+                await _buildNamedMarkerIcon(placeName);
 
             markers.add(
               Marker(
                 markerId: MarkerId(placeId),
                 position: LatLng(lat, lng),
+                icon: namedMarkerIcon,
+                anchor: const Offset(0.5, 1.0),
                 consumeTapEvents: true,
-                infoWindow: InfoWindow(
-                  title: placeName,
-                  snippet: placeAddress,
-                ),
+                infoWindow: InfoWindow(title: placeName, snippet: placeAddress),
                 onTap: () async {
                   await openPlaceFromMap(
                     placeId: placeId,
@@ -1369,24 +1981,18 @@ class MapController extends GetxController {
             );
           }
 
-          if (showResultMessage &&
-              data['results'].isNotEmpty) {
-            final resultsCount =
-                data['results'].length as int;
+          if (showResultMessage && data['results'].isNotEmpty) {
+            final resultsCount = data['results'].length as int;
 
             final hasMore =
                 data['next_page_token'] != null &&
-                    data['next_page_token']
-                        .toString()
-                        .isNotEmpty;
+                data['next_page_token'].toString().isNotEmpty;
 
-            final displayCount =
-                hasMore ? '$resultsCount+' : '$resultsCount';
+            final displayCount = hasMore ? '$resultsCount+' : '$resultsCount';
 
-            final countLabel =
-                category == 'Attractions'
-                    ? 'attractions'
-                    : category.toLowerCase();
+            final countLabel = category == 'Attractions'
+                ? 'attractions'
+                : category.toLowerCase();
 
             Get.snackbar(
               'Results',
@@ -1398,34 +2004,27 @@ class MapController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to search category: $e',
-      );
+      Get.snackbar('Error', 'Failed to search category: $e');
     } finally {
       isSearching.value = false;
     }
   }
 
-  Future<void> selectSearchResult(
-    Map<String, dynamic> result,
-  ) async {
+  Future<void> selectSearchResult(Map<String, dynamic> result) async {
     try {
-      final double lat =
-          (result['lat'] as num).toDouble();
+      final double lat = (result['lat'] as num).toDouble();
 
-      final double lng =
-          (result['lng'] as num).toDouble();
+      final double lng = (result['lng'] as num).toDouble();
 
-      final String placeId =
-          result['place_id'].toString();
+      final String placeId = result['place_id'].toString();
 
-      final String name =
-          (result['name'] ?? 'Unknown Location')
-              .toString();
+      final String name = (result['name'] ?? 'Unknown Location').toString();
 
-      final String address =
-          (result['address'] ?? '').toString();
+      final String address = (result['address'] ?? '').toString();
+
+      final BitmapDescriptor namedMarkerIcon = await _buildNamedMarkerIcon(
+        name,
+      );
 
       markers.clear();
 
@@ -1433,11 +2032,10 @@ class MapController extends GetxController {
         Marker(
           markerId: MarkerId(placeId),
           position: LatLng(lat, lng),
+          icon: namedMarkerIcon,
+          anchor: const Offset(0.5, 1.0),
           consumeTapEvents: true,
-          infoWindow: InfoWindow(
-            title: name,
-            snippet: address,
-          ),
+          infoWindow: InfoWindow(title: name, snippet: address),
           onTap: () async {
             await openPlaceFromMap(
               placeId: placeId,
@@ -1462,22 +2060,12 @@ class MapController extends GetxController {
         rating: result['rating'],
       );
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to select location: $e',
-      );
+      Get.snackbar('Error', 'Failed to select location: $e');
     }
   }
 
-  Future<void> moveCamera(
-    double lat,
-    double lng, {
-    double zoom = 15,
-  }) async {
-    final newPosition = CameraPosition(
-      target: LatLng(lat, lng),
-      zoom: zoom,
-    );
+  Future<void> moveCamera(double lat, double lng, {double zoom = 15}) async {
+    final newPosition = CameraPosition(target: LatLng(lat, lng), zoom: zoom);
 
     cameraPosition.value = newPosition;
     visibleCameraPosition = newPosition;
@@ -1491,20 +2079,17 @@ class MapController extends GetxController {
 
   Future<void> getUserLocation() async {
     try {
-      final bool serviceEnabled =
-          await Geolocator.isLocationServiceEnabled();
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
       if (!serviceEnabled) {
         debugPrint('Location services are disabled');
         return;
       }
 
-      LocationPermission permission =
-          await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
 
       if (permission == LocationPermission.denied) {
-        permission =
-            await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission();
 
         if (permission == LocationPermission.denied) {
           debugPrint('Location permission denied');
@@ -1512,16 +2097,12 @@ class MapController extends GetxController {
         }
       }
 
-      if (permission ==
-          LocationPermission.deniedForever) {
-        debugPrint(
-          'Location permission permanently denied',
-        );
+      if (permission == LocationPermission.deniedForever) {
+        debugPrint('Location permission permanently denied');
         return;
       }
 
-      final Position position =
-          await Geolocator.getCurrentPosition(
+      final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
@@ -1530,17 +2111,15 @@ class MapController extends GetxController {
       hasUserLocation.value = true;
 
       cameraPosition.value = CameraPosition(
-        target: LatLng(
-          position.latitude,
-          position.longitude,
-        ),
+        target: LatLng(position.latitude, position.longitude),
         zoom: 16,
       );
 
       visibleCameraPosition = cameraPosition.value;
 
       debugPrint(
-        'User location: ${position.latitude}, ${position.longitude}',
+        'User location: ${position.latitude}, '
+        '${position.longitude}',
       );
     } catch (e) {
       debugPrint('Failed to get user location: $e');
@@ -1550,44 +2129,34 @@ class MapController extends GetxController {
 
   Future<void> getCurrentLocation() async {
     try {
-      final bool serviceEnabled =
-          await Geolocator.isLocationServiceEnabled();
+      final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
       if (!serviceEnabled) {
-        Get.snackbar(
-          'Error',
-          'Location services are disabled',
-        );
+        Get.snackbar('Error', 'Location services are disabled');
         return;
       }
 
-      LocationPermission permission =
-          await Geolocator.checkPermission();
+      LocationPermission permission = await Geolocator.checkPermission();
 
       if (permission == LocationPermission.denied) {
-        permission =
-            await Geolocator.requestPermission();
+        permission = await Geolocator.requestPermission();
 
         if (permission == LocationPermission.denied) {
-          Get.snackbar(
-            'Error',
-            'Location permission denied',
-          );
+          Get.snackbar('Error', 'Location permission denied');
           return;
         }
       }
 
-      if (permission ==
-          LocationPermission.deniedForever) {
+      if (permission == LocationPermission.deniedForever) {
         Get.snackbar(
           'Error',
-          'Location permission permanently denied. Please enable it from settings.',
+          'Location permission permanently denied. '
+              'Please enable it from settings.',
         );
         return;
       }
 
-      final Position position =
-          await Geolocator.getCurrentPosition(
+      final Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
 
@@ -1595,11 +2164,7 @@ class MapController extends GetxController {
       userLng.value = position.longitude;
       hasUserLocation.value = true;
 
-      await moveCamera(
-        position.latitude,
-        position.longitude,
-        zoom: 16,
-      );
+      await moveCamera(position.latitude, position.longitude, zoom: 16);
 
       final placeId = await getNearbyPlaceDetails(
         position.latitude,
@@ -1613,23 +2178,14 @@ class MapController extends GetxController {
 
         markers.add(
           Marker(
-            markerId:
-                const MarkerId('current_location'),
-            position: LatLng(
-              position.latitude,
-              position.longitude,
-            ),
+            markerId: const MarkerId('current_location'),
+            position: LatLng(position.latitude, position.longitude),
             consumeTapEvents: true,
             infoWindow: InfoWindow(
-              title:
-                  selectedPlaceDetails['name'] ??
-                      'Current Location',
-              snippet:
-                  selectedPlaceDetails['fullAddress'] ??
-                      '',
+              title: selectedPlaceDetails['name'] ?? 'Current Location',
+              snippet: selectedPlaceDetails['fullAddress'] ?? '',
             ),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(
+            icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueBlue,
             ),
             onTap: () {
@@ -1654,18 +2210,11 @@ class MapController extends GetxController {
 
         markers.add(
           Marker(
-            markerId:
-                const MarkerId('current_location'),
-            position: LatLng(
-              position.latitude,
-              position.longitude,
-            ),
+            markerId: const MarkerId('current_location'),
+            position: LatLng(position.latitude, position.longitude),
             consumeTapEvents: true,
-            infoWindow: const InfoWindow(
-              title: 'Current Location',
-            ),
-            icon:
-                BitmapDescriptor.defaultMarkerWithHue(
+            infoWindow: const InfoWindow(title: 'Current Location'),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
               BitmapDescriptor.hueBlue,
             ),
             onTap: () {
@@ -1675,10 +2224,7 @@ class MapController extends GetxController {
         );
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'Failed to get current location: $e',
-      );
+      Get.snackbar('Error', 'Failed to get current location: $e');
     }
   }
 
@@ -1691,8 +2237,7 @@ class MapController extends GetxController {
       return place.locality!;
     }
 
-    if (place.administrativeArea?.isNotEmpty ??
-        false) {
+    if (place.administrativeArea?.isNotEmpty ?? false) {
       return place.administrativeArea!;
     }
 
@@ -1720,8 +2265,7 @@ class MapController extends GetxController {
       parts.add(place.locality!);
     }
 
-    if (place.administrativeArea?.isNotEmpty ??
-        false) {
+    if (place.administrativeArea?.isNotEmpty ?? false) {
       parts.add(place.administrativeArea!);
     }
 
@@ -1732,10 +2276,7 @@ class MapController extends GetxController {
     return parts.join(', ');
   }
 
-  String getPhotoUrl(
-    String photoReference, {
-    int maxWidth = 800,
-  }) {
+  String getPhotoUrl(String photoReference, {int maxWidth = 800}) {
     return 'https://maps.googleapis.com/maps/api/place/photo'
         '?maxwidth=$maxWidth'
         '&photo_reference=$photoReference'
@@ -1749,30 +2290,18 @@ class MapController extends GetxController {
   }) {
     final List<String> urls = [];
 
-    final count =
-        photos.length > maxCount
-            ? maxCount
-            : photos.length;
+    final count = photos.length > maxCount ? maxCount : photos.length;
 
     for (int i = 0; i < count; i++) {
       if (photos[i]['photo_reference'] != null) {
-        urls.add(
-          getPhotoUrl(
-            photos[i]['photo_reference'],
-            maxWidth: maxWidth,
-          ),
-        );
+        urls.add(getPhotoUrl(photos[i]['photo_reference'], maxWidth: maxWidth));
       }
     }
 
     return urls;
   }
 
-  Future<void> searchNearbyPlaces(
-    double lat,
-    double lng,
-    String type,
-  ) async {
+  Future<void> searchNearbyPlaces(double lat, double lng, String type) async {
     try {
       isLoadingNearbyPlaces.value = true;
       nearbyPlaces.clear();
@@ -1792,59 +2321,41 @@ class MapController extends GetxController {
         if (data['results'] != null) {
           nearbyPlaces.assignAll(
             List<Map<String, dynamic>>.from(
-              data['results'].take(10).map(
-                (place) {
-                  final double placeLat =
-                      (place['geometry']['location']['lat']
-                              as num)
-                          .toDouble();
+              data['results'].take(10).map((place) {
+                final double placeLat =
+                    (place['geometry']['location']['lat'] as num).toDouble();
 
-                  final double placeLng =
-                      (place['geometry']['location']['lng']
-                              as num)
-                          .toDouble();
+                final double placeLng =
+                    (place['geometry']['location']['lng'] as num).toDouble();
 
-                  final distance = _calculateDistance(
-                    lat,
-                    lng,
-                    placeLat,
-                    placeLng,
-                  );
+                final distance = _calculateDistance(
+                  lat,
+                  lng,
+                  placeLat,
+                  placeLng,
+                );
 
-                  return {
-                    'name': place['name'],
-                    'vicinity': place['vicinity'],
-                    'address':
-                        place['formatted_address'] ??
-                            place['vicinity'],
-                    'rating': place['rating'],
-                    'latitude': placeLat,
-                    'longitude': placeLng,
-                    'place_id': place['place_id'],
-                    'photo':
-                        place['photos']?[0]
-                            ?['photo_reference'],
-                    'distance':
-                        distance.toStringAsFixed(1),
-                    'isOpen':
-                        place['opening_hours']
-                            ?['open_now'],
-                  };
-                },
-              ),
+                return {
+                  'name': place['name'],
+                  'vicinity': place['vicinity'],
+                  'address': place['formatted_address'] ?? place['vicinity'],
+                  'rating': place['rating'],
+                  'latitude': placeLat,
+                  'longitude': placeLng,
+                  'place_id': place['place_id'],
+                  'photo': place['photos']?[0]?['photo_reference'],
+                  'distance': distance.toStringAsFixed(1),
+                  'isOpen': place['opening_hours']?['open_now'],
+                };
+              }),
             ),
           );
         }
       }
     } catch (e) {
-      debugPrint(
-        'Error searching nearby places: $e',
-      );
+      debugPrint('Error searching nearby places: $e');
 
-      Get.snackbar(
-        'Error',
-        'Failed to load nearby places',
-      );
+      Get.snackbar('Error', 'Failed to load nearby places');
     } finally {
       isLoadingNearbyPlaces.value = false;
     }
@@ -1858,24 +2369,17 @@ class MapController extends GetxController {
   ) {
     const double earthRadius = 6371;
 
-    final dLat =
-        _degreesToRadians(lat2 - lat1);
+    final dLat = _degreesToRadians(lat2 - lat1);
 
-    final dLon =
-        _degreesToRadians(lon2 - lon1);
+    final dLon = _degreesToRadians(lon2 - lon1);
 
     final a =
         (sin(dLat / 2) * sin(dLat / 2)) +
-            cos(_degreesToRadians(lat1)) *
-                cos(_degreesToRadians(lat2)) *
-                (sin(dLon / 2) *
-                    sin(dLon / 2));
+        cos(_degreesToRadians(lat1)) *
+            cos(_degreesToRadians(lat2)) *
+            (sin(dLon / 2) * sin(dLon / 2));
 
-    final c =
-        2 * atan2(
-          sqrt(a),
-          sqrt(1 - a),
-        );
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
     return earthRadius * c;
   }
@@ -1884,30 +2388,19 @@ class MapController extends GetxController {
     return degrees * pi / 180;
   }
 
-  Future<void> openInGoogleMaps(
-    double lat,
-    double lng,
-  ) async {
+  Future<void> openInGoogleMaps(double lat, double lng) async {
     try {
-      final googleMapsUrl =
-          Uri.parse(
-        'google.navigation:q=$lat,$lng',
-      );
+      final googleMapsUrl = Uri.parse('google.navigation:q=$lat,$lng');
 
-      final googleMapsWebUrl =
-          Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+      final googleMapsWebUrl = Uri.parse(
+        'https://www.google.com/maps/search/'
+        '?api=1&query=$lat,$lng',
       );
 
       if (await canLaunchUrl(googleMapsUrl)) {
         await launchUrl(googleMapsUrl);
-      } else if (await canLaunchUrl(
-        googleMapsWebUrl,
-      )) {
-        await launchUrl(
-          googleMapsWebUrl,
-          mode: LaunchMode.externalApplication,
-        );
+      } else if (await canLaunchUrl(googleMapsWebUrl)) {
+        await launchUrl(googleMapsWebUrl, mode: LaunchMode.externalApplication);
       } else {
         Get.snackbar(
           'Error',
@@ -1926,18 +2419,14 @@ class MapController extends GetxController {
     }
   }
 
-  Future<void> savePlace(
-    Map<String, dynamic> placeData,
-  ) async {
+  Future<void> savePlace(Map<String, dynamic> placeData) async {
     try {
-      final token =
-          Get.find<StorageService>().getAccessToken();
+      final token = Get.find<StorageService>().getAccessToken();
 
       if (token == null || token.isEmpty) {
         debugPrint('No access token found');
-        EasyLoading.showError(
-          'Authentication required',
-        );
+
+        EasyLoading.showError('Authentication required');
         return;
       }
 
@@ -1954,52 +2443,38 @@ class MapController extends GetxController {
           await profile.fetchSavedPlaces();
         }
       } catch (e) {
-        debugPrint(
-          'Error accessing ProfileController: $e',
-        );
+        debugPrint('Error accessing ProfileController: $e');
       }
 
-      final placeName =
-          (placeData['place_name'] ??
-                  placeData['name'] ??
-                  '')
-              .toString();
+      final placeName = (placeData['place_name'] ?? placeData['name'] ?? '')
+          .toString();
 
       if (placeName.isNotEmpty) {
         try {
           if (Get.isRegistered<ProfileController>()) {
-            final profileController =
-                Get.find<ProfileController>();
+            final profileController = Get.find<ProfileController>();
 
-            if (profileController.isPlaceSaved(
-              placeName,
-            )) {
+            if (profileController.isPlaceSaved(placeName)) {
               EasyLoading.showInfo('Already saved');
 
               Get.snackbar(
                 'Info',
                 '$placeName already saved',
-                snackPosition:
-                    SnackPosition.BOTTOM,
+                snackPosition: SnackPosition.BOTTOM,
               );
 
               return;
             }
           }
         } catch (e) {
-          debugPrint(
-            'Error checking saved places: $e',
-          );
+          debugPrint('Error checking saved places: $e');
         }
       }
 
       EasyLoading.show(status: 'Saving...');
 
       final normalizedName =
-          (placeData['place_name'] ??
-                  placeData['name'] ??
-                  '')
-              .toString();
+          (placeData['place_name'] ?? placeData['name'] ?? '').toString();
 
       final normalizedAddress =
           (placeData['place_address'] ??
@@ -2009,67 +2484,46 @@ class MapController extends GetxController {
               .toString();
 
       final normalizedDescription =
-          (placeData['place_description'] ??
-                  normalizedAddress)
-              .toString();
+          (placeData['place_description'] ?? normalizedAddress).toString();
 
-      final normalizedImage =
-          (placeData['place_image'] ?? '')
-              .toString();
+      final normalizedImage = (placeData['place_image'] ?? '').toString();
 
-      final rawRating =
-          (placeData['place_rating'] ??
-                  placeData['rating'] ??
-                  '')
-              .toString();
+      final rawRating = (placeData['place_rating'] ?? placeData['rating'] ?? '')
+          .toString();
 
-      final normalizedRating =
-          rawRating == 'N/A' ||
-                  rawRating == 'null'
-              ? ''
-              : rawRating;
+      final normalizedRating = rawRating == 'N/A' || rawRating == 'null'
+          ? ''
+          : rawRating;
 
-      final normalizedLat =
-          placeData['latitude'] ??
-              placeData['lat'] ??
-              0.0;
+      final normalizedLat = placeData['latitude'] ?? placeData['lat'] ?? 0.0;
 
-      final normalizedLng =
-          placeData['longitude'] ??
-              placeData['lng'] ??
-              0.0;
+      final normalizedLng = placeData['longitude'] ?? placeData['lng'] ?? 0.0;
 
-      final rawPlaceId =
-          (placeData['place_id'] ??
-                  placeData['id'] ??
-                  '')
-              .toString()
-              .trim();
+      final rawPlaceId = (placeData['place_id'] ?? placeData['id'] ?? '')
+          .toString()
+          .trim();
 
-      final normalizedPlaceId =
-          rawPlaceId.isNotEmpty
-              ? rawPlaceId
-              : 'custom_${normalizedLat.toStringAsFixed(6)}_'
-                  '${normalizedLng.toStringAsFixed(6)}';
+      final normalizedPlaceId = rawPlaceId.isNotEmpty
+          ? rawPlaceId
+          : 'custom_'
+                '${normalizedLat.toStringAsFixed(6)}_'
+                '${normalizedLng.toStringAsFixed(6)}';
 
       final payload = <String, dynamic>{
         'place_id': normalizedPlaceId,
         'place_name': normalizedName,
-        'place_description':
-            normalizedDescription.isNotEmpty
-                ? normalizedDescription
-                : normalizedName,
-        if (normalizedAddress.isNotEmpty)
-          'place_address': normalizedAddress,
-        if (normalizedImage.isNotEmpty)
-          'place_image': normalizedImage,
-        if (normalizedRating.isNotEmpty)
-          'place_rating': normalizedRating,
+        'place_description': normalizedDescription.isNotEmpty
+            ? normalizedDescription
+            : normalizedName,
+        if (normalizedAddress.isNotEmpty) 'place_address': normalizedAddress,
+        if (normalizedImage.isNotEmpty) 'place_image': normalizedImage,
+        if (normalizedRating.isNotEmpty) 'place_rating': normalizedRating,
         'latitude': normalizedLat,
         'longitude': normalizedLng,
       };
 
       debugPrint('API: ${Url.savePlace}');
+
       debugPrint('Sending payload: $payload');
 
       final response = await http.post(
@@ -2081,43 +2535,36 @@ class MapController extends GetxController {
         body: jsonEncode(payload),
       );
 
-      debugPrint(
-        'Save place status: ${response.statusCode}',
-      );
+      debugPrint('Save place status: ${response.statusCode}');
 
-      debugPrint(
-        'Save place body: ${response.body}',
-      );
+      debugPrint('Save place body: ${response.body}');
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         EasyLoading.dismiss();
+
         EasyLoading.showSuccess('Place saved');
 
         Get.snackbar(
           'Saved',
-          '${normalizedName.isNotEmpty ? normalizedName : 'Place'} saved successfully',
+          '${normalizedName.isNotEmpty ? normalizedName : 'Place'} '
+              'saved successfully',
           snackPosition: SnackPosition.BOTTOM,
         );
 
         try {
           if (Get.isRegistered<ProfileController>()) {
-            final profileController =
-                Get.find<ProfileController>();
+            final profileController = Get.find<ProfileController>();
 
-            profileController
-                .hasLoadedSavedPlaces
-                .value = false;
+            profileController.hasLoadedSavedPlaces.value = false;
 
             await profileController.fetchSavedPlaces();
           }
         } catch (e) {
-          debugPrint(
-            'Error refreshing saved places: $e',
-          );
+          debugPrint('Error refreshing saved places: $e');
         }
       } else {
         EasyLoading.dismiss();
+
         EasyLoading.showError('Failed to save');
 
         Get.snackbar(
@@ -2129,9 +2576,7 @@ class MapController extends GetxController {
     } catch (e) {
       EasyLoading.dismiss();
 
-      debugPrint(
-        'Exception saving place: $e',
-      );
+      debugPrint('Exception saving place: $e');
 
       EasyLoading.showError('Failed to save');
     }
@@ -2140,10 +2585,13 @@ class MapController extends GetxController {
   @override
   void onClose() {
     gMapController?.dispose();
+
     markers.clear();
+    _namedMarkerIconCache.clear();
     searchResults.clear();
     nearbyPlaces.clear();
     selectedPlaceDetails.clear();
+
     super.onClose();
   }
 }
