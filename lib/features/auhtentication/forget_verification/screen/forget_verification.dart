@@ -1,5 +1,205 @@
-import 'package:ai_powered_tourists_app/features/auhtentication/forget_verification/controller/forget_verification_controller.dart';
+// import 'package:ai_powered_tourists_app/features/auhtentication/forget_verification/controller/forget_verification_controller.dart';
 
+// import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
+// import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:get/get.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import 'package:pinput/pinput.dart';
+
+// class ForgetVerification extends StatelessWidget {
+//   final String? email;
+//   const ForgetVerification({super.key, this.email});
+
+//   @override
+//   Widget build(BuildContext context) {
+//       final ForgetVerificationController controller = Get.put(ForgetVerificationController(email: email ?? ''));
+      
+//     final defaultPinTheme = PinTheme(
+//       width: 54.w,
+//       height: 60.h,
+//       textStyle: GoogleFonts.inter(
+//         color: AppColors.textPrimary,
+//         fontSize: 20.sp,
+//         fontWeight: FontWeight.w500,
+//       ),
+//       decoration: BoxDecoration(
+//         color: Colors.white,
+//         borderRadius: BorderRadius.circular(8.r),
+//         border: Border.all(color: const Color(0xFFE6E6E6)),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withValues(alpha: .04),
+//             blurRadius: 6,
+//             offset: const Offset(0, 2),
+//           ),
+//         ],
+//       ),
+//     );
+
+//     // focused theme (slightly bolder border)
+//     final focusedPinTheme = defaultPinTheme.copyWith(
+//       decoration: defaultPinTheme.decoration!.copyWith(
+//         border: Border.all(color: const Color(0xff505050) , width: 1.w),
+//       ),
+//     );
+
+//     // green theme used when all boxes are filled (matches the provided image style)
+//     final filledPinTheme = defaultPinTheme.copyWith(
+//       decoration: BoxDecoration(
+//         color: const Color(0xFFBEE84F), // change this hex to match the exact shade you want
+//         borderRadius: BorderRadius.circular(8.r),
+//         border: Border.all(color: Colors.transparent),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withValues(alpha: .06),
+//             blurRadius: 6,
+//             offset: const Offset(0, 2),
+//           ),
+//         ],
+//       ),
+//       textStyle: GoogleFonts.inter(
+//         color: Colors.white, // white text on green background (like the image)
+//         fontSize: 20.sp,
+//         fontWeight: FontWeight.w600,
+//       ),
+//     );
+
+//     return Scaffold(
+//        resizeToAvoidBottomInset: false,
+//       backgroundColor: AppColors.backgroundColor,
+//       body: SafeArea(child: Padding(padding:  EdgeInsets.symmetric(horizontal: 12.w),
+//       child: Column(
+//            crossAxisAlignment: CrossAxisAlignment.start,
+//            children: [
+//               SizedBox(height: 105.h),
+//               Center(
+//                 child: Text(
+//                   "Verify Your E-mail",
+//                   style: GoogleFonts.inter(
+//                     color: AppColors.textPrimary,
+//                     fontSize: 22.sp,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//               ),
+//                SizedBox(height: 6.h),
+//                 Center(
+//                 child: Text(
+//                   "We have sent the OTP code to example@gmail.com",
+//                   style: GoogleFonts.inter(
+//                     fontSize: 12.sp,
+//                     fontWeight: FontWeight.w400,
+//                     color: const Color(0xff505050),
+//                   ),
+//                 ),
+//               ),
+//                SizedBox(height: 1.h),
+//                 Center(
+//                 child: Text(
+//                   "the process",
+//                   style: GoogleFonts.inter(
+//                     fontSize: 12.sp,
+//                     fontWeight: FontWeight.w400,
+//                     color: const Color(0xff505050),
+//                   ),
+//                 ),
+//               ),
+//                  SizedBox(height: 32.h),
+//                  Center(
+//                 child: Obx(
+//                   () => Pinput(
+//                     length: 6,
+//                     controller: controller.pinputController,
+//                     defaultPinTheme: defaultPinTheme,
+//                     focusedPinTheme: focusedPinTheme,
+//                     // Use filledPinTheme when all digits are entered, otherwise use defaultPinTheme
+//                     submittedPinTheme: controller.pin.value.trim().length == 6
+//                         ? filledPinTheme
+//                         : defaultPinTheme,
+//                     showCursor: true,
+//                     onChanged: controller.onChanged,
+//                     onCompleted: controller.onCompleted,
+//                     preFilledWidget: Center(
+//                       child: Text(
+//                         '_',
+//                         style: GoogleFonts.inter(
+//                           fontSize: 20.sp,
+//                           color: const Color(0xff252525),
+//                           fontWeight: FontWeight.w600,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//           SizedBox(height: 20.h),
+//           Spacer(),
+//           Obx(
+//             () => controller.pin.value.trim().length == 6
+//                 ? InkWell(
+//                     onTap: () => controller.verifyOtp(controller.pin.value),
+//                     child: Container(
+//                       width: double.infinity,
+//                       height: 48.h,
+//                       decoration: BoxDecoration(
+//                         borderRadius: BorderRadius.circular(12.r),
+//                         image: const DecorationImage(
+//                           image: AssetImage(ImagePath.button),
+//                           fit: BoxFit.cover,
+//                         ),
+//                       ),
+//                       child: Center(
+//                         child: Text(
+//                           "Next",
+//                           style: GoogleFonts.inter(
+//                             fontSize: 20.sp,
+//                             fontWeight: FontWeight.w600,
+//                             color: Colors.white,
+//                             shadows: [
+//                               Shadow(
+//                                 offset: const Offset(0, 1),
+//                                 blurRadius: 4,
+//                                 color: Colors.black.withValues(alpha: 0.4),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     ),
+//                   )
+//                 : Container(
+//                     width: double.infinity,
+//                     height: 48.h,
+//                     decoration: BoxDecoration(
+//                       color: const Color(0xffE1E1E1),
+//                       borderRadius: BorderRadius.circular(12.r),
+//                     ),
+//                     child: Center(
+//                       child: Text(
+//                         "Next",
+//                         style: GoogleFonts.inter(
+//                           fontSize: 14.sp,
+//                           fontWeight: FontWeight.w500,
+//                           color: const Color(0xff878787),
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//           ),
+//           SizedBox(height: 20.h,)
+
+//            ],
+
+//       ),
+      
+//       )),
+//     );
+//   }
+// }
+import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
+import 'package:ai_powered_tourists_app/features/auhtentication/forget_verification/controller/forget_verification_controller.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +210,51 @@ import 'package:pinput/pinput.dart';
 
 class ForgetVerification extends StatelessWidget {
   final String? email;
-  const ForgetVerification({super.key, this.email});
+
+  const ForgetVerification({
+    super.key,
+    this.email,
+  });
+
+  String _getUserEmail() {
+    // Constructor দিয়ে email পাঠালে সেটি আগে নেওয়া হবে
+    final constructorEmail = email?.trim() ?? '';
+
+    if (constructorEmail.isNotEmpty) {
+      return constructorEmail;
+    }
+
+    // Get.arguments দিয়ে email পাঠালে সেটি নেওয়া হবে
+    final arguments = Get.arguments;
+
+    if (arguments is String && arguments.trim().isNotEmpty) {
+      return arguments.trim();
+    }
+
+    if (arguments is Map) {
+      final argumentEmail = arguments['email']?.toString().trim() ?? '';
+
+      if (argumentEmail.isNotEmpty) {
+        return argumentEmail;
+      }
+    }
+
+    // উপরের কোনোভাবে email না এলে saved registration email নেওয়া হবে
+    if (Get.isRegistered<StorageService>()) {
+      return Get.find<StorageService>().getUserEmail()?.trim() ?? '';
+    }
+
+    return '';
+  }
 
   @override
   Widget build(BuildContext context) {
-      final ForgetVerificationController controller = Get.put(ForgetVerificationController(email: email ?? ''));
-      
+    final String userEmail = _getUserEmail();
+
+    final ForgetVerificationController controller = Get.put(
+      ForgetVerificationController(email: userEmail),
+    );
+
     final defaultPinTheme = PinTheme(
       width: 54.w,
       height: 60.h,
@@ -27,7 +266,9 @@ class ForgetVerification extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: const Color(0xFFE6E6E6)),
+        border: Border.all(
+          color: const Color(0xFFE6E6E6),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: .04),
@@ -38,19 +279,22 @@ class ForgetVerification extends StatelessWidget {
       ),
     );
 
-    // focused theme (slightly bolder border)
     final focusedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration!.copyWith(
-        border: Border.all(color: const Color(0xff505050) , width: 1.w),
+        border: Border.all(
+          color: const Color(0xff505050),
+          width: 1.w,
+        ),
       ),
     );
 
-    // green theme used when all boxes are filled (matches the provided image style)
     final filledPinTheme = defaultPinTheme.copyWith(
       decoration: BoxDecoration(
-        color: const Color(0xFFBEE84F), // change this hex to match the exact shade you want
+        color: const Color(0xFFBEE84F),
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: Colors.transparent),
+        border: Border.all(
+          color: Colors.transparent,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: .06),
@@ -60,141 +304,192 @@ class ForgetVerification extends StatelessWidget {
         ],
       ),
       textStyle: GoogleFonts.inter(
-        color: Colors.white, // white text on green background (like the image)
+        color: Colors.white,
         fontSize: 20.sp,
         fontWeight: FontWeight.w600,
       ),
     );
 
     return Scaffold(
-       resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: false,
       backgroundColor: AppColors.backgroundColor,
-      body: SafeArea(child: Padding(padding:  EdgeInsets.symmetric(horizontal: 12.w),
-      child: Column(
-           crossAxisAlignment: CrossAxisAlignment.start,
-           children: [
-              SizedBox(height: 105.h),
-              Center(
-                child: Text(
-                  "Verify Your E-mail",
-                  style: GoogleFonts.inter(
-                    color: AppColors.textPrimary,
-                    fontSize: 22.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-               SizedBox(height: 6.h),
-                Center(
-                child: Text(
-                  "We have sent the OTP code to example@gmail.com",
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xff505050),
-                  ),
-                ),
-              ),
-               SizedBox(height: 1.h),
-                Center(
-                child: Text(
-                  "the process",
-                  style: GoogleFonts.inter(
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    color: const Color(0xff505050),
-                  ),
-                ),
-              ),
-                 SizedBox(height: 32.h),
-                 Center(
-                child: Obx(
-                  () => Pinput(
-                    length: 6,
-                    controller: controller.pinputController,
-                    defaultPinTheme: defaultPinTheme,
-                    focusedPinTheme: focusedPinTheme,
-                    // Use filledPinTheme when all digits are entered, otherwise use defaultPinTheme
-                    submittedPinTheme: controller.pin.value.trim().length == 6
-                        ? filledPinTheme
-                        : defaultPinTheme,
-                    showCursor: true,
-                    onChanged: controller.onChanged,
-                    onCompleted: controller.onCompleted,
-                    preFilledWidget: Center(
-                      child: Text(
-                        '_',
-                        style: GoogleFonts.inter(
-                          fontSize: 20.sp,
-                          color: const Color(0xff252525),
-                          fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          child: Stack(
+            children: [
+              // Back button
+              Positioned(
+                top: 16.h,
+                left: 0,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: Get.back,
+                    borderRadius: BorderRadius.circular(50.r),
+                    child: Container(
+                      width: 42.w,
+                      height: 42.h,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFFE6E6E6),
                         ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.05),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        size: 18.sp,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),
                 ),
               ),
-          SizedBox(height: 20.h),
-          Spacer(),
-          Obx(
-            () => controller.pin.value.trim().length == 6
-                ? InkWell(
-                    onTap: () => controller.verifyOtp(controller.pin.value),
-                    child: Container(
-                      width: double.infinity,
-                      height: 48.h,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.r),
-                        image: const DecorationImage(
-                          image: AssetImage(ImagePath.button),
-                          fit: BoxFit.cover,
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 105.h),
+
+                  Center(
+                    child: Text(
+                      'Verify Your E-mail',
+                      style: GoogleFonts.inter(
+                        color: AppColors.textPrimary,
+                        fontSize: 22.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 6.h),
+
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      child: Text(
+                        userEmail.isNotEmpty
+                            ? 'We have sent the OTP code to $userEmail\nto continue the process'
+                            : 'We have sent the OTP code to your registered e-mail\nto continue the process',
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                          color: const Color(0xff505050),
+                          height: 1.4,
                         ),
                       ),
-                      child: Center(
-                        child: Text(
-                          "Next",
-                          style: GoogleFonts.inter(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(0, 1),
-                                blurRadius: 4,
-                                color: Colors.black.withValues(alpha: 0.4),
-                              ),
-                            ],
+                    ),
+                  ),
+
+                  SizedBox(height: 32.h),
+
+                  Center(
+                    child: Obx(
+                      () => Pinput(
+                        length: 6,
+                        controller: controller.pinputController,
+                        defaultPinTheme: defaultPinTheme,
+                        focusedPinTheme: focusedPinTheme,
+                        submittedPinTheme:
+                            controller.pin.value.trim().length == 6
+                                ? filledPinTheme
+                                : defaultPinTheme,
+                        showCursor: true,
+                        onChanged: controller.onChanged,
+                        onCompleted: controller.onCompleted,
+                        preFilledWidget: Center(
+                          child: Text(
+                            '_',
+                            style: GoogleFonts.inter(
+                              fontSize: 20.sp,
+                              color: const Color(0xff252525),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  )
-                : Container(
-                    width: double.infinity,
-                    height: 48.h,
-                    decoration: BoxDecoration(
-                      color: const Color(0xffE1E1E1),
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Next",
-                        style: GoogleFonts.inter(
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                          color: const Color(0xff878787),
-                        ),
-                      ),
-                    ),
                   ),
+
+                  SizedBox(height: 20.h),
+
+                  const Spacer(),
+
+                  Obx(
+                    () => controller.pin.value.trim().length == 6
+                        ? InkWell(
+                            onTap: () {
+                              controller.verifyOtp(
+                                controller.pin.value,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(12.r),
+                            child: Container(
+                              width: double.infinity,
+                              height: 48.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12.r),
+                                image: const DecorationImage(
+                                  image: AssetImage(ImagePath.button),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Next',
+                                style: GoogleFonts.inter(
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  shadows: [
+                                    Shadow(
+                                      offset: const Offset(0, 1),
+                                      blurRadius: 4,
+                                      color: Colors.black.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container(
+                            width: double.infinity,
+                            height: 48.h,
+                            decoration: BoxDecoration(
+                              color: const Color(0xffE1E1E1),
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Next',
+                              style: GoogleFonts.inter(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: const Color(0xff878787),
+                              ),
+                            ),
+                          ),
+                  ),
+
+                  SizedBox(height: 20.h),
+                ],
+              ),
+            ],
           ),
-          SizedBox(height: 20.h,)
-
-           ],
-
+        ),
       ),
-      
-      )),
     );
   }
 }
