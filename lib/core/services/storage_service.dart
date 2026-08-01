@@ -5,6 +5,7 @@ import 'package:get_storage/get_storage.dart';
 class StorageService extends GetxService {
   late GetStorage _box;
   static const String _profileImageBase64Key = 'profile_image_base64';
+  static const String _nearbyPlacesCacheKey = 'nearby_places_cache';
 
   Future<StorageService> init() async {
     await GetStorage.init();
@@ -132,5 +133,18 @@ class StorageService extends GetxService {
 
   void removeProfileImageBase64() {
     _box.remove(_profileImageBase64Key);
+  }
+
+  void saveNearbyPlacesCache(String jsonString) {
+    _box.write(_nearbyPlacesCacheKey, jsonString);
+    debugPrint('💾 Nearby places cache saved');
+  }
+
+  String? getNearbyPlacesCache() {
+    return _box.read(_nearbyPlacesCacheKey);
+  }
+
+  void removeNearbyPlacesCache() {
+    _box.remove(_nearbyPlacesCacheKey);
   }
 }
