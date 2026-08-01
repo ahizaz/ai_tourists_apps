@@ -1,4 +1,7 @@
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
+import 'package:ai_powered_tourists_app/features/home/controller/home_controller.dart';
+import 'package:ai_powered_tourists_app/features/home/screen/home_select_place_map.dart';
+import 'package:ai_powered_tourists_app/features/home/widget/place.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -8,10 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class LocationDetailsScreen extends StatelessWidget {
   final Map<String, dynamic> locationData;
 
-  const LocationDetailsScreen({
-    super.key,
-    required this.locationData,
-  });
+  const LocationDetailsScreen({super.key, required this.locationData});
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +52,9 @@ class LocationDetailsScreen extends StatelessWidget {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Obx(() {
-                final photos = controller.selectedPlaceDetails['photos'] as List?;
-                
+                final photos =
+                    controller.selectedPlaceDetails['photos'] as List?;
+
                 if (photos != null && photos.isNotEmpty) {
                   // Show all photos in a PageView
                   return Stack(
@@ -61,9 +62,12 @@ class LocationDetailsScreen extends StatelessWidget {
                       PageView.builder(
                         itemCount: photos.length, // Show all photos, not just 5
                         itemBuilder: (context, index) {
-                          final photoReference = photos[index]['photo_reference'];
-                          final photoUrl = controller.getPhotoUrl(photoReference);
-                          
+                          final photoReference =
+                              photos[index]['photo_reference'];
+                          final photoUrl = controller.getPhotoUrl(
+                            photoReference,
+                          );
+
                           return CachedNetworkImage(
                             imageUrl: photoUrl,
                             fit: BoxFit.cover,
@@ -71,10 +75,10 @@ class LocationDetailsScreen extends StatelessWidget {
                             maxWidthDiskCache: 1200,
                             memCacheHeight: 800,
                             memCacheWidth: 1200,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) => _buildDefaultImage(),
+                            placeholder: (context, url) =>
+                                Center(child: CircularProgressIndicator()),
+                            errorWidget: (context, url, error) =>
+                                _buildDefaultImage(),
                           );
                         },
                       ),
@@ -143,8 +147,9 @@ class LocationDetailsScreen extends StatelessWidget {
                   // Rating and Type
                   Obx(() {
                     final rating = controller.selectedPlaceDetails['rating'];
-                    final types = controller.selectedPlaceDetails['types'] as List?;
-                    
+                    final types =
+                        controller.selectedPlaceDetails['types'] as List?;
+
                     return Row(
                       children: [
                         if (rating != null && rating != 'N/A') ...[
@@ -152,7 +157,10 @@ class LocationDetailsScreen extends StatelessWidget {
                           SizedBox(width: 4.w),
                           Text(
                             rating.toString(),
-                            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                           SizedBox(width: 16.w),
                         ],
@@ -240,11 +248,17 @@ class LocationDetailsScreen extends StatelessWidget {
                     children: [
                       Expanded(
                         child: ElevatedButton.icon(
-                          onPressed: () {
+                          onPressed: () async {
                             final lat = locationData['latitude'];
                             final lng = locationData['longitude'];
-                            // Open in Google Maps
-                            controller.openInGoogleMaps(lat, lng);
+
+                            if (lat is num && lng is num) {
+                              await controller.openInGoogleMaps(
+                                lat.toDouble(),
+                                lng.toDouble(),
+                              );
+                              Get.back();
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -260,21 +274,42 @@ class LocationDetailsScreen extends StatelessWidget {
                       ),
                       SizedBox(width: 12.w),
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: ElevatedButton.icon(
                           onPressed: () {
-                            controller.savePlace(locationData);
+                            _startVisitFromSelectedLocation(context);
                           },
-                          style: OutlinedButton.styleFrom(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
                             padding: EdgeInsets.symmetric(vertical: 12.h),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.r),
                             ),
                           ),
-                          icon: Icon(Icons.bookmark_border),
-                          label: Text('Save'),
+                          icon: Icon(Icons.play_arrow),
+                          label: Text('Start Visit'),
                         ),
                       ),
                     ],
+                  ),
+
+                  SizedBox(height: 12.h),
+
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        controller.savePlace(locationData);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: 12.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r),
+                        ),
+                      ),
+                      icon: Icon(Icons.bookmark_border),
+                      label: Text('Save'),
+                    ),
                   ),
 
                   SizedBox(height: 32.h),
@@ -336,9 +371,7 @@ class LocationDetailsScreen extends StatelessWidget {
             }),
           ),
 
-          SliverToBoxAdapter(
-            child: SizedBox(height: 32.h),
-          ),
+          SliverToBoxAdapter(child: SizedBox(height: 32.h)),
         ],
       ),
     );
@@ -350,18 +383,11 @@ class LocationDetailsScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.location_on,
-            size: 80.sp,
-            color: Colors.grey[500],
-          ),
+          Icon(Icons.location_on, size: 80.sp, color: Colors.grey[500]),
           SizedBox(height: 8.h),
           Text(
             'No images available',
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16.sp, color: Colors.grey[600]),
           ),
         ],
       ),
@@ -377,13 +403,46 @@ class LocationDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 16.sp,
-              color: Colors.grey[800],
-            ),
+            style: TextStyle(fontSize: 16.sp, color: Colors.grey[800]),
           ),
         ),
       ],
+    );
+  }
+
+  void _startVisitFromSelectedLocation(BuildContext context) {
+    final homeController = Get.find<HomeController>();
+    final place = _buildSelectedPlace();
+
+    homeController.openAIGuideSheet();
+    HomeSelectPlaceMap.showAIGuideBottomSheet(context, place, homeController);
+    homeController.startAITouristGuide(place: place);
+  }
+
+  Place _buildSelectedPlace() {
+    final name = (locationData['name'] ?? 'Selected Location').toString();
+    final address = (locationData['fullAddress'] ?? '').toString();
+    final photos = locationData['photos'] as List?;
+    final photoReference = photos != null && photos.isNotEmpty
+        ? photos.first['photo_reference']?.toString()
+        : null;
+    final imageUrl = photoReference != null
+        ? Get.find<MapController>().getPhotoUrl(photoReference)
+        : '';
+
+    final ratingValue = locationData['rating'];
+    final double rating = ratingValue is num
+        ? ratingValue.toDouble()
+        : double.tryParse(ratingValue?.toString() ?? '') ?? 0.0;
+
+    return Place(
+      id: locationData['place_id']?.toString() ?? name,
+      title: name,
+      description: address,
+      imageUrl: imageUrl,
+      rating: rating,
+      distanceKm: 0.0,
+      category: 'selected',
     );
   }
 
@@ -403,16 +462,22 @@ class LocationDetailsScreen extends StatelessWidget {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final category = categories[index];
-          
+
           return Obx(() {
-            final isSelected = controller.selectedNearbyCategory.value == category['type'];
-            
+            final isSelected =
+                controller.selectedNearbyCategory.value == category['type'];
+
             return GestureDetector(
               onTap: () {
-                controller.selectedNearbyCategory.value = category['type'] as String;
+                controller.selectedNearbyCategory.value =
+                    category['type'] as String;
                 final lat = locationData['latitude'];
                 final lng = locationData['longitude'];
-                controller.searchNearbyPlaces(lat, lng, category['type'] as String);
+                controller.searchNearbyPlaces(
+                  lat,
+                  lng,
+                  category['type'] as String,
+                );
               },
               child: Container(
                 width: 90.w,
@@ -453,29 +518,30 @@ class LocationDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNearbyPlaceCard(Map<String, dynamic> place, MapController controller) {
+  Widget _buildNearbyPlaceCard(
+    Map<String, dynamic> place,
+    MapController controller,
+  ) {
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
       child: InkWell(
         onTap: () async {
           // Navigate to this place's details - Google Maps style
           final lat = place['latitude'];
           final lng = place['longitude'];
           final placeId = place['place_id'];
-          
+
           // Show loading indicator
           Get.dialog(
             Center(child: CircularProgressIndicator()),
             barrierDismissible: false,
           );
-          
+
           // Move map camera to the new location
           await controller.moveCamera(lat, lng, zoom: 16);
-          
+
           // Get full place details using place_id
           if (placeId != null) {
             await controller.getPlaceDetails(placeId);
@@ -483,22 +549,24 @@ class LocationDetailsScreen extends StatelessWidget {
             // Fallback if no place_id
             await controller.onMapTap(LatLng(lat, lng));
           }
-          
+
           // Load nearby places for the new location
           await controller.searchNearbyPlaces(
             lat,
             lng,
             controller.selectedNearbyCategory.value,
           );
-          
+
           // Close loading and current screen
           Get.back(); // Close loading dialog
           Get.back(); // Close current details screen
-          
+
           // Open new details screen for the selected place
-          Get.to(() => LocationDetailsScreen(
-            locationData: controller.selectedPlaceDetails,
-          ));
+          Get.to(
+            () => LocationDetailsScreen(
+              locationData: controller.selectedPlaceDetails,
+            ),
+          );
         },
         borderRadius: BorderRadius.circular(12.r),
         child: Padding(
@@ -618,12 +686,12 @@ class LocationDetailsScreen extends StatelessWidget {
 
   String _formatTypes(List types) {
     if (types.isEmpty) return '';
-    
+
     final formatted = types
         .take(3)
         .map((type) => type.toString().replaceAll('_', ' '))
         .join(' • ');
-    
+
     return formatted.capitalize ?? formatted;
   }
 }

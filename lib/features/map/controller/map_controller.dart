@@ -1333,6 +1333,8 @@
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:convert';
+import 'dart:math';
 import 'dart:ui' as ui;
 
 import 'package:ai_powered_tourists_app/core/config/api_keys.dart';
@@ -1347,7 +1349,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 
 class MapController extends GetxController {
   final String apiKey = ApiKeys.googleMapsApiKey;
@@ -1382,6 +1383,9 @@ class MapController extends GetxController {
   );
 
   final RxSet<Marker> markers = <Marker>{}.obs;
+
+  final RxSet<Polyline> routePolylines = <Polyline>{}.obs;
+  final RxBool isLoadingDirections = false.obs;
 
   // একই নামের marker icon বারবার তৈরি না করে cache-এ রাখা হবে।
   final Map<String, BitmapDescriptor> _namedMarkerIconCache =
@@ -1464,6 +1468,7 @@ class MapController extends GetxController {
 
       isLoadingPlaceDetails.value = true;
       showPlaceDetails.value = false;
+      routePolylines.clear();
 
       selectedPlaceDetails.assignAll({
         'name': 'Selected Location',
@@ -1654,6 +1659,7 @@ class MapController extends GetxController {
     try {
       isLoadingPlaceDetails.value = true;
       searchResults.clear();
+      routePolylines.clear();
 
       selectedPlaceDetails.assignAll({
         'name': name,
@@ -2163,6 +2169,7 @@ class MapController extends GetxController {
       userLat.value = position.latitude;
       userLng.value = position.longitude;
       hasUserLocation.value = true;
+      routePolylines.clear();
 
       await moveCamera(position.latitude, position.longitude, zoom: 16);
 
@@ -2390,33 +2397,173 @@ class MapController extends GetxController {
 
   Future<void> openInGoogleMaps(double lat, double lng) async {
     try {
-      final googleMapsUrl = Uri.parse('google.navigation:q=$lat,$lng');
-
-      final googleMapsWebUrl = Uri.parse(
-        'https://www.google.com/maps/search/'
-        '?api=1&query=$lat,$lng',
-      );
-
-      if (await canLaunchUrl(googleMapsUrl)) {
-        await launchUrl(googleMapsUrl);
-      } else if (await canLaunchUrl(googleMapsWebUrl)) {
-        await launchUrl(googleMapsWebUrl, mode: LaunchMode.externalApplication);
-      } else {
-        Get.snackbar(
-          'Error',
-          'Could not open Google Maps',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      }
+      await showInternalDirections(lat, lng);
     } catch (e) {
-      debugPrint('Error opening Google Maps: $e');
+      debugPrint('Error loading internal directions: $e');
 
       Get.snackbar(
         'Error',
-        'Failed to open Google Maps',
+        'Failed to load directions',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
+  }
+
+  Future<void> showInternalDirections(double lat, double lng) async {
+    try {
+      isLoadingDirections.value = true;
+      routePolylines.clear();
+
+      final origin = hasUserLocation.value
+          ? LatLng(userLat.value, userLng.value)
+          : visibleCameraPosition.target;
+      final destination = LatLng(lat, lng);
+
+      final routePoints = await _fetchDirectionsPolyline(origin, destination);
+
+      if (routePoints.isEmpty) {
+        Get.snackbar(
+          'Error',
+          'No route could be loaded for this location',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      routePolylines.add(
+        Polyline(
+          polylineId: const PolylineId('selected_route'),
+          points: routePoints,
+          color: Colors.blue,
+          width: 6,
+        ),
+      );
+
+      await _fitRouteOnMap(routePoints);
+    } catch (e) {
+      debugPrint('Error building internal directions: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to load directions',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isLoadingDirections.value = false;
+    }
+  }
+
+  Future<List<LatLng>> _fetchDirectionsPolyline(
+    LatLng origin,
+    LatLng destination,
+  ) async {
+    try {
+      final url =
+          'https://maps.googleapis.com/maps/api/directions/json'
+          '?origin=${origin.latitude},${origin.longitude}'
+          '&destination=${destination.latitude},${destination.longitude}'
+          '&mode=driving'
+          '&key=$apiKey';
+
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode != 200) {
+        return <LatLng>[];
+      }
+
+      final data = json.decode(response.body);
+      if (data['routes'] == null || data['routes'].isEmpty) {
+        return <LatLng>[];
+      }
+
+      final polylinePoints =
+          data['routes'][0]['overview_polyline']?['points'] as String?;
+
+      if (polylinePoints == null || polylinePoints.isEmpty) {
+        return <LatLng>[];
+      }
+
+      return _decodePolyline(polylinePoints);
+    } catch (e) {
+      debugPrint('Error fetching route polyline: $e');
+      return <LatLng>[];
+    }
+  }
+
+  List<LatLng> _decodePolyline(String encoded) {
+    final points = <LatLng>[];
+    int index = 0;
+    int lat = 0;
+    int lng = 0;
+
+    while (index < encoded.length) {
+      int shift = 0;
+      int result = 0;
+
+      while (true) {
+        final int b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+        if (b < 0x20) {
+          break;
+        }
+      }
+
+      final int dLat = ((result & 1) != 0) ? ~(result >> 1) : (result >> 1);
+      lat += dLat;
+
+      shift = 0;
+      result = 0;
+
+      while (true) {
+        final int b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+        if (b < 0x20) {
+          break;
+        }
+      }
+
+      final int dLng = ((result & 1) != 0) ? ~(result >> 1) : (result >> 1);
+      lng += dLng;
+
+      points.add(LatLng(lat / 1E5, lng / 1E5));
+    }
+
+    return points;
+  }
+
+  Future<void> _fitRouteOnMap(List<LatLng> routePoints) async {
+    if (gMapController == null || routePoints.isEmpty) {
+      return;
+    }
+
+    if (routePoints.length == 1) {
+      await gMapController!.animateCamera(
+        CameraUpdate.newLatLngZoom(routePoints.first, 15),
+      );
+      return;
+    }
+
+    double minLat = routePoints.first.latitude;
+    double maxLat = routePoints.first.latitude;
+    double minLng = routePoints.first.longitude;
+    double maxLng = routePoints.first.longitude;
+
+    for (final point in routePoints) {
+      minLat = min(minLat, point.latitude);
+      maxLat = max(maxLat, point.latitude);
+      minLng = min(minLng, point.longitude);
+      maxLng = max(maxLng, point.longitude);
+    }
+
+    final bounds = LatLngBounds(
+      southwest: LatLng(minLat, minLng),
+      northeast: LatLng(maxLat, maxLng),
+    );
+
+    await gMapController!.animateCamera(
+      CameraUpdate.newLatLngBounds(bounds, 80),
+    );
   }
 
   Future<void> savePlace(Map<String, dynamic> placeData) async {

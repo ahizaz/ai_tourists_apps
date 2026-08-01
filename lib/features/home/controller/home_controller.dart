@@ -88,6 +88,7 @@ class HomeController extends GetxController {
       debugPrint('Error loading stored user name: $e');
     }
 
+    _loadCachedNearbyPlaces();
     _loadSampleData();
     _setupAudioListeners();
 
@@ -100,6 +101,26 @@ class HomeController extends GetxController {
     ever(Get.find<LocalizationService>().currentLocale, (_) {
       reloadPlacesData();
     });
+  }
+
+  void _loadCachedNearbyPlaces() {
+    try {
+      final cachedData = Get.find<StorageService>().getNearbyPlacesCache();
+      if (cachedData == null || cachedData.isEmpty) {
+        return;
+      }
+
+      final decoded = jsonDecode(cachedData);
+      if (decoded is List) {
+        nearbyPlaces.value = decoded
+            .whereType<Map<String, dynamic>>()
+            .map(NearbyPlace.fromJson)
+            .toList();
+        debugPrint(' Restored ${nearbyPlaces.length} cached nearby places');
+      }
+    } catch (e) {
+      debugPrint('Error loading cached nearby places: $e');
+    }
   }
 
   // Get current location
@@ -557,8 +578,6 @@ class HomeController extends GetxController {
               }
             }
 
-       
-
             // Only use formatted address if we don't have street info and it's not a Plus Code
             if (addressParts.isNotEmpty) {
               final readableAddress = addressParts.join(', ');
@@ -714,10 +733,14 @@ class HomeController extends GetxController {
       // Format: https://wttr.in/{lat},{lng}?format=j1
       final url = Uri.parse('https://wttr.in/$lat,$lng?format=j1');
       try {
-        final response = await http.get(
-          url,
-          headers: {'User-Agent': 'Mozilla/5.0'}, // Some APIs require user agent
-        ).timeout(timeout);
+        final response = await http
+            .get(
+              url,
+              headers: {
+                'User-Agent': 'Mozilla/5.0',
+              }, // Some APIs require user agent
+            )
+            .timeout(timeout);
 
         if (response.statusCode == 200) {
           try {
@@ -749,7 +772,9 @@ class HomeController extends GetxController {
           final temp = data['current']?['temperature_2m'];
           if (temp != null) {
             // `temperature_2m` is usually numeric.
-            final tempNum = temp is num ? temp.toDouble() : double.tryParse(temp.toString());
+            final tempNum = temp is num
+                ? temp.toDouble()
+                : double.tryParse(temp.toString());
             if (tempNum != null) {
               currentWeather.value = "${tempNum.toStringAsFixed(0)}°C";
               return;
@@ -814,6 +839,11 @@ class HomeController extends GetxController {
         try {
           final nearbyResponse = NearbyPlacesResponse.fromJson(data);
           nearbyPlaces.value = nearbyResponse.data;
+          Get.find<StorageService>().saveNearbyPlacesCache(
+            jsonEncode(
+              nearbyResponse.data.map((place) => place.toJson()).toList(),
+            ),
+          );
 
           debugPrint(' Found ${nearbyPlaces.length} nearby places');
           for (var place in nearbyPlaces) {
@@ -1258,9 +1288,13 @@ class HomeController extends GetxController {
         final profileCtrl = Get.find<ProfileController>();
         aiVoice = profileCtrl.voice.value;
         gender = profileCtrl.gender.value;
-        debugPrint('HomeController: forwarding aiVoice=$aiVoice gender=$gender');
+        debugPrint(
+          'HomeController: forwarding aiVoice=$aiVoice gender=$gender',
+        );
       } catch (_) {
-        debugPrint('HomeController: ProfileController not found; not forwarding voice/gender');
+        debugPrint(
+          'HomeController: ProfileController not found; not forwarding voice/gender',
+        );
       }
 
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(
