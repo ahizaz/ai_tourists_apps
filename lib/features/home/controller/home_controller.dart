@@ -1283,18 +1283,33 @@ class HomeController extends GetxController {
       final userIdentifier = Get.find<StorageService>().getUserIdentifier();
       // Forward selected AI voice/gender from ProfileController if available
       String? aiVoice;
+      String? aiVoiceType;
       String? gender;
       try {
         final profileCtrl = Get.find<ProfileController>();
         aiVoice = profileCtrl.voice.value;
         gender = profileCtrl.gender.value;
+        aiVoiceType = profileCtrl.selectedVoiceType;
         debugPrint(
-          'HomeController: forwarding aiVoice=$aiVoice gender=$gender',
+          'HomeController: forwarding aiVoice=$aiVoice aiVoiceType=$aiVoiceType gender=$gender',
         );
       } catch (_) {
         debugPrint(
-          'HomeController: ProfileController not found; not forwarding voice/gender',
+          'HomeController: ProfileController not found; not forwarding voice/gender/type',
         );
+      }
+
+      if (aiVoice == null || aiVoice.isEmpty) {
+        aiVoice = Get.find<StorageService>().getAiVoice();
+      }
+      if (gender == null || gender.isEmpty) {
+        gender = Get.find<StorageService>().getAiGender();
+      }
+      if (aiVoiceType == null || aiVoiceType.isEmpty) {
+        final storedVoiceTypes = Get.find<StorageService>().getAiVoiceTypes();
+        if (storedVoiceTypes.isNotEmpty) {
+          aiVoiceType = storedVoiceTypes.last;
+        }
       }
 
       final audioUrl = await PlaceVoiceService.fetchAudioUrl(
@@ -1302,6 +1317,7 @@ class HomeController extends GetxController {
         selectedPlace: place.title,
         userIdentifier: userIdentifier,
         aiVoice: aiVoice,
+        aiVoiceType: aiVoiceType,
         gender: gender,
       );
 

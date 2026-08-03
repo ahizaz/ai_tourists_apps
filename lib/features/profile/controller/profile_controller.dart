@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:ai_powered_tourists_app/core/urls/urls.dart';
 import 'package:http/http.dart' as http;
 
@@ -28,6 +27,41 @@ class ProfileController extends GetxController {
   final RxnString voice = RxnString();
   final RxList<String> voiceTypes = <String>[].obs;
   final int maxVoiceTypesSelections = 3;
+
+  void _loadAiAssistantPreferences() {
+    final storage = Get.find<StorageService>();
+    gender.value = storage.getAiGender();
+    voice.value = storage.getAiVoice();
+    voiceTypes.assignAll(storage.getAiVoiceTypes());
+  }
+
+  String? get selectedVoiceType =>
+      voiceTypes.isNotEmpty ? voiceTypes.last : null;
+
+  void persistAiAssistantPreferences() {
+    final storage = Get.find<StorageService>();
+    if (gender.value == null || gender.value!.isEmpty) {
+      storage.removeAiGender();
+    } else {
+      storage.saveAiGender(gender.value!);
+    }
+
+    if (voice.value == null || voice.value!.isEmpty) {
+      storage.removeAiVoice();
+    } else {
+      storage.saveAiVoice(voice.value!);
+    }
+
+    if (voiceTypes.isEmpty) {
+      storage.removeAiVoiceTypes();
+    } else {
+      storage.saveAiVoiceTypes(voiceTypes.toList());
+    }
+  }
+
+  void _persistAiAssistantPreferences() {
+    persistAiAssistantPreferences();
+  }
 
   // Quiz options
   var selectedQuantity = RxnInt();
@@ -62,11 +96,11 @@ class ProfileController extends GetxController {
   }
 
   // Upload profile image to backend
-  Future<void>uploadProfileImage()async{
-    try{
-      if(profileImage.value==null && profileImageBytes.value==null){
+  Future<void> uploadProfileImage() async {
+    try {
+      if (profileImage.value == null && profileImageBytes.value == null) {
         EasyLoading.showError('Please select an image first');
-       debugPrint('❌ No image selected');
+        debugPrint('❌ No image selected');
         return;
       }
       EasyLoading.show(status: 'Uploading image...');
@@ -74,21 +108,19 @@ class ProfileController extends GetxController {
       debugPrint("Uploading profile image");
       //get access token
       final token = Get.find<StorageService>().getAccessToken();
-      if(token==null|| token.isEmpty){
-           EasyLoading.dismiss();
+      if (token == null || token.isEmpty) {
+        EasyLoading.dismiss();
         EasyLoading.showError('Authentication required');
         debugPrint(' No access token found');
         return;
       }
-        debugPrint('Token: Bearer $token');
+      debugPrint('Token: Bearer $token');
       debugPrint('API URL: ${Url.profileImage}');
       debugPrint('Image Path/Bytes: ${profileImage.value?.path ?? 'bytes'}');
-         
+
       var request = http.MultipartRequest('POST', Uri.parse(Url.profileImage));
 
-      request.headers.addAll({
-      'Authorization':'Bearer $token',
-      });  
+      request.headers.addAll({'Authorization': 'Bearer $token'});
       if (profileImage.value != null) {
         request.files.add(
           await http.MultipartFile.fromPath(
@@ -109,21 +141,20 @@ class ProfileController extends GetxController {
       debugPrint('Sending request....');
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-       debugPrint('Response Status: ${response.statusCode}');
+      debugPrint('Response Status: ${response.statusCode}');
       debugPrint('Response Body: ${response.body}');
-     if(response.statusCode==200 || response.statusCode==201){
-       EasyLoading.dismiss();
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.dismiss();
         EasyLoading.showSuccess('Profile image uploaded successfully!');
-
-     }else{
-       EasyLoading.dismiss();
+      } else {
+        EasyLoading.dismiss();
         EasyLoading.showError('Upload failed: ${response.statusCode}');
         debugPrint('❌ Upload failed: ${response.statusCode}');
         debugPrint('Error: ${response.body}');
-     }
-       debugPrint('========================================');
-    }catch(e){
-         EasyLoading.dismiss();
+      }
+      debugPrint('========================================');
+    } catch (e) {
+      EasyLoading.dismiss();
       EasyLoading.showError('Error uploading image');
       debugPrint('❌ Exception uploading image: $e');
     }
@@ -136,7 +167,8 @@ class ProfileController extends GetxController {
       selectedPlan.value = plan;
     }
   }
-//
+
+  //
   void subscribeNow() {
     if (selectedPlan.value != null) {}
   }
@@ -144,19 +176,23 @@ class ProfileController extends GetxController {
   // AI Assistant methods
   void selectGender(String? g) {
     gender.value = g;
+    _persistAiAssistantPreferences();
   }
 
   void selectVoice(String? v) {
     voice.value = v;
+    _persistAiAssistantPreferences();
   }
 
   bool toggleVoiceType(String t) {
     if (voiceTypes.contains(t)) {
       voiceTypes.remove(t);
+      _persistAiAssistantPreferences();
       return true;
     }
     if (voiceTypes.length < maxVoiceTypesSelections) {
       voiceTypes.add(t);
+      _persistAiAssistantPreferences();
       return true;
     }
     return false;
@@ -166,6 +202,10 @@ class ProfileController extends GetxController {
     gender.value = null;
     voice.value = null;
     voiceTypes.clear();
+    final storage = Get.find<StorageService>();
+    storage.removeAiGender();
+    storage.removeAiVoice();
+    storage.removeAiVoiceTypes();
   }
 
   // Quiz selection methods
@@ -334,13 +374,22 @@ class ProfileController extends GetxController {
         final List<dynamic> data = body['data'] ?? [];
 
         final List<Map<String, dynamic>> places = data.map((item) {
-          final lat = (item['latitude'] is num) ? (item['latitude'] as num).toDouble() : (item['latitude'] != null ? double.tryParse(item['latitude'].toString()) ?? 0.0 : 0.0);
-          final lng = (item['longitude'] is num) ? (item['longitude'] as num).toDouble() : (item['longitude'] != null ? double.tryParse(item['longitude'].toString()) ?? 0.0 : 0.0);
+          final lat = (item['latitude'] is num)
+              ? (item['latitude'] as num).toDouble()
+              : (item['latitude'] != null
+                    ? double.tryParse(item['latitude'].toString()) ?? 0.0
+                    : 0.0);
+          final lng = (item['longitude'] is num)
+              ? (item['longitude'] as num).toDouble()
+              : (item['longitude'] != null
+                    ? double.tryParse(item['longitude'].toString()) ?? 0.0
+                    : 0.0);
 
           return {
             'name': item['place_name'] ?? '',
             'description': item['place_description'] ?? '',
-            'rating': double.tryParse((item['place_rating'] ?? '').toString()) ?? 0.0,
+            'rating':
+                double.tryParse((item['place_rating'] ?? '').toString()) ?? 0.0,
             'distance': _formatDistance(initialLat, initialLng, lat, lng),
             'image': item['place_image'] ?? '',
             'latitude': lat,
@@ -366,7 +415,11 @@ class ProfileController extends GetxController {
       const double earthRadius = 6371; // km
       double dLat = _deg2rad(lat2 - lat1);
       double dLon = _deg2rad(lon2 - lon1);
-      double a = (sin(dLat / 2) * sin(dLat / 2)) + cos(_deg2rad(lat1)) * cos(_deg2rad(lat2)) * (sin(dLon / 2) * sin(dLon / 2));
+      double a =
+          (sin(dLat / 2) * sin(dLat / 2)) +
+          cos(_deg2rad(lat1)) *
+              cos(_deg2rad(lat2)) *
+              (sin(dLon / 2) * sin(dLon / 2));
       double c = 2 * atan2(sqrt(a), sqrt(1 - a));
       double distance = earthRadius * c;
       if (distance >= 1) {
@@ -548,6 +601,7 @@ class ProfileController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadAiAssistantPreferences();
     // Add the initial marker
     final initialMarker = Marker(
       markerId: const MarkerId('initial_marker'),
@@ -646,14 +700,15 @@ class ProfileController extends GetxController {
       EasyLoading.showError("Something went wrong");
     }
   }
+
   @override
-  void onClose(){
-   profileImage.value=null;
-   profileImageBytes.value=null;
-   profileImageFileName.value=null;
-   savedPlaces.clear();
-   qaAnswers.clear();
-   markers.clear();
-   super.onClose();
+  void onClose() {
+    profileImage.value = null;
+    profileImageBytes.value = null;
+    profileImageFileName.value = null;
+    savedPlaces.clear();
+    qaAnswers.clear();
+    markers.clear();
+    super.onClose();
   }
 }
