@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/core/urls/urls.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/last_ai_assistant.dart';
+import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -13,18 +14,51 @@ class AiAssistantController extends GetxController {
   final RxnString voice = RxnString();
   final RxnString voiceType = RxnString();
 
+  void _syncToProfileController() {
+    try {
+      final profileController = Get.find<ProfileController>();
+      profileController.gender.value = gender.value;
+      profileController.voice.value = voice.value;
+      profileController.persistAiAssistantPreferences();
+    } catch (_) {
+      debugPrint('ProfileController not available yet; skipping sync');
+    }
+  }
+
   void selectGender(String? g) {
     gender.value = g;
+    if (g != null && g.isNotEmpty) {
+      Get.find<StorageService>().saveAiGender(g);
+    } else {
+      Get.find<StorageService>().removeAiGender();
+    }
+    _syncToProfileController();
     debugPrint("🔵 Gender Selected: $g");
   }
 
   void selectVoice(String? v) {
     voice.value = v;
+    if (v != null && v.isNotEmpty) {
+      Get.find<StorageService>().saveAiVoice(v);
+    } else {
+      Get.find<StorageService>().removeAiVoice();
+    }
+    _syncToProfileController();
     debugPrint("🔵 Voice Selected: $v");
   }
 
   void selectVoiceType(String? t) {
     voiceType.value = t;
+    try {
+      final profileController = Get.find<ProfileController>();
+      profileController.voiceTypes.clear();
+      if (t != null && t.isNotEmpty) {
+        profileController.voiceTypes.add(t);
+      }
+      profileController.persistAiAssistantPreferences();
+    } catch (_) {
+      debugPrint('ProfileController not available yet; skipping voice-type sync');
+    }
     debugPrint(" Voice Type Selected: $t");
   }
 
@@ -120,6 +154,18 @@ class AiAssistantController extends GetxController {
     gender.value = null;
     voice.value = null;
     voiceType.value = null;
+    Get.find<StorageService>().removeAiGender();
+    Get.find<StorageService>().removeAiVoice();
+    Get.find<StorageService>().removeAiVoiceTypes();
+    try {
+      final profileController = Get.find<ProfileController>();
+      profileController.gender.value = null;
+      profileController.voice.value = null;
+      profileController.voiceTypes.clear();
+      profileController.persistAiAssistantPreferences();
+    } catch (_) {
+      debugPrint('ProfileController not available yet; skipping reset sync');
+    }
     debugPrint("All values reset");
   }
 }

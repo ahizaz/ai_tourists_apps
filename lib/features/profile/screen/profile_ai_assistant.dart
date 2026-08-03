@@ -1,4 +1,3 @@
-import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/profile_first_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ class ProfileAiAssistant extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // ensure single controller instance for whole flow
-  
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -29,8 +28,8 @@ class ProfileAiAssistant extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-             SizedBox(height: 20.h),
-              Center(
+            SizedBox(height: 20.h),
+            Center(
               child: ShaderMask(
                 shaderCallback: (bounds) => const LinearGradient(
                   colors: [
@@ -53,8 +52,8 @@ class ProfileAiAssistant extends StatelessWidget {
                 ),
               ),
             ),
-                        SizedBox(height: 5.h),
-                         Center(
+            SizedBox(height: 5.h),
+            Center(
               child: Text(
                 "Personalize your experience choose how your AI ",
                 style: GoogleFonts.inter(
@@ -78,7 +77,6 @@ class ProfileAiAssistant extends StatelessWidget {
             SizedBox(height: 50.h),
             InkWell(
               onTap: () {
-                Get.put(ProfileController()); // Register the controller here
                 Get.to(() => ProfileFirstAiAssistant());
               },
               child: Container(

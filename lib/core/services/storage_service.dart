@@ -6,6 +6,9 @@ class StorageService extends GetxService {
   late GetStorage _box;
   static const String _profileImageBase64Key = 'profile_image_base64';
   static const String _nearbyPlacesCacheKey = 'nearby_places_cache';
+  static const String _aiGenderKey = 'ai_gender';
+  static const String _aiVoiceKey = 'ai_voice';
+  static const String _aiVoiceTypesKey = 'ai_voice_types';
 
   Future<StorageService> init() async {
     await GetStorage.init();
@@ -146,5 +149,48 @@ class StorageService extends GetxService {
 
   void removeNearbyPlacesCache() {
     _box.remove(_nearbyPlacesCacheKey);
+  }
+
+  void saveAiGender(String gender) {
+    _box.write(_aiGenderKey, gender);
+    debugPrint('💾 AI gender saved to SharedPreferences: $gender');
+  }
+
+  String? getAiGender() {
+    return _box.read(_aiGenderKey);
+  }
+
+  void removeAiGender() {
+    _box.remove(_aiGenderKey);
+  }
+
+  void saveAiVoice(String voice) {
+    _box.write(_aiVoiceKey, voice);
+    debugPrint('💾 AI voice saved to SharedPreferences: $voice');
+  }
+
+  String? getAiVoice() {
+    return _box.read(_aiVoiceKey);
+  }
+
+  void removeAiVoice() {
+    _box.remove(_aiVoiceKey);
+  }
+
+  void saveAiVoiceTypes(List<String> voiceTypes) {
+    _box.write(_aiVoiceTypesKey, voiceTypes);
+    debugPrint('💾 AI voice types saved to SharedPreferences: $voiceTypes');
+  }
+
+  List<String> getAiVoiceTypes() {
+    final stored = _box.read(_aiVoiceTypesKey);
+    if (stored is List) {
+      return stored.whereType<String>().toList();
+    }
+    return <String>[];
+  }
+
+  void removeAiVoiceTypes() {
+    _box.remove(_aiVoiceTypesKey);
   }
 }
