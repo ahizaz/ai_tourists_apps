@@ -1,9 +1,9 @@
-// ...existing code...
+
+import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/profile_last_ai_assistant.dart';
-import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,14 +13,17 @@ class ProfileThirdAiAssistant extends StatelessWidget {
 
   Widget _topProgress(int step) {
     return Row(
-      children: List.generate(3, (i) {
-        final active = (i + 1) == step;
+      children: List.generate(3, (index) {
+        final active = (index + 1) == step;
+
         return Expanded(
           child: Container(
             height: 4.h,
             margin: EdgeInsets.symmetric(horizontal: 6.w),
             decoration: BoxDecoration(
-              color: active ? const Color(0xFF9ED12E) : const Color(0xFFE6E6E6),
+              color: active
+                  ? const Color(0xFF9ED12E)
+                  : const Color(0xFFE6E6E6),
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),
@@ -31,14 +34,25 @@ class ProfileThirdAiAssistant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController ctrl = Get.find();
-    final types = ['Historical', 'Artistic', 'Fun facts'];
+    final ProfileController controller =
+        Get.find<ProfileController>();
+
+    final types = <String>[
+      'Historical',
+      'Artistic',
+      'Fun facts',
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 18.h),
+          padding: EdgeInsets.fromLTRB(
+            16.w,
+            20.h,
+            16.w,
+            18.h,
+          ),
           child: Column(
             children: [
               _topProgress(3),
@@ -46,31 +60,67 @@ class ProfileThirdAiAssistant extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('AI Preferences Voice', style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B))),
+                    child: Text(
+                      'AI Preferences Voice',
+                      style: GoogleFonts.inter(
+                        fontSize: 18.sp,
+                        color: const Color(0xFF6B6B6B),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              Align(alignment: Alignment.centerRight, child: Text('3/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '3/3',
+                  style: TextStyle(
+                    color: const Color(0xFF9B9B9B),
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('Ai visit focus', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'AI Visit Focus',
+                  style: GoogleFonts.inter(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
                   child: Obx(() {
                     return Column(
-                      children: types.map((t) {
+                      children: types.map((item) {
                         return OptionTile(
-                          label: t,
-                          selected: ctrl.voiceTypes.contains(t),
+                          label: item,
+                          selected:
+                              controller.voiceTypes.any(
+                            (selectedItem) =>
+                                selectedItem.toLowerCase() ==
+                                item.toLowerCase(),
+                          ),
                           isCheckbox: true,
                           onTap: () {
-                            final ok = ctrl.toggleVoiceType(t);
-                            if (!ok) {
+                            final success =
+                                controller.toggleVoiceType(
+                              item.toLowerCase(),
+                            );
+
+                            if (!success) {
                               Get.snackbar(
                                 'Limit reached',
-                                'You can select up to ${ctrl.maxVoiceTypesSelections} items',
-                                snackPosition: SnackPosition.BOTTOM,
-                                backgroundColor: Colors.black87,
+                                'You can select up to '
+                                    '${controller.maxVoiceTypesSelections} items',
+                                snackPosition:
+                                    SnackPosition.BOTTOM,
+                                backgroundColor:
+                                    Colors.black87,
                                 colorText: Colors.white,
                                 margin: EdgeInsets.all(12.w),
                               );
@@ -83,20 +133,37 @@ class ProfileThirdAiAssistant extends StatelessWidget {
                 ),
               ),
               GestureDetector(
-                onTap: () {
-               Get.to(()=>ProfileLastAiAssistant());
-                },
+              onTap: () async {
+  final success =
+      await controller.updateAiPreferences();
+
+  if (success) {
+    Get.to(
+      () => const ProfileLastAiAssistant(),
+    );
+  }
+},
                 child: Container(
                   height: 52.h,
                   margin: EdgeInsets.only(top: 8.h),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius:
+                        BorderRadius.circular(12.r),
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFF05A1B), Color(0xFFF7C64A)],
+                      colors: [
+                        Color(0xFFF05A1B),
+                        Color(0xFFF7C64A),
+                      ],
                     ),
                   ),
-                  child: Center(
-                    child: Text('Complete', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Complete',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
               ),

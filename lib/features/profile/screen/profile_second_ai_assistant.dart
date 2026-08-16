@@ -1,9 +1,106 @@
 
+// import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
+// import 'package:ai_powered_tourists_app/features/profile/screen/profile_third_ai_assistant.dart';
+// import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
+
+// import 'package:flutter/material.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:get/get.dart';
+// import 'package:google_fonts/google_fonts.dart';
+
+// class ProfileSecondAiAssistant extends StatelessWidget {
+//   const ProfileSecondAiAssistant({super.key});
+
+//   Widget _topProgress(int step) {
+//     return Row(
+//       children: List.generate(3, (i) {
+//         final active = (i + 1) == step;
+//         return Expanded(
+//           child: Container(
+//             height: 4.h,
+//             margin: EdgeInsets.symmetric(horizontal: 6.w),
+//             decoration: BoxDecoration(
+//               color: active ? const Color(0xFF9ED12E) : const Color(0xFFE6E6E6),
+//               borderRadius: BorderRadius.circular(4.r),
+//             ),
+//           ),
+//         );
+//       }),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final ProfileController ctrl = Get.find();
+//     final voices = ['Cool', 'Serious', 'Friendly', 'Professional'];
+
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SafeArea(
+//         child: Padding(
+//           padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 18.h),
+//           child: Column(
+//             children: [
+//               _topProgress(2),
+//               SizedBox(height: 18.h),
+//               Row(
+//                 children: [
+//                   Expanded(
+//                     child: Text('AI Preferences Voice', style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B))),
+//                   ),
+//                 ],
+//               ),
+//               Align(alignment: Alignment.centerRight, child: Text('2/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
+//               SizedBox(height: 18.h),
+//               Align(alignment: Alignment.centerLeft, child: Text('Ai Speech Type', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+//               SizedBox(height: 12.h),
+//               Expanded(
+//                 child: SingleChildScrollView(
+//                   child: Obx(() {
+//                     return Column(
+//                       children: voices.map((v) {
+//                         return OptionTile(
+//                           label: v,
+//                           selected: ctrl.voice.value == v,
+//                           isCheckbox: false,
+//                           onTap: () => ctrl.selectVoice(v),
+//                         );
+//                       }).toList(),
+//                     );
+//                   }),
+//                 ),
+//               ),
+//               GestureDetector(
+//                 onTap: () {
+//                   Get.to(() =>  ProfileThirdAiAssistant());
+//                 },
+//                 child: Container(
+//                   height: 52.h,
+//                   margin: EdgeInsets.only(top: 8.h),
+//                   decoration: BoxDecoration(
+//                     borderRadius: BorderRadius.circular(12.r),
+//                     gradient: const LinearGradient(
+//                       colors: [Color(0xFFF05A1B), Color(0xFFF7C64A)],
+//                     ),
+//                   ),
+//                   child: Center(
+//                     child: Text('Next', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/profile_third_ai_assistant.dart';
-import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,14 +110,17 @@ class ProfileSecondAiAssistant extends StatelessWidget {
 
   Widget _topProgress(int step) {
     return Row(
-      children: List.generate(3, (i) {
-        final active = (i + 1) == step;
+      children: List.generate(3, (index) {
+        final active = (index + 1) == step;
+
         return Expanded(
           child: Container(
             height: 4.h,
             margin: EdgeInsets.symmetric(horizontal: 6.w),
             decoration: BoxDecoration(
-              color: active ? const Color(0xFF9ED12E) : const Color(0xFFE6E6E6),
+              color: active
+                  ? const Color(0xFF9ED12E)
+                  : const Color(0xFFE6E6E6),
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),
@@ -31,14 +131,26 @@ class ProfileSecondAiAssistant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProfileController ctrl = Get.find();
-    final voices = ['Cool', 'Serious', 'Friendly', 'Professional'];
+    final ProfileController controller =
+        Get.find<ProfileController>();
+
+    final voices = <String>[
+      'Cool',
+      'Serious',
+      'Friendly',
+      'Professional',
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 18.h),
+          padding: EdgeInsets.fromLTRB(
+            16.w,
+            20.h,
+            16.w,
+            18.h,
+          ),
           child: Column(
             children: [
               _topProgress(2),
@@ -46,24 +158,55 @@ class ProfileSecondAiAssistant extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('AI Preferences Voice', style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B))),
+                    child: Text(
+                      'AI Preferences Voice',
+                      style: GoogleFonts.inter(
+                        fontSize: 18.sp,
+                        color: const Color(0xFF6B6B6B),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              Align(alignment: Alignment.centerRight, child: Text('2/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '2/3',
+                  style: TextStyle(
+                    color: const Color(0xFF9B9B9B),
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('Ai Speech Type', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'AI Speech Type',
+                  style: GoogleFonts.inter(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
                   child: Obx(() {
                     return Column(
-                      children: voices.map((v) {
+                      children: voices.map((item) {
                         return OptionTile(
-                          label: v,
-                          selected: ctrl.voice.value == v,
+                          label: item,
+                          selected:
+                              controller.voice.value
+                                  ?.toLowerCase() ==
+                              item.toLowerCase(),
                           isCheckbox: false,
-                          onTap: () => ctrl.selectVoice(v),
+                          onTap: () {
+                            controller.selectVoice(
+                              item.toLowerCase(),
+                            );
+                          },
                         );
                       }).toList(),
                     );
@@ -72,19 +215,42 @@ class ProfileSecondAiAssistant extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Get.to(() =>  ProfileThirdAiAssistant());
+                  final selectedVoice =
+                      controller.voice.value;
+
+                  if (selectedVoice == null ||
+                      selectedVoice.isEmpty) {
+                    EasyLoading.showError(
+                      'Please select an AI speech type',
+                    );
+                    return;
+                  }
+
+                  Get.to(
+                    () => const ProfileThirdAiAssistant(),
+                  );
                 },
                 child: Container(
                   height: 52.h,
                   margin: EdgeInsets.only(top: 8.h),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius:
+                        BorderRadius.circular(12.r),
                     gradient: const LinearGradient(
-                      colors: [Color(0xFFF05A1B), Color(0xFFF7C64A)],
+                      colors: [
+                        Color(0xFFF05A1B),
+                        Color(0xFFF7C64A),
+                      ],
                     ),
                   ),
-                  child: Center(
-                    child: Text('Next', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Next',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16.sp,
+                    ),
                   ),
                 ),
               ),
