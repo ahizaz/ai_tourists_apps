@@ -17,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
   @override
   Widget build(BuildContext context) {
-   final ProfileController controller = Get.find<ProfileController>();
+    final ProfileController controller = Get.find<ProfileController>();
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       body: SingleChildScrollView(
@@ -41,11 +41,11 @@ class ProfileScreen extends StatelessWidget {
                               image: MemoryImage(imageBytes),
                             )
                           : (imageFile != null
-                              ? DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: FileImage(imageFile),
-                                )
-                              : null);
+                                ? DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: FileImage(imageFile),
+                                  )
+                                : null);
                       return Container(
                         width: 120.w,
                         height: 120.w,
@@ -60,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
                       );
                     }),
                     GestureDetector(
-                      onTap: ()async{
+                      onTap: () async {
                         await controller.pickImage();
                         if (controller.profileImage.value != null ||
                             controller.profileImageBytes.value != null) {
@@ -144,7 +144,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.saveplace,
-                title: "Saved Places".tr,
+                title: "saved_places".tr,
                 onTap: () {
                   Get.to(() => SavePlace());
                 },

@@ -3,39 +3,47 @@ import 'package:get/get.dart';
 class AppTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
-        'en_US': enUS,
-        'fr_FR': frFR,
-        'es_ES': esES,
-      };
+    'en_US': enUS,
+    'fr_FR': frFR,
+    'es_ES': esES,
+  };
 
-  // English translations
+  // ============================================================
+  // ENGLISH TRANSLATIONS
+  // ============================================================
+
   static const Map<String, String> enUS = {
+    // AI Assistant Intro
+    'create_custom_ai_assistant': 'Create Your Custom AI Assistant',
+    'customize_ai_description':
+        'Personalize your experience, choose how your AI guide speaks, sounds, and helps you explore.',
+    'start_customize_ai': 'Start Customize AI',
     // Language Selection
     'select_language': 'Select Language',
     'language': 'Language',
     'english': 'English',
     'french': 'Français',
     'spanish': 'Español',
-    
+
     // Splash Screen
     'discover_the': 'Discover the',
     'ai_travel_assist': 'AI Travel Assist App',
     'smart_recommendations': 'Smart recommendations and real-time',
     'guidance_fingertips': 'guidance at your fingertips',
     'next': 'Next',
-    
+
     // Splash Screen Second
     'explore_effortlessly': 'Explore Without Limits',
     'navigate_plan': 'Enjoy offline access and smart recommendations,',
     'ai_assistance': 'anytime, anywhere',
     'get_start': 'Get Start',
-    
+
     // Splash Screen Third
     'ai_travel_companion': 'Your AI Travel Companion',
     'receive_realtime': 'Receive real-time navigation, personalized',
     'tips_support': 'tips, and multi-language support',
     'go_to_home': 'Go To Home',
-    
+
     // Sign In
     'sign_in_account': 'Sign In Your Account',
     'phone_or_email': 'Phone number or email',
@@ -45,7 +53,7 @@ class AppTranslations extends Translations {
     'sign_in': 'Sign In',
     'dont_have_account': "Don't have an account?",
     'sign_up': 'Sign Up',
-    
+
     // Sign Up
     'sign_up_account': 'Sign Up Your Account',
     'full_name': 'Full Name',
@@ -53,7 +61,7 @@ class AppTranslations extends Translations {
     'phone_number': 'Phone Number',
     'confirm_password': 'Confirm Password',
     'already_have_account': 'Already have an account?',
-    
+
     // Common
     'continue': 'Continue',
     'cancel': 'Cancel',
@@ -68,28 +76,46 @@ class AppTranslations extends Translations {
     'no': 'No',
     'ok': 'OK',
     'hello': 'Hello',
-    
+    'close': 'Close',
+    'back': 'Back',
+    'done': 'Done',
+    'loading': 'Loading...',
+    'error': 'Error',
+    'retry': 'Retry',
+
     // Categories
     'all': 'All',
     'historical': 'Historical',
     'museum': 'Museum',
     'tourism': 'Tourism',
+    'attraction': 'Attraction',
+    'attractions': 'Attractions',
+    'hotel': 'Hotel',
+    'hotels': 'Hotels',
+    'restaurant': 'Restaurant',
+    'restaurants': 'Restaurants',
+    'activity': 'Activity',
+    'activities': 'Activities',
     'most_nearby': 'Most Nearby',
     'no_places_found': 'No nearby places found.',
     'current_location': 'Current location',
     'weather': 'Weather',
     'see_map': 'See Map',
-    
+
     // Places
     'great_wall_china': 'Great Wall of China',
-    'great_wall_desc': 'The Great Wall of China is a series of fortifications made of stone, brick, tamped earth, wood, and other materials.',
+    'great_wall_desc':
+        'The Great Wall of China is a series of fortifications made of stone, brick, tamped earth, wood, and other materials.',
     'national_museum': 'National History Museum',
-    'national_museum_desc': 'Explore ancient artifacts and natural history exhibitions from around the world.',
+    'national_museum_desc':
+        'Explore ancient artifacts and natural history exhibitions from around the world.',
     'city_park': 'City Park',
-    'city_park_desc': 'A big green area great for walking, cycling and family activities.',
+    'city_park_desc':
+        'A big green area great for walking, cycling and family activities.',
     'great_wall_scenic': 'Great Wall Scenic Spot',
-    'great_wall_scenic_desc': 'Beautiful viewpoint with restored watchtowers and easy access trails.',
-    
+    'great_wall_scenic_desc':
+        'Beautiful viewpoint with restored watchtowers and easy access trails.',
+
     // Profile Screen
     'account': 'Account',
     'subscription': 'Subscription',
@@ -98,26 +124,27 @@ class AppTranslations extends Translations {
     'save_place': 'Save Place',
     'download_offline_map': 'Download Offline Map',
     'terms_condition': 'Terms & Condition',
-    
+
     // AI Travel Assistant
     'ai_travel_assistant': 'AI Travel Assistant',
     'ai_is_thinking': 'AI is thinking...',
     'start_conversation': 'Start your conversation here…',
     'every_picture_history': 'Every picture has a history—let AI',
     'reveal_it': 'reveal it to you',
-    'upload_snap_photo': 'Upload or snap a photo, and AI will tell you the full',
+    'upload_snap_photo':
+        'Upload or snap a photo, and AI will tell you the full',
     'story_history': 'story of its history.',
     'choose_image_source': 'Choose Image Source',
     'gallery': 'Gallery',
     'camera': 'Camera',
-    
-    // Sign Up
+
+    // Create Account
     'create_an_account': 'Create An Account',
     'name': 'Name',
     'email_or_phone': 'Email or phone number',
     'i_agree_to': 'I agree to the',
     'terms_and_condition': 'Terms & Condition',
-    
+
     // Reset Password
     'reset_password': 'Reset Password',
     'create_new_password': 'Create New Password',
@@ -126,12 +153,12 @@ class AppTranslations extends Translations {
     'new_password': 'New Password',
     'confirm_password_field': 'Confirm Password',
     'reset_password_btn': 'Reset Password',
-    
+
     // Map Screen
     'search_location': 'Search location',
     'you_are_here': 'You are here',
     'selected_location': 'Selected location',
-    
+
     // Account Screen
     'account_info': 'Account',
     'full_name_label': 'Full Name',
@@ -141,7 +168,7 @@ class AppTranslations extends Translations {
     'enter_new_value': 'Enter new value',
     'save_btn': 'Save',
     'cancel_btn': 'Cancel',
-    
+
     // AI Assistant Setup
     'ai_preferences': 'AI Preferences',
     'ai_preferences_voice': 'AI Preferences Voice',
@@ -153,6 +180,7 @@ class AppTranslations extends Translations {
     'next_btn': 'Next',
     'complete_btn': 'Complete',
     'skip': 'Skip',
+
     'intelligent_companion': 'Your intelligent companion for exploring and',
     'managing_travel': 'managing travel experiences.',
     'effortlessly_explore': 'Effortlessly explore and manage points of',
@@ -161,7 +189,7 @@ class AppTranslations extends Translations {
     'contribute_unique': 'Contribute unique insights and experiences',
     'enhance_database': 'to enhance our travel database and earn',
     'rewards': 'rewards',
-    
+
     // Subscription
     'subscription_plan': 'Subscription',
     'choose_plan': 'Choose the plan',
@@ -169,12 +197,12 @@ class AppTranslations extends Translations {
     'yearly': 'Yearly',
     'subscribe': 'Subscribe',
     'includes': 'Includes',
-    
+
     // Save Place
     'saved_places': 'Saved Places',
     'my_saved_places': 'My Saved Places',
     'save_your_favorite': 'Save your favorite places and access them anytime',
-    
+
     // Quiz
     'test_travel_knowledge': 'Test Your Travel Knowledge',
     'fun_quizzes_ai': 'Fun quizzes generated by AI, based on',
@@ -184,9 +212,10 @@ class AppTranslations extends Translations {
     'submit': 'Submit',
     'score': 'Score',
     'visit_complete': 'Visit Complete! 🎉',
-    'quiz_suggestion_message': 'Great job exploring! Would you like to test your knowledge about this place with a fun quiz?',
+    'quiz_suggestion_message':
+        'Great job exploring! Would you like to test your knowledge about this place with a fun quiz?',
     'maybe_later': 'Maybe Later',
-    
+
     // Download Map
     'download_map': 'Download Offline Map',
     'select_area': 'Select Area to Download',
@@ -196,7 +225,7 @@ class AppTranslations extends Translations {
     'rename_map': 'Rename Map',
     'delete_map': 'Delete Map',
     'are_you_sure_delete': 'Are you sure you want to delete this map?',
-    
+
     // Terms & Conditions
     'terms_conditions_title': 'Terms & Conditions',
     'welcome_to_app': 'Welcome to AI Tourists',
@@ -211,18 +240,19 @@ class AppTranslations extends Translations {
     'governing_law': '8. Governing Law',
     'i_understand': 'I Understand',
     'contact_us': 'Contact Us',
-    
+
     // Place Details
     'book_now': 'Book Now',
     'description': 'Description',
     'location': 'Location',
     'reviews': 'Reviews',
     'rating': 'Rating',
-    
+
     // Booking
     'booking_title': 'Booking.com',
     'search_hotels': 'Search hotels',
-    'search_hotels_subtitle': 'From cozy country homes to funky city apartments',
+    'search_hotels_subtitle':
+        'From cozy country homes to funky city apartments',
     'destination_name': 'Destination name',
     'destination_placeholder': 'e.g. city, region, district or specific hotel',
     'check_in_date': 'Check-in date',
@@ -236,34 +266,40 @@ class AppTranslations extends Translations {
     'searching_hotels_in': 'Searching hotels in',
   };
 
-  // French translations
+  // ============================================================
+  // FRENCH TRANSLATIONS
+  // ============================================================
+
   static const Map<String, String> frFR = {
+    // AI Assistant Intro
+    'create_custom_ai_assistant': 'Créez votre assistant IA personnalisé',
+    'customize_ai_description':
+        'Personnalisez votre expérience, choisissez comment votre guide IA parle, sonne et vous aide à explorer.',
+    'start_customize_ai': 'Commencer la personnalisation',
     // Language Selection
     'select_language': 'Sélectionner la langue',
     'language': 'Langue',
     'english': 'English',
     'french': 'Français',
     'spanish': 'Español',
-    
+
     // Splash Screen
     'discover_the': 'Découvrez',
     'ai_travel_assist': 'L\'app de voyage IA',
     'smart_recommendations': 'Recommandations intelligentes et',
     'guidance_fingertips': 'guidage en temps réel',
     'next': 'Suivant',
-    
-    // Splash Screen Second
+
     'explore_effortlessly': 'Explorez sans limites',
     'navigate_plan': 'Accès hors ligne et recommandations,',
     'ai_assistance': 'partout, tout le temps',
     'get_start': 'Commencer',
-    
-    // Splash Screen Third
+
     'ai_travel_companion': 'Compagnon de voyage IA',
     'receive_realtime': 'Navigation en temps réel, conseils',
     'tips_support': 'personnalisés et support multilingue',
     'go_to_home': 'Aller à l\'accueil',
-    
+
     // Sign In
     'sign_in_account': 'Connectez-vous à votre compte',
     'phone_or_email': 'Numéro de téléphone ou e-mail',
@@ -273,7 +309,7 @@ class AppTranslations extends Translations {
     'sign_in': 'Se connecter',
     'dont_have_account': "Vous n'avez pas de compte?",
     'sign_up': 'S\'inscrire',
-    
+
     // Sign Up
     'sign_up_account': 'Créer votre compte',
     'full_name': 'Nom complet',
@@ -281,7 +317,7 @@ class AppTranslations extends Translations {
     'phone_number': 'Numéro de téléphone',
     'confirm_password': 'Confirmer le mot de passe',
     'already_have_account': 'Vous avez déjà un compte?',
-    
+
     // Common
     'continue': 'Continuer',
     'cancel': 'Annuler',
@@ -296,29 +332,47 @@ class AppTranslations extends Translations {
     'no': 'Non',
     'ok': 'OK',
     'hello': 'Bonjour',
-    
+    'close': 'Fermer',
+    'back': 'Retour',
+    'done': 'Terminé',
+    'loading': 'Chargement...',
+    'error': 'Erreur',
+    'retry': 'Réessayer',
+
     // Categories
     'all': 'Tout',
     'historical': 'Historique',
     'museum': 'Musée',
     'tourism': 'Tourisme',
+    'attraction': 'Attraction',
+    'attractions': 'Attractions',
+    'hotel': 'Hôtel',
+    'hotels': 'Hôtels',
+    'restaurant': 'Restaurant',
+    'restaurants': 'Restaurants',
+    'activity': 'Activité',
+    'activities': 'Activités',
     'most_nearby': 'Plus proche',
     'no_places_found': 'Aucun lieu à proximité trouvé.',
     'current_location': 'Emplacement actuel',
     'weather': 'Météo',
     'see_map': 'Voir la carte',
-    
+
     // Places
     'great_wall_china': 'Grande Muraille de Chine',
-    'great_wall_desc': 'La Grande Muraille de Chine est une série de fortifications faites de pierre, de brique, de terre battue, de bois et d\'autres matériaux.',
+    'great_wall_desc':
+        'La Grande Muraille de Chine est une série de fortifications faites de pierre, de brique, de terre battue, de bois et d\'autres matériaux.',
     'national_museum': 'Musée National d\'Histoire',
-    'national_museum_desc': 'Explorez des artefacts anciens et des expositions d\'histoire naturelle du monde entier.',
+    'national_museum_desc':
+        'Explorez des artefacts anciens et des expositions d\'histoire naturelle du monde entier.',
     'city_park': 'Parc de la Ville',
-    'city_park_desc': 'Un grand espace vert idéal pour la marche, le vélo et les activités familiales.',
+    'city_park_desc':
+        'Un grand espace vert idéal pour la marche, le vélo et les activités familiales.',
     'great_wall_scenic': 'Point de Vue Grande Muraille',
-    'great_wall_scenic_desc': 'Magnifique point de vue avec des tours de guet restaurées et des sentiers d\'accès facile.',
-    
-    // Profile Screen
+    'great_wall_scenic_desc':
+        'Magnifique point de vue avec des tours de guet restaurées et des sentiers d\'accès facile.',
+
+    // Profile
     'account': 'Compte',
     'subscription': 'Abonnement',
     'play_quiz': 'Jouer au quiz',
@@ -326,26 +380,27 @@ class AppTranslations extends Translations {
     'save_place': 'Enregistrer le lieu',
     'download_offline_map': 'Télécharger la carte hors ligne',
     'terms_condition': 'Termes et conditions',
-    
+
     // AI Travel Assistant
     'ai_travel_assistant': 'Assistant de voyage IA',
     'ai_is_thinking': 'L\'IA réfléchit...',
     'start_conversation': 'Commencez votre conversation ici…',
     'every_picture_history': 'Chaque image a une histoire—laissez l\'IA',
     'reveal_it': 'vous la révéler',
-    'upload_snap_photo': 'Téléchargez ou prenez une photo, et l\'IA vous racontera',
+    'upload_snap_photo':
+        'Téléchargez ou prenez une photo, et l\'IA vous racontera',
     'story_history': 'toute son histoire.',
     'choose_image_source': 'Choisir la source de l\'image',
     'gallery': 'Galerie',
     'camera': 'Caméra',
-    
-    // Sign Up
+
+    // Create Account
     'create_an_account': 'Créer un compte',
     'name': 'Nom',
     'email_or_phone': 'E-mail ou numéro de téléphone',
     'i_agree_to': 'J\'accepte les',
     'terms_and_condition': 'Termes et conditions',
-    
+
     // Reset Password
     'reset_password': 'Réinitialiser le mot de passe',
     'create_new_password': 'Créer un nouveau mot de passe',
@@ -354,13 +409,13 @@ class AppTranslations extends Translations {
     'new_password': 'Nouveau mot de passe',
     'confirm_password_field': 'Confirmer le mot de passe',
     'reset_password_btn': 'Réinitialiser le mot de passe',
-    
-    // Map Screen
+
+    // Map
     'search_location': 'Rechercher un emplacement',
     'you_are_here': 'Vous êtes ici',
     'selected_location': 'Emplacement sélectionné',
-    
-    // Account Screen
+
+    // Account
     'account_info': 'Compte',
     'full_name_label': 'Nom complet',
     'email_label': 'E-mail',
@@ -369,8 +424,8 @@ class AppTranslations extends Translations {
     'enter_new_value': 'Entrer une nouvelle valeur',
     'save_btn': 'Enregistrer',
     'cancel_btn': 'Annuler',
-    
-    // AI Assistant Setup
+
+    // AI Setup
     'ai_preferences': 'Préférences IA',
     'ai_preferences_voice': 'Préférences vocales IA',
     'ai_gender': 'Genre IA',
@@ -381,6 +436,7 @@ class AppTranslations extends Translations {
     'next_btn': 'Suivant',
     'complete_btn': 'Terminer',
     'skip': 'Passer',
+
     'intelligent_companion': 'Votre compagnon intelligent pour explorer et',
     'managing_travel': 'gérer vos expériences de voyage.',
     'effortlessly_explore': 'Explorez et gérez facilement les points',
@@ -389,7 +445,7 @@ class AppTranslations extends Translations {
     'contribute_unique': 'Contribuez des idées et expériences uniques',
     'enhance_database': 'pour enrichir notre base de données et gagner',
     'rewards': 'des récompenses',
-    
+
     // Subscription
     'subscription_plan': 'Abonnement',
     'choose_plan': 'Choisissez le plan',
@@ -397,12 +453,13 @@ class AppTranslations extends Translations {
     'yearly': 'Annuel',
     'subscribe': 'S\'abonner',
     'includes': 'Comprend',
-    
+
     // Save Place
     'saved_places': 'Lieux enregistrés',
     'my_saved_places': 'Mes lieux enregistrés',
-    'save_your_favorite': 'Enregistrez vos lieux préférés et accédez-y à tout moment',
-    
+    'save_your_favorite':
+        'Enregistrez vos lieux préférés et accédez-y à tout moment',
+
     // Quiz
     'test_travel_knowledge': 'Testez vos connaissances en voyage',
     'fun_quizzes_ai': 'Quiz amusants générés par IA, basés sur',
@@ -412,9 +469,10 @@ class AppTranslations extends Translations {
     'submit': 'Soumettre',
     'score': 'Score',
     'visit_complete': 'Visite terminée ! 🎉',
-    'quiz_suggestion_message': 'Excellent travail d\'exploration ! Voulez-vous tester vos connaissances sur ce lieu avec un quiz amusant ?',
+    'quiz_suggestion_message':
+        'Excellent travail d\'exploration ! Voulez-vous tester vos connaissances sur ce lieu avec un quiz amusant ?',
     'maybe_later': 'Peut-être plus tard',
-    
+
     // Download Map
     'download_map': 'Télécharger la carte hors ligne',
     'select_area': 'Sélectionner la zone à télécharger',
@@ -424,8 +482,8 @@ class AppTranslations extends Translations {
     'rename_map': 'Renommer la carte',
     'delete_map': 'Supprimer la carte',
     'are_you_sure_delete': 'Êtes-vous sûr de vouloir supprimer cette carte?',
-    
-    // Terms & Conditions
+
+    // Terms
     'terms_conditions_title': 'Termes et conditions',
     'welcome_to_app': 'Bienvenue sur AI Tourists',
     'last_updated': 'Dernière mise à jour: Novembre 2024',
@@ -439,20 +497,22 @@ class AppTranslations extends Translations {
     'governing_law': '8. Loi applicable',
     'i_understand': 'Je comprends',
     'contact_us': 'Contactez-nous',
-    
+
     // Place Details
     'book_now': 'Réserver maintenant',
     'description': 'Description',
     'location': 'Emplacement',
     'reviews': 'Avis',
     'rating': 'Note',
-    
+
     // Booking
     'booking_title': 'Booking.com',
     'search_hotels': 'Rechercher des hôtels',
-    'search_hotels_subtitle': 'Des maisons de campagne confortables aux appartements branchés',
+    'search_hotels_subtitle':
+        'Des maisons de campagne confortables aux appartements branchés',
     'destination_name': 'Nom de la destination',
-    'destination_placeholder': 'ex. ville, région, quartier ou hôtel spécifique',
+    'destination_placeholder':
+        'ex. ville, région, quartier ou hôtel spécifique',
     'check_in_date': 'Date d\'arrivée',
     'check_out_date': 'Date de départ',
     'night': 'nuit',
@@ -464,7 +524,10 @@ class AppTranslations extends Translations {
     'searching_hotels_in': 'Recherche d\'hôtels à',
   };
 
-  // Spanish translations
+  // ============================================================
+  // SPANISH TRANSLATIONS
+  // ============================================================
+
   static const Map<String, String> esES = {
     // Language Selection
     'select_language': 'Seleccionar idioma',
@@ -472,26 +535,26 @@ class AppTranslations extends Translations {
     'english': 'English',
     'french': 'Français',
     'spanish': 'Español',
-    
+
     // Splash Screen
     'discover_the': 'Descubre la',
     'ai_travel_assist': 'App de viaje con IA',
     'smart_recommendations': 'Recomendaciones inteligentes y',
     'guidance_fingertips': 'orientación en tiempo real',
     'next': 'Siguiente',
-    
+
     // Splash Screen Second
     'explore_effortlessly': 'Explora sin límites',
     'navigate_plan': 'Acceso offline y recomendaciones,',
     'ai_assistance': 'en cualquier momento y lugar',
     'get_start': 'Comenzar',
-    
+
     // Splash Screen Third
     'ai_travel_companion': 'Compañero de viaje IA',
     'receive_realtime': 'Navegación en tiempo real, consejos',
     'tips_support': 'personalizados y soporte multilingüe',
     'go_to_home': 'Ir al inicio',
-    
+
     // Sign In
     'sign_in_account': 'Inicia sesión en tu cuenta',
     'phone_or_email': 'Número de teléfono o correo electrónico',
@@ -501,7 +564,7 @@ class AppTranslations extends Translations {
     'sign_in': 'Iniciar sesión',
     'dont_have_account': '¿No tienes una cuenta?',
     'sign_up': 'Registrarse',
-    
+
     // Sign Up
     'sign_up_account': 'Crea tu cuenta',
     'full_name': 'Nombre completo',
@@ -509,7 +572,7 @@ class AppTranslations extends Translations {
     'phone_number': 'Número de teléfono',
     'confirm_password': 'Confirmar contraseña',
     'already_have_account': '¿Ya tienes una cuenta?',
-    
+
     // Common
     'continue': 'Continuar',
     'cancel': 'Cancelar',
@@ -524,28 +587,46 @@ class AppTranslations extends Translations {
     'no': 'No',
     'ok': 'OK',
     'hello': 'Hola',
-    
+    'close': 'Cerrar',
+    'back': 'Atrás',
+    'done': 'Listo',
+    'loading': 'Cargando...',
+    'error': 'Error',
+    'retry': 'Reintentar',
+
     // Categories
     'all': 'Todo',
     'historical': 'Histórico',
     'museum': 'Museo',
     'tourism': 'Turismo',
+    'attraction': 'Atracción',
+    'attractions': 'Atracciones',
+    'hotel': 'Hotel',
+    'hotels': 'Hoteles',
+    'restaurant': 'Restaurante',
+    'restaurants': 'Restaurantes',
+    'activity': 'Actividad',
+    'activities': 'Actividades',
     'most_nearby': 'Más cercano',
     'no_places_found': 'No se encontraron lugares cercanos.',
     'current_location': 'Ubicación actual',
     'weather': 'Clima',
     'see_map': 'Ver mapa',
-    
+
     // Places
     'great_wall_china': 'Gran Muralla China',
-    'great_wall_desc': 'La Gran Muralla China es una serie de fortificaciones hechas de piedra, ladrillo, tierra apisonada, madera y otros materiales.',
+    'great_wall_desc':
+        'La Gran Muralla China es una serie de fortificaciones hechas de piedra, ladrillo, tierra apisonada, madera y otros materiales.',
     'national_museum': 'Museo Nacional de Historia',
-    'national_museum_desc': 'Explora artefactos antiguos y exhibiciones de historia natural de todo el mundo.',
+    'national_museum_desc':
+        'Explora artefactos antiguos y exhibiciones de historia natural de todo el mundo.',
     'city_park': 'Parque de la Ciudad',
-    'city_park_desc': 'Una gran área verde ideal para caminar, andar en bicicleta y actividades familiares.',
+    'city_park_desc':
+        'Una gran área verde ideal para caminar, andar en bicicleta y actividades familiares.',
     'great_wall_scenic': 'Mirador Gran Muralla',
-    'great_wall_scenic_desc': 'Hermoso mirador con torres de vigilancia restauradas y senderos de fácil acceso.',
-    
+    'great_wall_scenic_desc':
+        'Hermoso mirador con torres de vigilancia restauradas y senderos de fácil acceso.',
+
     // Profile Screen
     'account': 'Cuenta',
     'subscription': 'Suscripción',
@@ -554,7 +635,7 @@ class AppTranslations extends Translations {
     'save_place': 'Guardar lugar',
     'download_offline_map': 'Descargar mapa sin conexión',
     'terms_condition': 'Términos y condiciones',
-    
+
     // AI Travel Assistant
     'ai_travel_assistant': 'Asistente de viaje IA',
     'ai_is_thinking': 'La IA está pensando...',
@@ -566,14 +647,14 @@ class AppTranslations extends Translations {
     'choose_image_source': 'Elegir fuente de imagen',
     'gallery': 'Galería',
     'camera': 'Cámara',
-    
-    // Sign Up
+
+    // Create Account
     'create_an_account': 'Crear una cuenta',
     'name': 'Nombre',
     'email_or_phone': 'Correo electrónico o teléfono',
     'i_agree_to': 'Estoy de acuerdo con los',
     'terms_and_condition': 'Términos y condiciones',
-    
+
     // Reset Password
     'reset_password': 'Restablecer contraseña',
     'create_new_password': 'Crear nueva contraseña',
@@ -582,12 +663,12 @@ class AppTranslations extends Translations {
     'new_password': 'Nueva contraseña',
     'confirm_password_field': 'Confirmar contraseña',
     'reset_password_btn': 'Restablecer contraseña',
-    
+
     // Map Screen
     'search_location': 'Buscar ubicación',
     'you_are_here': 'Estás aquí',
     'selected_location': 'Ubicación seleccionada',
-    
+
     // Account Screen
     'account_info': 'Cuenta',
     'full_name_label': 'Nombre completo',
@@ -597,7 +678,7 @@ class AppTranslations extends Translations {
     'enter_new_value': 'Ingrese un nuevo valor',
     'save_btn': 'Guardar',
     'cancel_btn': 'Cancelar',
-    
+
     // AI Assistant Setup
     'ai_preferences': 'Preferencias IA',
     'ai_preferences_voice': 'Preferencias de voz IA',
@@ -609,6 +690,7 @@ class AppTranslations extends Translations {
     'next_btn': 'Siguiente',
     'complete_btn': 'Completar',
     'skip': 'Saltar',
+
     'intelligent_companion': 'Tu compañero inteligente para explorar y',
     'managing_travel': 'gestionar experiencias de viaje.',
     'effortlessly_explore': 'Explora y gestiona puntos de',
@@ -617,7 +699,7 @@ class AppTranslations extends Translations {
     'contribute_unique': 'Contribuye con ideas y experiencias únicas',
     'enhance_database': 'para mejorar nuestra base de datos y ganar',
     'rewards': 'recompensas',
-    
+
     // Subscription
     'subscription_plan': 'Suscripción',
     'choose_plan': 'Elige el plan',
@@ -625,12 +707,13 @@ class AppTranslations extends Translations {
     'yearly': 'Anual',
     'subscribe': 'Suscribirse',
     'includes': 'Incluye',
-    
+
     // Save Place
     'saved_places': 'Lugares guardados',
     'my_saved_places': 'Mis lugares guardados',
-    'save_your_favorite': 'Guarda tus lugares favoritos y accede a ellos en cualquier momento',
-    
+    'save_your_favorite':
+        'Guarda tus lugares favoritos y accede a ellos en cualquier momento',
+
     // Quiz
     'test_travel_knowledge': 'Prueba tus conocimientos de viaje',
     'fun_quizzes_ai': 'Cuestionarios divertidos generados por IA, basados en',
@@ -640,9 +723,10 @@ class AppTranslations extends Translations {
     'submit': 'Enviar',
     'score': 'Puntuación',
     'visit_complete': '¡Visita completada! 🎉',
-    'quiz_suggestion_message': '¡Excelente trabajo explorando! ¿Te gustaría probar tus conocimientos sobre este lugar con un cuestionario divertido?',
+    'quiz_suggestion_message':
+        '¡Excelente trabajo explorando! ¿Te gustaría probar tus conocimientos sobre este lugar con un cuestionario divertido?',
     'maybe_later': 'Tal vez más tarde',
-    
+
     // Download Map
     'download_map': 'Descargar mapa sin conexión',
     'select_area': 'Seleccionar área para descargar',
@@ -652,7 +736,7 @@ class AppTranslations extends Translations {
     'rename_map': 'Renombrar mapa',
     'delete_map': 'Eliminar mapa',
     'are_you_sure_delete': '¿Estás seguro de que quieres eliminar este mapa?',
-    
+
     // Terms & Conditions
     'terms_conditions_title': 'Términos y condiciones',
     'welcome_to_app': 'Bienvenido a AI Tourists',
@@ -667,20 +751,22 @@ class AppTranslations extends Translations {
     'governing_law': '8. Ley aplicable',
     'i_understand': 'Entiendo',
     'contact_us': 'Contáctenos',
-    
+
     // Place Details
     'book_now': 'Reservar ahora',
     'description': 'Descripción',
     'location': 'Ubicación',
     'reviews': 'Reseñas',
     'rating': 'Calificación',
-    
-    // Booking
+
+    // Booking / Hotels
     'booking_title': 'Booking.com',
     'search_hotels': 'Buscar hoteles',
-    'search_hotels_subtitle': 'Desde acogedoras casas de campo hasta apartamentos urbanos modernos',
+    'search_hotels_subtitle':
+        'Desde acogedoras casas de campo hasta modernos apartamentos urbanos',
     'destination_name': 'Nombre del destino',
-    'destination_placeholder': 'ej. ciudad, región, distrito u hotel específico',
+    'destination_placeholder':
+        'ej. ciudad, región, distrito u hotel específico',
     'check_in_date': 'Fecha de entrada',
     'check_out_date': 'Fecha de salida',
     'night': 'noche',
@@ -690,5 +776,11 @@ class AppTranslations extends Translations {
     'enter_destination': 'Por favor ingrese un nombre de destino',
     'search_complete': 'Búsqueda completa',
     'searching_hotels_in': 'Buscando hoteles en',
+
+    // AI Assistant Intro
+    'create_custom_ai_assistant': 'Crea tu asistente de IA personalizado',
+    'customize_ai_description':
+        'Personaliza tu experiencia, elige cómo habla tu guía de IA, cómo suena y cómo te ayuda a explorar.',
+    'start_customize_ai': 'Comenzar personalización',
   };
 }
