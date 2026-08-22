@@ -1,3 +1,899 @@
+// // import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
+// // import 'package:ai_powered_tourists_app/features/map/screen/location_details_screen.dart';
+// // import 'package:flutter/material.dart';
+// // import 'package:get/get.dart';
+// // import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+// // class MapScreen extends StatelessWidget {
+// //   const MapScreen({super.key});
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     final MapController controller = Get.find<MapController>();
+
+// //     final TextEditingController searchController = TextEditingController();
+
+// //     return Scaffold(
+// //       backgroundColor: Colors.white,
+// //       body: SafeArea(
+// //         child: Stack(
+// //           children: [
+// //             Positioned.fill(
+// //               child: Obx(() {
+// //                 return GoogleMap(
+// //                   initialCameraPosition: controller.cameraPosition.value,
+// //                   onMapCreated: controller.onMapCreated,
+// //                   onCameraMove: controller.onCameraMove,
+// //                   onTap: controller.onMapTap,
+// //                   myLocationEnabled: false,
+// //                   myLocationButtonEnabled: false,
+// //                   zoomControlsEnabled: false,
+// //                   markers: controller.markers.toSet(),
+// //                   polylines: controller.routePolylines.toSet(),
+// //                 );
+// //               }),
+// //             ),
+
+// //             Positioned(
+// //               left: 16,
+// //               right: 16,
+// //               top: 16,
+// //               child: Column(
+// //                 children: [
+// //                   Container(
+// //                     decoration: BoxDecoration(
+// //                       color: Colors.white,
+// //                       borderRadius: BorderRadius.circular(12),
+// //                       boxShadow: const [
+// //                         BoxShadow(
+// //                           color: Colors.black12,
+// //                           blurRadius: 8,
+// //                           offset: Offset(0, 3),
+// //                         ),
+// //                       ],
+// //                     ),
+// //                     child: TextField(
+// //                       controller: searchController,
+// //                       onChanged: (value) {
+// //                         controller.searchPlaces(value);
+// //                       },
+// //                       onSubmitted: (value) {
+// //                         controller.searchPlaces(value);
+// //                       },
+// //                       decoration: InputDecoration(
+// //                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+// //                         hintText: 'search_location'.tr,
+// //                         border: InputBorder.none,
+// //                         contentPadding: const EdgeInsets.symmetric(
+// //                           vertical: 14,
+// //                         ),
+// //                       ),
+// //                     ),
+// //                   ),
+
+// //                   const SizedBox(height: 8),
+
+// //                   SizedBox(
+// //                     height: 40,
+// //                     child: ListView(
+// //                       scrollDirection: Axis.horizontal,
+// //                       children: [
+// //                         _buildChip('Attractions', controller),
+// //                         _buildChip('Hotel', controller),
+// //                         _buildChip('Restaurant', controller),
+// //                         _buildChip('ATMs', controller),
+// //                         _buildChip('Shopping Mall', controller),
+// //                         _buildChip('Hospital', controller),
+// //                       ],
+// //                     ),
+// //                   ),
+
+// //                   Obx(() {
+// //                     if (controller.searchResults.isEmpty) {
+// //                       return const SizedBox.shrink();
+// //                     }
+
+// //                     return Container(
+// //                       margin: const EdgeInsets.only(top: 8),
+// //                       decoration: BoxDecoration(
+// //                         color: Colors.white,
+// //                         borderRadius: BorderRadius.circular(12),
+// //                         boxShadow: const [
+// //                           BoxShadow(
+// //                             color: Colors.black12,
+// //                             blurRadius: 8,
+// //                             offset: Offset(0, 3),
+// //                           ),
+// //                         ],
+// //                       ),
+// //                       constraints: const BoxConstraints(maxHeight: 200),
+// //                       child: ListView.builder(
+// //                         shrinkWrap: true,
+// //                         itemCount: controller.searchResults.length,
+// //                         itemBuilder: (context, index) {
+// //                           final result = controller.searchResults[index];
+
+// //                           return ListTile(
+// //                             leading: const Icon(
+// //                               Icons.location_on,
+// //                               color: Colors.red,
+// //                             ),
+// //                             title: Text(result['name'] ?? ''),
+// //                             subtitle: Text(
+// //                               result['address'] ?? '',
+// //                               maxLines: 1,
+// //                               overflow: TextOverflow.ellipsis,
+// //                             ),
+// //                             onTap: () async {
+// //                               searchController.clear();
+
+// //                               FocusScope.of(context).unfocus();
+
+// //                               await controller.selectSearchResult(result);
+// //                             },
+// //                           );
+// //                         },
+// //                       ),
+// //                     );
+// //                   }),
+// //                 ],
+// //               ),
+// //             ),
+
+// //             const Align(
+// //               alignment: Alignment.center,
+// //               child: IgnorePointer(
+// //                 ignoring: true,
+// //                 child: SizedBox(width: 28, height: 28),
+// //               ),
+// //             ),
+
+// //             Positioned(
+// //               right: 16,
+// //               bottom: 24,
+// //               child: FloatingActionButton(
+// //                 onPressed: () async {
+// //                   await controller.getCurrentLocation();
+// //                 },
+// //                 child: const Icon(Icons.my_location),
+// //               ),
+// //             ),
+
+// //             Obx(() {
+// //               if (!controller.showPlaceDetails.value) {
+// //                 return const SizedBox.shrink();
+// //               }
+
+// //               return Positioned(
+// //                 left: 0,
+// //                 right: 0,
+// //                 bottom: 0,
+// //                 child: Container(
+// //                   decoration: const BoxDecoration(
+// //                     color: Colors.white,
+// //                     borderRadius: BorderRadius.vertical(
+// //                       top: Radius.circular(20),
+// //                     ),
+// //                     boxShadow: [
+// //                       BoxShadow(
+// //                         color: Colors.black26,
+// //                         blurRadius: 10,
+// //                         offset: Offset(0, -3),
+// //                       ),
+// //                     ],
+// //                   ),
+// //                   padding: const EdgeInsets.all(16),
+// //                   child: Column(
+// //                     mainAxisSize: MainAxisSize.min,
+// //                     crossAxisAlignment: CrossAxisAlignment.start,
+// //                     children: [
+// //                       Row(
+// //                         children: [
+// //                           Expanded(
+// //                             child: Text(
+// //                               controller.selectedPlaceDetails['name'] ??
+// //                                   'Unknown',
+// //                               style: const TextStyle(
+// //                                 fontSize: 18,
+// //                                 fontWeight: FontWeight.bold,
+// //                               ),
+// //                             ),
+// //                           ),
+// //                           IconButton(
+// //                             icon: const Icon(Icons.close),
+// //                             onPressed: () {
+// //                               controller.showPlaceDetails.value = false;
+// //                             },
+// //                           ),
+// //                         ],
+// //                       ),
+
+// //                       const SizedBox(height: 8),
+
+// //                       if (controller.selectedPlaceDetails['rating'] != null)
+// //                         Row(
+// //                           children: [
+// //                             const Icon(
+// //                               Icons.star,
+// //                               color: Colors.amber,
+// //                               size: 20,
+// //                             ),
+// //                             const SizedBox(width: 4),
+// //                             Text(
+// //                               controller.selectedPlaceDetails['rating']
+// //                                   .toString(),
+// //                               style: const TextStyle(fontSize: 16),
+// //                             ),
+// //                           ],
+// //                         ),
+
+// //                       const SizedBox(height: 8),
+
+// //                       Row(
+// //                         crossAxisAlignment: CrossAxisAlignment.start,
+// //                         children: [
+// //                           const Icon(
+// //                             Icons.location_on,
+// //                             color: Colors.grey,
+// //                             size: 20,
+// //                           ),
+// //                           const SizedBox(width: 4),
+// //                           Expanded(
+// //                             child: Text(
+// //                               controller.selectedPlaceDetails['fullAddress'] ??
+// //                                   '',
+// //                               style: TextStyle(color: Colors.grey[700]),
+// //                             ),
+// //                           ),
+// //                         ],
+// //                       ),
+
+// //                       if (controller.selectedPlaceDetails['phone'] != null &&
+// //                           controller.selectedPlaceDetails['phone'] != 'N/A')
+// //                         Padding(
+// //                           padding: const EdgeInsets.only(top: 8),
+// //                           child: Row(
+// //                             children: [
+// //                               const Icon(
+// //                                 Icons.phone,
+// //                                 color: Colors.grey,
+// //                                 size: 20,
+// //                               ),
+// //                               const SizedBox(width: 4),
+// //                               Expanded(
+// //                                 child: Text(
+// //                                   controller.selectedPlaceDetails['phone'],
+// //                                   style: TextStyle(color: Colors.grey[700]),
+// //                                 ),
+// //                               ),
+// //                             ],
+// //                           ),
+// //                         ),
+
+// //                       const SizedBox(height: 16),
+
+// //                       Row(
+// //                         children: [
+// //                           Expanded(
+// //                             child: ElevatedButton.icon(
+// //                               onPressed: () {
+// //                                 Get.to(
+// //                                   () => LocationDetailsScreen(
+// //                                     locationData:
+// //                                         controller.selectedPlaceDetails,
+// //                                   ),
+// //                                 );
+// //                               },
+// //                               style: ElevatedButton.styleFrom(
+// //                                 backgroundColor: Colors.blue,
+// //                                 foregroundColor: Colors.white,
+// //                                 padding: const EdgeInsets.symmetric(
+// //                                   vertical: 12,
+// //                                 ),
+// //                                 shape: RoundedRectangleBorder(
+// //                                   borderRadius: BorderRadius.circular(8),
+// //                                 ),
+// //                               ),
+// //                               icon: const Icon(Icons.info_outline),
+// //                               label: const Text('View Details'),
+// //                             ),
+// //                           ),
+
+// //                           const SizedBox(width: 8),
+
+// //                           Expanded(
+// //                             child: ElevatedButton.icon(
+// //                               onPressed: () async {
+// //                                 final lat =
+// //                                     controller.selectedPlaceDetails['latitude'];
+
+// //                                 final lng = controller
+// //                                     .selectedPlaceDetails['longitude'];
+
+// //                                 if (lat != null && lng != null) {
+// //                                   await controller.openInGoogleMaps(
+// //                                     (lat as num).toDouble(),
+// //                                     (lng as num).toDouble(),
+// //                                   );
+// //                                 }
+// //                               },
+// //                               style: ElevatedButton.styleFrom(
+// //                                 backgroundColor: Colors.green,
+// //                                 foregroundColor: Colors.white,
+// //                                 padding: const EdgeInsets.symmetric(
+// //                                   vertical: 12,
+// //                                 ),
+// //                                 shape: RoundedRectangleBorder(
+// //                                   borderRadius: BorderRadius.circular(8),
+// //                                 ),
+// //                               ),
+// //                               icon: const Icon(Icons.directions),
+// //                               label: const Text('Directions'),
+// //                             ),
+// //                           ),
+// //                         ],
+// //                       ),
+
+// //                       const SizedBox(height: 8),
+
+// //                       SizedBox(
+// //                         width: double.infinity,
+// //                         child: OutlinedButton.icon(
+// //                           onPressed: () async {
+// //                             await controller.savePlace(
+// //                               controller.selectedPlaceDetails,
+// //                             );
+// //                           },
+// //                           style: OutlinedButton.styleFrom(
+// //                             padding: const EdgeInsets.symmetric(vertical: 12),
+// //                             shape: RoundedRectangleBorder(
+// //                               borderRadius: BorderRadius.circular(8),
+// //                             ),
+// //                           ),
+// //                           icon: const Icon(Icons.bookmark_border),
+// //                           label: const Text('Save Place'),
+// //                         ),
+// //                       ),
+// //                     ],
+// //                   ),
+// //                 ),
+// //               );
+// //             }),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildChip(String label, MapController controller) {
+// //     return Padding(
+// //       padding: const EdgeInsets.only(right: 8),
+// //       child: Obx(() {
+// //         final bool isSelected = controller.selectedMapCategory.value == label;
+
+// //         return OutlinedButton(
+// //           onPressed: () async {
+// //             await controller.searchByCategory(label);
+// //           },
+// //           style: OutlinedButton.styleFrom(
+// //             backgroundColor: isSelected ? Colors.blue : Colors.white70,
+// //             foregroundColor: isSelected ? Colors.white : Colors.black87,
+// //             shape: RoundedRectangleBorder(
+// //               borderRadius: BorderRadius.circular(20),
+// //             ),
+// //             side: BorderSide(
+// //               color: isSelected ? Colors.blue : Colors.grey.shade300,
+// //             ),
+// //           ),
+// //           child: Text(label, style: const TextStyle(fontSize: 13)),
+// //         );
+// //       }),
+// //     );
+// //   }
+// // }
+// import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
+// import 'package:ai_powered_tourists_app/features/map/screen/location_details_screen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+// class MapScreen extends StatelessWidget {
+//   const MapScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final MapController controller = Get.find<MapController>();
+
+//     final TextEditingController searchController = TextEditingController();
+
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SafeArea(
+//         child: Stack(
+//           children: [
+//             // ================= MAP =================
+//             Positioned.fill(
+//               child: Obx(() {
+//                 return GoogleMap(
+//                   initialCameraPosition: controller.cameraPosition.value,
+//                   onMapCreated: controller.onMapCreated,
+//                   onCameraMove: controller.onCameraMove,
+//                   onTap: controller.onMapTap,
+//                   myLocationEnabled: false,
+//                   myLocationButtonEnabled: false,
+//                   zoomControlsEnabled: false,
+//                   markers: controller.markers.toSet(),
+//                   polylines: controller.routePolylines.toSet(),
+//                 );
+//               }),
+//             ),
+
+//             // ================= SEARCH + CATEGORY =================
+//             Positioned(
+//               left: 16,
+//               right: 16,
+//               top: 16,
+//               child: Column(
+//                 children: [
+//                   // ================= SEARCH FIELD =================
+//                   Container(
+//                     decoration: BoxDecoration(
+//                       color: Colors.white,
+//                       borderRadius: BorderRadius.circular(12),
+//                       boxShadow: const [
+//                         BoxShadow(
+//                           color: Colors.black12,
+//                           blurRadius: 8,
+//                           offset: Offset(0, 3),
+//                         ),
+//                       ],
+//                     ),
+//                     child: TextField(
+//                       controller: searchController,
+//                       onChanged: (value) {
+//                         controller.searchPlaces(value);
+//                       },
+//                       onSubmitted: (value) {
+//                         controller.searchPlaces(value);
+//                       },
+//                       decoration: InputDecoration(
+//                         prefixIcon: Icon(
+//                           Icons.search,
+//                           color: Colors.grey[600],
+//                         ),
+//                         hintText: 'search_location'.tr,
+//                         border: InputBorder.none,
+//                         contentPadding: const EdgeInsets.symmetric(
+//                           vertical: 14,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+
+//                   const SizedBox(height: 8),
+
+//                   // ================= CATEGORY CHIPS =================
+//                   SizedBox(
+//                     height: 40,
+//                     child: ListView(
+//                       scrollDirection: Axis.horizontal,
+//                       children: [
+//                         _buildChip(
+//                           'attractions',
+//                           'Attractions',
+//                           controller,
+//                         ),
+//                         _buildChip(
+//                           'hotel',
+//                           'Hotel',
+//                           controller,
+//                         ),
+//                         _buildChip(
+//                           'restaurant',
+//                           'Restaurant',
+//                           controller,
+//                         ),
+//                         _buildChip(
+//                           'atms',
+//                           'ATMs',
+//                           controller,
+//                         ),
+//                         _buildChip(
+//                           'shopping_mall',
+//                           'Shopping Mall',
+//                           controller,
+//                         ),
+//                         _buildChip(
+//                           'hospital',
+//                           'Hospital',
+//                           controller,
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+
+//                   // ================= SEARCH RESULTS =================
+//                   Obx(() {
+//                     if (controller.searchResults.isEmpty) {
+//                       return const SizedBox.shrink();
+//                     }
+
+//                     return Container(
+//                       margin: const EdgeInsets.only(top: 8),
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(12),
+//                         boxShadow: const [
+//                           BoxShadow(
+//                             color: Colors.black12,
+//                             blurRadius: 8,
+//                             offset: Offset(0, 3),
+//                           ),
+//                         ],
+//                       ),
+//                       constraints: const BoxConstraints(
+//                         maxHeight: 200,
+//                       ),
+//                       child: ListView.builder(
+//                         shrinkWrap: true,
+//                         itemCount: controller.searchResults.length,
+//                         itemBuilder: (context, index) {
+//                           final result =
+//                               controller.searchResults[index];
+
+//                           return ListTile(
+//                             leading: const Icon(
+//                               Icons.location_on,
+//                               color: Colors.red,
+//                             ),
+//                             title: Text(
+//                               result['name'] ?? '',
+//                             ),
+//                             subtitle: Text(
+//                               result['address'] ?? '',
+//                               maxLines: 1,
+//                               overflow: TextOverflow.ellipsis,
+//                             ),
+//                             onTap: () async {
+//                               searchController.clear();
+
+//                               FocusScope.of(context).unfocus();
+
+//                               await controller.selectSearchResult(
+//                                 result,
+//                               );
+//                             },
+//                           );
+//                         },
+//                       ),
+//                     );
+//                   }),
+//                 ],
+//               ),
+//             ),
+
+//             // ================= CENTER MAP MARKER =================
+//             const Align(
+//               alignment: Alignment.center,
+//               child: IgnorePointer(
+//                 ignoring: true,
+//                 child: SizedBox(
+//                   width: 28,
+//                   height: 28,
+//                 ),
+//               ),
+//             ),
+
+//             // ================= CURRENT LOCATION =================
+//             Positioned(
+//               right: 16,
+//               bottom: 24,
+//               child: FloatingActionButton(
+//                 onPressed: () async {
+//                   await controller.getCurrentLocation();
+//                 },
+//                 child: const Icon(Icons.my_location),
+//               ),
+//             ),
+
+//             // ================= PLACE DETAILS =================
+//             Obx(() {
+//               if (!controller.showPlaceDetails.value) {
+//                 return const SizedBox.shrink();
+//               }
+
+//               return Positioned(
+//                 left: 0,
+//                 right: 0,
+//                 bottom: 0,
+//                 child: Container(
+//                   decoration: const BoxDecoration(
+//                     color: Colors.white,
+//                     borderRadius: BorderRadius.vertical(
+//                       top: Radius.circular(20),
+//                     ),
+//                     boxShadow: [
+//                       BoxShadow(
+//                         color: Colors.black26,
+//                         blurRadius: 10,
+//                         offset: Offset(0, -3),
+//                       ),
+//                     ],
+//                   ),
+//                   padding: const EdgeInsets.all(16),
+//                   child: Column(
+//                     mainAxisSize: MainAxisSize.min,
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       // ================= TITLE =================
+//                       Row(
+//                         children: [
+//                           Expanded(
+//                             child: Text(
+//                               controller.selectedPlaceDetails['name'] ??
+//                                   'Unknown',
+//                               style: const TextStyle(
+//                                 fontSize: 18,
+//                                 fontWeight: FontWeight.bold,
+//                               ),
+//                             ),
+//                           ),
+//                           IconButton(
+//                             icon: const Icon(Icons.close),
+//                             onPressed: () {
+//                               controller.showPlaceDetails.value =
+//                                   false;
+//                             },
+//                           ),
+//                         ],
+//                       ),
+
+//                       const SizedBox(height: 8),
+
+//                       // ================= RATING =================
+//                       if (controller
+//                               .selectedPlaceDetails['rating'] !=
+//                           null)
+//                         Row(
+//                           children: [
+//                             const Icon(
+//                               Icons.star,
+//                               color: Colors.amber,
+//                               size: 20,
+//                             ),
+//                             const SizedBox(width: 4),
+//                             Text(
+//                               controller
+//                                   .selectedPlaceDetails['rating']
+//                                   .toString(),
+//                               style: const TextStyle(
+//                                 fontSize: 16,
+//                               ),
+//                             ),
+//                           ],
+//                         ),
+
+//                       const SizedBox(height: 8),
+
+//                       // ================= ADDRESS =================
+//                       Row(
+//                         crossAxisAlignment:
+//                             CrossAxisAlignment.start,
+//                         children: [
+//                           const Icon(
+//                             Icons.location_on,
+//                             color: Colors.grey,
+//                             size: 20,
+//                           ),
+//                           const SizedBox(width: 4),
+//                           Expanded(
+//                             child: Text(
+//                               controller.selectedPlaceDetails[
+//                                       'fullAddress'] ??
+//                                   '',
+//                               style: TextStyle(
+//                                 color: Colors.grey[700],
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+
+//                       // ================= PHONE =================
+//                       if (controller
+//                                   .selectedPlaceDetails['phone'] !=
+//                               null &&
+//                           controller
+//                                   .selectedPlaceDetails['phone'] !=
+//                               'N/A')
+//                         Padding(
+//                           padding: const EdgeInsets.only(top: 8),
+//                           child: Row(
+//                             children: [
+//                               const Icon(
+//                                 Icons.phone,
+//                                 color: Colors.grey,
+//                                 size: 20,
+//                               ),
+//                               const SizedBox(width: 4),
+//                               Expanded(
+//                                 child: Text(
+//                                   controller
+//                                       .selectedPlaceDetails['phone'],
+//                                   style: TextStyle(
+//                                     color: Colors.grey[700],
+//                                   ),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+
+//                       const SizedBox(height: 16),
+
+//                       // ================= DETAILS + DIRECTIONS =================
+//                       Row(
+//                         children: [
+//                           // ================= VIEW DETAILS =================
+//                           Expanded(
+//                             child: ElevatedButton.icon(
+//                               onPressed: () {
+//                                 Get.to(
+//                                   () => LocationDetailsScreen(
+//                                     locationData: controller
+//                                         .selectedPlaceDetails,
+//                                   ),
+//                                 );
+//                               },
+//                               style: ElevatedButton.styleFrom(
+//                                 backgroundColor: Colors.blue,
+//                                 foregroundColor: Colors.white,
+//                                 padding:
+//                                     const EdgeInsets.symmetric(
+//                                   vertical: 12,
+//                                 ),
+//                                 shape: RoundedRectangleBorder(
+//                                   borderRadius:
+//                                       BorderRadius.circular(8),
+//                                 ),
+//                               ),
+//                               icon: const Icon(
+//                                 Icons.info_outline,
+//                               ),
+//                               label: Text(
+//                                 'view_details'.tr,
+//                               ),
+//                             ),
+//                           ),
+
+//                           const SizedBox(width: 8),
+
+//                           // ================= DIRECTIONS =================
+//                           Expanded(
+//                             child: ElevatedButton.icon(
+//                               onPressed: () async {
+//                                 final lat = controller
+//                                     .selectedPlaceDetails[
+//                                         'latitude'];
+
+//                                 final lng = controller
+//                                     .selectedPlaceDetails[
+//                                         'longitude'];
+
+//                                 if (lat != null && lng != null) {
+//                                   await controller.openInGoogleMaps(
+//                                     (lat as num).toDouble(),
+//                                     (lng as num).toDouble(),
+//                                   );
+//                                 }
+//                               },
+//                               style: ElevatedButton.styleFrom(
+//                                 backgroundColor: Colors.green,
+//                                 foregroundColor: Colors.white,
+//                                 padding:
+//                                     const EdgeInsets.symmetric(
+//                                   vertical: 12,
+//                                 ),
+//                                 shape: RoundedRectangleBorder(
+//                                   borderRadius:
+//                                       BorderRadius.circular(8),
+//                                 ),
+//                               ),
+//                               icon: const Icon(
+//                                 Icons.directions,
+//                               ),
+//                               label: Text(
+//                                 'directions'.tr,
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+
+//                       const SizedBox(height: 8),
+
+//                       // ================= SAVE PLACE =================
+//                       SizedBox(
+//                         width: double.infinity,
+//                         child: OutlinedButton.icon(
+//                           onPressed: () async {
+//                             await controller.savePlace(
+//                               controller.selectedPlaceDetails,
+//                             );
+//                           },
+//                           style: OutlinedButton.styleFrom(
+//                             padding:
+//                                 const EdgeInsets.symmetric(
+//                               vertical: 12,
+//                             ),
+//                             shape: RoundedRectangleBorder(
+//                               borderRadius:
+//                                   BorderRadius.circular(8),
+//                             ),
+//                           ),
+//                           icon: const Icon(
+//                             Icons.bookmark_border,
+//                           ),
+//                           label: Text(
+//                             'save_place'.tr,
+//                           ),
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               );
+//             }),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   // ================= CATEGORY CHIP =================
+//   Widget _buildChip(
+//     String translationKey,
+//     String categoryValue,
+//     MapController controller,
+//   ) {
+//     return Padding(
+//       padding: const EdgeInsets.only(right: 8),
+//       child: Obx(() {
+//         final bool isSelected =
+//             controller.selectedMapCategory.value ==
+//                 categoryValue;
+
+//         return OutlinedButton(
+//           onPressed: () async {
+//             await controller.searchByCategory(
+//               categoryValue,
+//             );
+//           },
+//           style: OutlinedButton.styleFrom(
+//             backgroundColor:
+//                 isSelected ? Colors.blue : Colors.white70,
+//             foregroundColor:
+//                 isSelected ? Colors.white : Colors.black87,
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(20),
+//             ),
+//             side: BorderSide(
+//               color: isSelected
+//                   ? Colors.blue
+//                   : Colors.grey.shade300,
+//             ),
+//           ),
+//           child: Text(
+//             translationKey.tr,
+//             style: const TextStyle(
+//               fontSize: 13,
+//             ),
+//           ),
+//         );
+//       }),
+//     );
+//   }
+// }
 import 'package:ai_powered_tourists_app/features/map/controller/map_controller.dart';
 import 'package:ai_powered_tourists_app/features/map/screen/location_details_screen.dart';
 import 'package:flutter/material.dart';
@@ -11,17 +907,22 @@ class MapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final MapController controller = Get.find<MapController>();
 
-    final TextEditingController searchController = TextEditingController();
+    final TextEditingController searchController =
+        TextEditingController();
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Stack(
           children: [
+            // =========================
+            // Google Map
+            // =========================
             Positioned.fill(
               child: Obx(() {
                 return GoogleMap(
-                  initialCameraPosition: controller.cameraPosition.value,
+                  initialCameraPosition:
+                      controller.cameraPosition.value,
                   onMapCreated: controller.onMapCreated,
                   onCameraMove: controller.onCameraMove,
                   onTap: controller.onMapTap,
@@ -34,12 +935,18 @@ class MapScreen extends StatelessWidget {
               }),
             ),
 
+            // =========================
+            // Search + Categories
+            // =========================
             Positioned(
               left: 16,
               right: 16,
               top: 16,
               child: Column(
                 children: [
+                  // =========================
+                  // Search Field
+                  // =========================
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -61,10 +968,14 @@ class MapScreen extends StatelessWidget {
                         controller.searchPlaces(value);
                       },
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.grey[600],
+                        ),
                         hintText: 'search_location'.tr,
                         border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
+                        contentPadding:
+                            const EdgeInsets.symmetric(
                           vertical: 14,
                         ),
                       ),
@@ -73,21 +984,51 @@ class MapScreen extends StatelessWidget {
 
                   const SizedBox(height: 8),
 
+                  // =========================
+                  // Category Chips
+                  // =========================
                   SizedBox(
                     height: 40,
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildChip('Attractions', controller),
-                        _buildChip('Hotel', controller),
-                        _buildChip('Restaurant', controller),
-                        _buildChip('ATMs', controller),
-                        _buildChip('Shopping Mall', controller),
-                        _buildChip('Hospital', controller),
+                        _buildChip(
+                          'attractions'.tr,
+                          controller,
+                          'attractions',
+                        ),
+                        _buildChip(
+                          'hotel'.tr,
+                          controller,
+                          'hotel',
+                        ),
+                        _buildChip(
+                          'restaurant'.tr,
+                          controller,
+                          'restaurant',
+                        ),
+                        _buildChip(
+                          'atms'.tr,
+                          controller,
+                          'atms',
+                        ),
+                        _buildChip(
+                          'shopping_mall'.tr,
+                          controller,
+                          'shopping_mall',
+                        ),
+                        _buildChip(
+                          'hospital'.tr,
+                          controller,
+                          'hospital',
+                        ),
                       ],
                     ),
                   ),
 
+                  // =========================
+                  // Search Results
+                  // =========================
                   Obx(() {
                     if (controller.searchResults.isEmpty) {
                       return const SizedBox.shrink();
@@ -97,7 +1038,8 @@ class MapScreen extends StatelessWidget {
                       margin: const EdgeInsets.only(top: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius:
+                            BorderRadius.circular(12),
                         boxShadow: const [
                           BoxShadow(
                             color: Colors.black12,
@@ -106,30 +1048,37 @@ class MapScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      constraints: const BoxConstraints(maxHeight: 200),
+                      constraints:
+                          const BoxConstraints(maxHeight: 200),
                       child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: controller.searchResults.length,
+                        itemCount:
+                            controller.searchResults.length,
                         itemBuilder: (context, index) {
-                          final result = controller.searchResults[index];
+                          final result =
+                              controller.searchResults[index];
 
                           return ListTile(
                             leading: const Icon(
                               Icons.location_on,
                               color: Colors.red,
                             ),
-                            title: Text(result['name'] ?? ''),
+                            title: Text(
+                              result['name'] ?? '',
+                            ),
                             subtitle: Text(
                               result['address'] ?? '',
                               maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              overflow:
+                                  TextOverflow.ellipsis,
                             ),
                             onTap: () async {
                               searchController.clear();
 
                               FocusScope.of(context).unfocus();
 
-                              await controller.selectSearchResult(result);
+                              await controller
+                                  .selectSearchResult(result);
                             },
                           );
                         },
@@ -140,14 +1089,23 @@ class MapScreen extends StatelessWidget {
               ),
             ),
 
+            // =========================
+            // Center Indicator
+            // =========================
             const Align(
               alignment: Alignment.center,
               child: IgnorePointer(
                 ignoring: true,
-                child: SizedBox(width: 28, height: 28),
+                child: SizedBox(
+                  width: 28,
+                  height: 28,
+                ),
               ),
             ),
 
+            // =========================
+            // Current Location Button
+            // =========================
             Positioned(
               right: 16,
               bottom: 24,
@@ -159,6 +1117,9 @@ class MapScreen extends StatelessWidget {
               ),
             ),
 
+            // =========================
+            // Place Details Bottom Sheet
+            // =========================
             Obx(() {
               if (!controller.showPlaceDetails.value) {
                 return const SizedBox.shrink();
@@ -185,13 +1146,18 @@ class MapScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
                     children: [
+                      // =========================
+                      // Place Name + Close
+                      // =========================
                       Row(
                         children: [
                           Expanded(
                             child: Text(
-                              controller.selectedPlaceDetails['name'] ??
+                              controller.selectedPlaceDetails[
+                                      'name'] ??
                                   'Unknown',
                               style: const TextStyle(
                                 fontSize: 18,
@@ -202,7 +1168,8 @@ class MapScreen extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.close),
                             onPressed: () {
-                              controller.showPlaceDetails.value = false;
+                              controller
+                                  .showPlaceDetails.value = false;
                             },
                           ),
                         ],
@@ -210,7 +1177,12 @@ class MapScreen extends StatelessWidget {
 
                       const SizedBox(height: 8),
 
-                      if (controller.selectedPlaceDetails['rating'] != null)
+                      // =========================
+                      // Rating
+                      // =========================
+                      if (controller.selectedPlaceDetails[
+                              'rating'] !=
+                          null)
                         Row(
                           children: [
                             const Icon(
@@ -220,17 +1192,24 @@ class MapScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              controller.selectedPlaceDetails['rating']
+                              controller.selectedPlaceDetails[
+                                      'rating']
                                   .toString(),
-                              style: const TextStyle(fontSize: 16),
+                              style: const TextStyle(
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
 
                       const SizedBox(height: 8),
 
+                      // =========================
+                      // Address
+                      // =========================
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment:
+                            CrossAxisAlignment.start,
                         children: [
                           const Icon(
                             Icons.location_on,
@@ -240,18 +1219,29 @@ class MapScreen extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              controller.selectedPlaceDetails['fullAddress'] ??
+                              controller.selectedPlaceDetails[
+                                      'fullAddress'] ??
                                   '',
-                              style: TextStyle(color: Colors.grey[700]),
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                              ),
                             ),
                           ),
                         ],
                       ),
 
-                      if (controller.selectedPlaceDetails['phone'] != null &&
-                          controller.selectedPlaceDetails['phone'] != 'N/A')
+                      // =========================
+                      // Phone
+                      // =========================
+                      if (controller.selectedPlaceDetails[
+                                  'phone'] !=
+                              null &&
+                          controller.selectedPlaceDetails[
+                                  'phone'] !=
+                              'N/A')
                         Padding(
-                          padding: const EdgeInsets.only(top: 8),
+                          padding:
+                              const EdgeInsets.only(top: 8),
                           child: Row(
                             children: [
                               const Icon(
@@ -262,8 +1252,12 @@ class MapScreen extends StatelessWidget {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  controller.selectedPlaceDetails['phone'],
-                                  style: TextStyle(color: Colors.grey[700]),
+                                  controller
+                                          .selectedPlaceDetails[
+                                      'phone'],
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                  ),
                                 ),
                               ),
                             ],
@@ -272,63 +1266,93 @@ class MapScreen extends StatelessWidget {
 
                       const SizedBox(height: 16),
 
+                      // =========================
+                      // View Details + Directions
+                      // =========================
                       Row(
                         children: [
+                          // View Details
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () {
                                 Get.to(
-                                  () => LocationDetailsScreen(
-                                    locationData:
-                                        controller.selectedPlaceDetails,
+                                  () =>
+                                      LocationDetailsScreen(
+                                    locationData: controller
+                                        .selectedPlaceDetails,
                                   ),
                                 );
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
+                              style:
+                                  ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Colors.blue,
+                                foregroundColor:
+                                    Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                shape:
+                                    RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(8),
                                 ),
                               ),
-                              icon: const Icon(Icons.info_outline),
-                              label: const Text('View Details'),
+                              icon: const Icon(
+                                Icons.info_outline,
+                              ),
+                              label: Text(
+                                'view_details'.tr,
+                              ),
                             ),
                           ),
 
                           const SizedBox(width: 8),
 
+                          // Directions
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: () async {
-                                final lat =
-                                    controller.selectedPlaceDetails['latitude'];
+                                final lat = controller
+                                    .selectedPlaceDetails[
+                                'latitude'];
 
                                 final lng = controller
-                                    .selectedPlaceDetails['longitude'];
+                                    .selectedPlaceDetails[
+                                'longitude'];
 
-                                if (lat != null && lng != null) {
-                                  await controller.openInGoogleMaps(
+                                if (lat != null &&
+                                    lng != null) {
+                                  await controller
+                                      .openInGoogleMaps(
                                     (lat as num).toDouble(),
                                     (lng as num).toDouble(),
                                   );
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
+                              style:
+                                  ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    Colors.green,
+                                foregroundColor:
+                                    Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                                shape:
+                                    RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(8),
                                 ),
                               ),
-                              icon: const Icon(Icons.directions),
-                              label: const Text('Directions'),
+                              icon: const Icon(
+                                Icons.directions,
+                              ),
+                              label: Text(
+                                'directions'.tr,
+                              ),
                             ),
                           ),
                         ],
@@ -336,6 +1360,9 @@ class MapScreen extends StatelessWidget {
 
                       const SizedBox(height: 8),
 
+                      // =========================
+                      // Save Place
+                      // =========================
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
@@ -344,14 +1371,24 @@ class MapScreen extends StatelessWidget {
                               controller.selectedPlaceDetails,
                             );
                           },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                          style:
+                              OutlinedButton.styleFrom(
+                            padding:
+                                const EdgeInsets.symmetric(
+                              vertical: 12,
+                            ),
+                            shape:
+                                RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(8),
                             ),
                           ),
-                          icon: const Icon(Icons.bookmark_border),
-                          label: const Text('Save Place'),
+                          icon: const Icon(
+                            Icons.bookmark_border,
+                          ),
+                          label: Text(
+                            'save_place'.tr,
+                          ),
                         ),
                       ),
                     ],
@@ -365,27 +1402,49 @@ class MapScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildChip(String label, MapController controller) {
+  // =====================================================
+  // Category Chip
+  // =====================================================
+  Widget _buildChip(
+    String label,
+    MapController controller,
+    String categoryKey,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: Obx(() {
-        final bool isSelected = controller.selectedMapCategory.value == label;
+        final bool isSelected =
+            controller.selectedMapCategory.value ==
+                categoryKey;
 
         return OutlinedButton(
           onPressed: () async {
-            await controller.searchByCategory(label);
+            await controller.searchByCategory(
+              categoryKey,
+            );
           },
           style: OutlinedButton.styleFrom(
-            backgroundColor: isSelected ? Colors.blue : Colors.white70,
-            foregroundColor: isSelected ? Colors.white : Colors.black87,
+            backgroundColor: isSelected
+                ? Colors.blue
+                : Colors.white70,
+            foregroundColor: isSelected
+                ? Colors.white
+                : Colors.black87,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
             side: BorderSide(
-              color: isSelected ? Colors.blue : Colors.grey.shade300,
+              color: isSelected
+                  ? Colors.blue
+                  : Colors.grey.shade300,
             ),
           ),
-          child: Text(label, style: const TextStyle(fontSize: 13)),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 13,
+            ),
+          ),
         );
       }),
     );
