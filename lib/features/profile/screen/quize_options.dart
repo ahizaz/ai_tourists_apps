@@ -1,3 +1,331 @@
+// import 'package:ai_powered_tourists_app/features/profile/screen/interactive_quiz_screen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_easyloading/flutter_easyloading.dart';
+// import 'package:flutter_screenutil/flutter_screenutil.dart';
+// import 'package:get/get.dart';
+// import 'package:geolocator/geolocator.dart';
+// import 'package:google_fonts/google_fonts.dart';
+// import '../controller/profile_controller.dart';
+// import '../controller/interactive_quiz_controller.dart';
+// import '../services/play_quize.dart';
+
+// class QuizeOptions extends StatelessWidget {
+//   const QuizeOptions({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final controller = Get.put(ProfileController());
+
+//     return Scaffold(
+//       backgroundColor: const Color(0xffF9F9F9),
+//       appBar: AppBar(
+//         backgroundColor: const Color(0xffF9F9F9),
+//         elevation: 0,
+//         leading: IconButton(
+//           icon: const Icon(Icons.arrow_back, color: Colors.black),
+//           onPressed: () => Navigator.pop(context),
+//         ),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Text(
+//               'Select Question Quantity',
+//               style: GoogleFonts.inter(
+//                 fontSize: 20.sp,
+//                 fontWeight: FontWeight.w400,
+//                 color: Color(0xff252525),
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             Obx(
+//               () => Row(
+//                 children: [
+//                   _buildQuantityOption(controller, '10 Q&A', 10),
+//                   const SizedBox(width: 16),
+//                   _buildQuantityOption(controller, '20 Q&A', 20),
+//                   const SizedBox(width: 16),
+//                   _buildQuantityOption(controller, '30 Q&A', 30),
+//                 ],
+//               ),
+//             ),
+//             const SizedBox(height: 32),
+//             const Text(
+//               'Select Q&A Subject',
+//               style: TextStyle(
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w600,
+//                 color: Colors.black,
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             Expanded(
+//               child: Obx(
+//                 () => ListView(
+//                   children: [
+//                     _buildSubjectOption(
+//                       controller,
+//                       'History',
+//                       'Test your knowledge of ancient events, empires, and heritage',
+//                     ),
+//                     const SizedBox(height: 12),
+//                     _buildSubjectOption(
+//                       controller,
+//                       'Culture',
+//                       'Discover local customs, art, and stories from around the world.',
+//                     ),
+//                     const SizedBox(height: 12),
+//                     _buildSubjectOption(
+//                       controller,
+//                       'Food',
+//                       'Guess famous dishes, flavors, and culinary traditions',
+//                     ),
+//                     // const SizedBox(height: 12),
+//                     // _buildSubjectOption(
+//                     //   controller,
+//                     //   'Landmarks',
+//                     //   'Challenge yourself to identify iconic places and monuments',
+//                     // ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             Obx(
+//               () => SizedBox(
+//                 width: double.infinity,
+//                 height: 56,
+//                 child: ElevatedButton(
+//                   onPressed: controller.canStartQuiz
+//                       ? () async {
+//                           final selectedCount =
+//                               controller.selectedQuantity.value ?? 10;
+//                           final serviceEnabled =
+//                               await Geolocator.isLocationServiceEnabled();
+//                           if (!serviceEnabled) {
+//                             EasyLoading.showError(
+//                               'Please enable location services and try again.',
+//                             );
+//                             return;
+//                           }
+
+//                           var permission = await Geolocator.checkPermission();
+//                           if (permission == LocationPermission.denied) {
+//                             permission =
+//                                 await Geolocator.requestPermission();
+//                           }
+//                           if (permission == LocationPermission.denied ||
+//                               permission == LocationPermission.deniedForever) {
+//                             EasyLoading.showError(
+//                               'Location permission is required to start quiz.',
+//                             );
+//                             return;
+//                           }
+
+//                           final position = await Geolocator.getCurrentPosition(
+//                             desiredAccuracy: LocationAccuracy.high,
+//                           );
+//                           final lat = position.latitude;
+//                           final lng = position.longitude;
+
+//                           debugPrint(
+//                             'Requesting quiz for ($lat, $lng) count: $selectedCount',
+//                           );
+
+//                           final selectedSubjectValue =
+//                               controller.selectedSubject.value;
+//                           final topics = selectedSubjectValue != null
+//                               ? [selectedSubjectValue.trim().toLowerCase()]
+//                               : ['food'];
+
+//                           final quizData =
+//                               await PlayQuizeService.fetchLocationQuiz(
+//                                 latitude: lat,
+//                                 longitude: lng,
+//                                 count: selectedCount,
+//                                 topics: topics,
+//                               );
+
+//                           if (quizData.isNotEmpty) {
+//                             final quizController = Get.put(
+//                               InteractiveQuizController(),
+//                             );
+//                             quizController.questions = quizData;
+//                             Get.to(() => const InteractiveQuizScreen());
+//                           } else {
+//                             Get.snackbar(
+//                               'Quiz',
+//                               'Failed to load quiz. Please try again.',
+//                             );
+//                           }
+//                         }
+//                       : null,
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: controller.canStartQuiz
+//                         ? const Color(0xffFF6B35)
+//                         : Colors.grey.shade300,
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     elevation: 0,
+//                   ),
+//                   child: Text(
+//                     'Start Q&A',
+//                     style: TextStyle(
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.w600,
+//                       color: controller.canStartQuiz
+//                           ? Colors.white
+//                           : Colors.grey.shade600,
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             SizedBox(height: 20.h),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildQuantityOption(
+//     ProfileController controller,
+//     String label,
+//     int value,
+//   ) {
+//     final isSelected = controller.selectedQuantity.value == value;
+
+//     return Expanded(
+//       child: GestureDetector(
+//         onTap: () => controller.selectQuantity(value),
+//         child: Container(
+//           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.circular(8),
+//             border: Border.all(
+//               color: isSelected ? const Color(0xffE5F5B4) : Color(0xffFFFFFF),
+//               width: 1.5,
+//             ),
+//           ),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Flexible(
+//                 child: Text(
+//                   label,
+//                   style: GoogleFonts.inter(
+//                     fontSize: 14.sp,
+//                     fontWeight: FontWeight.w400,
+//                     color: isSelected ? Color(0xff505050) : Color(0xff878787),
+//                   ),
+//                   overflow: TextOverflow.ellipsis,
+//                 ),
+//               ),
+//               SizedBox(width: 8),
+//               Container(
+//                 width: 20,
+//                 height: 20,
+//                 decoration: BoxDecoration(
+//                   shape: BoxShape.circle,
+//                   color: isSelected
+//                       ? const Color(0xff8BC34A)
+//                       : Colors.transparent,
+//                   border: Border.all(
+//                     color: isSelected
+//                         ? const Color(0xff8BC34A)
+//                         : Colors.grey.shade400,
+//                     width: 2,
+//                   ),
+//                 ),
+//                 child: isSelected
+//                     ? const Icon(Icons.check, size: 14, color: Colors.white)
+//                     : null,
+//               ),
+//               SizedBox(height: 20.h),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   ///
+//   Widget _buildSubjectOption(
+//     ProfileController controller,
+//     String title,
+//     String description,
+//   ) {
+//     final isSelected = controller.selectedSubject.value == title;
+
+//     return GestureDetector(
+//       onTap: () => controller.selectSubject(title),
+//       child: Container(
+//         padding: const EdgeInsets.all(16),
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(12),
+//           border: Border.all(
+//             color: isSelected ? const Color(0xffE5F5B4) : Colors.grey.shade300,
+//             width: 1.5,
+//           ),
+//         ),
+//         child: Row(
+//           children: [
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text(
+//                     title,
+//                     style: GoogleFonts.inter(
+//                       fontSize: 18.sp,
+//                       fontWeight: FontWeight.w500,
+//                       color: isSelected ? Colors.black : Colors.grey.shade800,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 4),
+//                   Text(
+//                     description,
+//                     style: GoogleFonts.inter(
+//                       fontSize: 16.sp,
+//                       fontWeight: FontWeight.w400,
+//                       color: Color(0xff878787),
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             const SizedBox(width: 12),
+//             Container(
+//               width: 24,
+//               height: 24,
+//               decoration: BoxDecoration(
+//                 shape: BoxShape.circle,
+//                 color: isSelected
+//                     ? const Color(0xff8BC34A)
+//                     : Colors.transparent,
+//                 border: Border.all(
+//                   color: isSelected
+//                       ? const Color(0xff8BC34A)
+//                       : Colors.grey.shade400,
+//                   width: 2,
+//                 ),
+//               ),
+//               child: isSelected
+//                   ? const Icon(Icons.check, size: 16, color: Colors.white)
+//                   : null,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 import 'package:ai_powered_tourists_app/features/profile/screen/interactive_quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -5,6 +333,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../controller/profile_controller.dart';
 import '../controller/interactive_quiz_controller.dart';
 import '../services/play_quize.dart';
@@ -22,7 +351,10 @@ class QuizeOptions extends StatelessWidget {
         backgroundColor: const Color(0xffF9F9F9),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -32,67 +364,96 @@ class QuizeOptions extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Select Question Quantity',
+              'quiz_select_question_quantity'.tr,
               style: GoogleFonts.inter(
                 fontSize: 20.sp,
                 fontWeight: FontWeight.w400,
-                color: Color(0xff252525),
+                color: const Color(0xff252525),
               ),
             ),
+
             const SizedBox(height: 16),
+
             Obx(
               () => Row(
                 children: [
-                  _buildQuantityOption(controller, '10 Q&A', 10),
+                  _buildQuantityOption(
+                    controller,
+                    'quiz_10_qa'.tr,
+                    10,
+                  ),
                   const SizedBox(width: 16),
-                  _buildQuantityOption(controller, '20 Q&A', 20),
+                  _buildQuantityOption(
+                    controller,
+                    'quiz_20_qa'.tr,
+                    20,
+                  ),
                   const SizedBox(width: 16),
-                  _buildQuantityOption(controller, '30 Q&A', 30),
+                  _buildQuantityOption(
+                    controller,
+                    'quiz_30_qa'.tr,
+                    30,
+                  ),
                 ],
               ),
             ),
+
             const SizedBox(height: 32),
-            const Text(
-              'Select Q&A Subject',
-              style: TextStyle(
+
+            Text(
+              'quiz_select_qa_subject'.tr,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
               ),
             ),
+
             const SizedBox(height: 16),
+
             Expanded(
               child: Obx(
                 () => ListView(
                   children: [
                     _buildSubjectOption(
-                      controller,
-                      'History',
-                      'Test your knowledge of ancient events, empires, and heritage',
+                      controller: controller,
+                      title: 'quiz_history'.tr,
+                      description: 'quiz_history_desc'.tr,
+                      value: 'History',
                     ),
+
                     const SizedBox(height: 12),
+
                     _buildSubjectOption(
-                      controller,
-                      'Culture',
-                      'Discover local customs, art, and stories from around the world.',
+                      controller: controller,
+                      title: 'quiz_culture'.tr,
+                      description: 'quiz_culture_desc'.tr,
+                      value: 'Culture',
                     ),
+
                     const SizedBox(height: 12),
+
                     _buildSubjectOption(
-                      controller,
-                      'Food',
-                      'Guess famous dishes, flavors, and culinary traditions',
+                      controller: controller,
+                      title: 'quiz_food'.tr,
+                      description: 'quiz_food_desc'.tr,
+                      value: 'Food',
                     ),
+
                     // const SizedBox(height: 12),
                     // _buildSubjectOption(
-                    //   controller,
-                    //   'Landmarks',
-                    //   'Challenge yourself to identify iconic places and monuments',
+                    //   controller: controller,
+                    //   title: 'quiz_landmarks'.tr,
+                    //   description: 'quiz_landmarks_desc'.tr,
+                    //   value: 'Landmarks',
                     // ),
                   ],
                 ),
               ),
             ),
+
             const SizedBox(height: 16),
+
             Obx(
               () => SizedBox(
                 width: double.infinity,
@@ -102,31 +463,39 @@ class QuizeOptions extends StatelessWidget {
                       ? () async {
                           final selectedCount =
                               controller.selectedQuantity.value ?? 10;
+
                           final serviceEnabled =
                               await Geolocator.isLocationServiceEnabled();
+
                           if (!serviceEnabled) {
                             EasyLoading.showError(
-                              'Please enable location services and try again.',
+                              'quiz_enable_location'.tr,
                             );
                             return;
                           }
 
-                          var permission = await Geolocator.checkPermission();
+                          var permission =
+                              await Geolocator.checkPermission();
+
                           if (permission == LocationPermission.denied) {
                             permission =
                                 await Geolocator.requestPermission();
                           }
+
                           if (permission == LocationPermission.denied ||
-                              permission == LocationPermission.deniedForever) {
+                              permission ==
+                                  LocationPermission.deniedForever) {
                             EasyLoading.showError(
-                              'Location permission is required to start quiz.',
+                              'quiz_location_permission_required'.tr,
                             );
                             return;
                           }
 
-                          final position = await Geolocator.getCurrentPosition(
+                          final position =
+                              await Geolocator.getCurrentPosition(
                             desiredAccuracy: LocationAccuracy.high,
                           );
+
                           final lat = position.latitude;
                           final lng = position.longitude;
 
@@ -136,28 +505,38 @@ class QuizeOptions extends StatelessWidget {
 
                           final selectedSubjectValue =
                               controller.selectedSubject.value;
-                          final topics = selectedSubjectValue != null
-                              ? [selectedSubjectValue.trim().toLowerCase()]
-                              : ['food'];
+
+                          final topics =
+                              selectedSubjectValue != null
+                                  ? [
+                                      selectedSubjectValue
+                                          .trim()
+                                          .toLowerCase()
+                                    ]
+                                  : ['food'];
 
                           final quizData =
                               await PlayQuizeService.fetchLocationQuiz(
-                                latitude: lat,
-                                longitude: lng,
-                                count: selectedCount,
-                                topics: topics,
-                              );
+                            latitude: lat,
+                            longitude: lng,
+                            count: selectedCount,
+                            topics: topics,
+                          );
 
                           if (quizData.isNotEmpty) {
                             final quizController = Get.put(
                               InteractiveQuizController(),
                             );
+
                             quizController.questions = quizData;
-                            Get.to(() => const InteractiveQuizScreen());
+
+                            Get.to(
+                              () => const InteractiveQuizScreen(),
+                            );
                           } else {
                             Get.snackbar(
-                              'Quiz',
-                              'Failed to load quiz. Please try again.',
+                              'quiz_title'.tr,
+                              'quiz_failed_to_load'.tr,
                             );
                           }
                         }
@@ -172,7 +551,7 @@ class QuizeOptions extends StatelessWidget {
                     elevation: 0,
                   ),
                   child: Text(
-                    'Start Q&A',
+                    'quiz_start_qa'.tr,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -184,6 +563,7 @@ class QuizeOptions extends StatelessWidget {
                 ),
               ),
             ),
+
             SizedBox(height: 20.h),
           ],
         ),
@@ -196,23 +576,30 @@ class QuizeOptions extends StatelessWidget {
     String label,
     int value,
   ) {
-    final isSelected = controller.selectedQuantity.value == value;
+    final isSelected =
+        controller.selectedQuantity.value == value;
 
     return Expanded(
       child: GestureDetector(
         onTap: () => controller.selectQuantity(value),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          padding: const EdgeInsets.symmetric(
+            vertical: 12,
+            horizontal: 16,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xffE5F5B4) : Color(0xffFFFFFF),
+              color: isSelected
+                  ? const Color(0xffE5F5B4)
+                  : const Color(0xffFFFFFF),
               width: 1.5,
             ),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment:
+                MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Text(
@@ -220,12 +607,16 @@ class QuizeOptions extends StatelessWidget {
                   style: GoogleFonts.inter(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w400,
-                    color: isSelected ? Color(0xff505050) : Color(0xff878787),
+                    color: isSelected
+                        ? const Color(0xff505050)
+                        : const Color(0xff878787),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              SizedBox(width: 8),
+
+              const SizedBox(width: 8),
+
               Container(
                 width: 20,
                 height: 20,
@@ -242,9 +633,14 @@ class QuizeOptions extends StatelessWidget {
                   ),
                 ),
                 child: isSelected
-                    ? const Icon(Icons.check, size: 14, color: Colors.white)
+                    ? const Icon(
+                        Icons.check,
+                        size: 14,
+                        color: Colors.white,
+                      )
                     : null,
               ),
+
               SizedBox(height: 20.h),
             ],
           ),
@@ -253,23 +649,26 @@ class QuizeOptions extends StatelessWidget {
     );
   }
 
-  ///
-  Widget _buildSubjectOption(
-    ProfileController controller,
-    String title,
-    String description,
-  ) {
-    final isSelected = controller.selectedSubject.value == title;
+  Widget _buildSubjectOption({
+    required ProfileController controller,
+    required String title,
+    required String description,
+    required String value,
+  }) {
+    final isSelected =
+        controller.selectedSubject.value == value;
 
     return GestureDetector(
-      onTap: () => controller.selectSubject(title),
+      onTap: () => controller.selectSubject(value),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? const Color(0xffE5F5B4) : Colors.grey.shade300,
+            color: isSelected
+                ? const Color(0xffE5F5B4)
+                : Colors.grey.shade300,
             width: 1.5,
           ),
         ),
@@ -277,29 +676,36 @@ class QuizeOptions extends StatelessWidget {
           children: [
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
                     style: GoogleFonts.inter(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.w500,
-                      color: isSelected ? Colors.black : Colors.grey.shade800,
+                      color: isSelected
+                          ? Colors.black
+                          : Colors.grey.shade800,
                     ),
                   ),
+
                   const SizedBox(height: 4),
+
                   Text(
                     description,
                     style: GoogleFonts.inter(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w400,
-                      color: Color(0xff878787),
+                      color: const Color(0xff878787),
                     ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(width: 12),
+
             Container(
               width: 24,
               height: 24,
@@ -316,7 +722,11 @@ class QuizeOptions extends StatelessWidget {
                 ),
               ),
               child: isSelected
-                  ? const Icon(Icons.check, size: 16, color: Colors.white)
+                  ? const Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Colors.white,
+                    )
                   : null,
             ),
           ],
