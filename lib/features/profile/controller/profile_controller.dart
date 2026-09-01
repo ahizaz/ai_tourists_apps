@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
@@ -32,117 +31,117 @@ class ProfileController extends GetxController {
   final int maxVoiceTypesSelections = 3;
 
   String? get selectedVoiceType {
-    return voiceTypes.isNotEmpty
-        ? voiceTypes.last
-        : null;
+    if (voiceTypes.isEmpty) {
+      return null;
+    }
+
+    final lastType = voiceTypes.last;
+    return _normalizeVoiceTypeForApi(lastType);
   }
 
   String? _normalizeValue(String? value) {
-    final normalizedValue =
-        value?.trim().toLowerCase();
+    final normalizedValue = value?.trim().toLowerCase();
 
-    if (normalizedValue == null ||
-        normalizedValue.isEmpty) {
+    if (normalizedValue == null || normalizedValue.isEmpty) {
       return null;
     }
 
     return normalizedValue;
   }
 
+  String _normalizeVoiceTypeForApi(String? value) {
+    final normalizedValue = _normalizeValue(value);
+
+    if (normalizedValue == null) {
+      return '';
+    }
+
+    switch (normalizedValue) {
+      case 'historical_focus':
+      case 'historical':
+        return 'historical';
+      case 'artistic_focus':
+      case 'artistic':
+        return 'artistic';
+      case 'fun_facts':
+      case 'fun facts':
+      case 'funfacts':
+        return 'fun_facts';
+      default:
+        return normalizedValue;
+    }
+  }
+
   void _loadAiAssistantPreferences() {
     final storage = Get.find<StorageService>();
 
-    gender.value = _normalizeValue(
-      storage.getAiGender(),
-    );
+    gender.value = _normalizeValue(storage.getAiGender());
 
-    voice.value = _normalizeValue(
-      storage.getAiVoice(),
-    );
+    voice.value = _normalizeValue(storage.getAiVoice());
 
     voiceTypes.assignAll(
       storage
           .getAiVoiceTypes()
-          .map((item) => item.trim().toLowerCase())
+          .map(_normalizeVoiceTypeForApi)
           .where((item) => item.isNotEmpty)
           .toList(),
     );
 
     debugPrint('====================================');
-    debugPrint(
-      '📖 Loaded AI gender: ${gender.value}',
-    );
-    debugPrint(
-      '📖 Loaded AI voice: ${voice.value}',
-    );
-    debugPrint(
-      '📖 Loaded voice types: $voiceTypes',
-    );
+    debugPrint('📖 Loaded AI gender: ${gender.value}');
+    debugPrint('📖 Loaded AI voice: ${voice.value}');
+    debugPrint('📖 Loaded voice types: $voiceTypes');
     debugPrint('====================================');
   }
 
   void selectGender(String? selectedGender) {
-    final normalizedGender =
-        _normalizeValue(selectedGender);
+    final normalizedGender = _normalizeValue(selectedGender);
 
     gender.value = normalizedGender;
 
     persistAiAssistantPreferences();
 
-    debugPrint(
-      '✅ Selected AI gender: ${gender.value}',
-    );
+    debugPrint('✅ Selected AI gender: ${gender.value}');
   }
 
   void selectVoice(String? selectedVoice) {
-    final normalizedVoice =
-        _normalizeValue(selectedVoice);
+    final normalizedVoice = _normalizeValue(selectedVoice);
 
     voice.value = normalizedVoice;
 
     persistAiAssistantPreferences();
 
-    debugPrint(
-      '✅ Selected AI voice: ${voice.value}',
-    );
+    debugPrint('✅ Selected AI voice: ${voice.value}');
   }
 
   bool toggleVoiceType(String selectedType) {
-    final normalizedType =
-        _normalizeValue(selectedType);
+    final normalizedType = _normalizeVoiceTypeForApi(selectedType);
 
-    if (normalizedType == null) {
+    if (normalizedType.isEmpty) {
       return false;
     }
 
     final existingIndex = voiceTypes.indexWhere(
-      (item) =>
-          item.trim().toLowerCase() ==
-          normalizedType,
+      (item) => item.trim().toLowerCase() == normalizedType,
     );
 
     if (existingIndex != -1) {
       voiceTypes.removeAt(existingIndex);
       persistAiAssistantPreferences();
 
-      debugPrint(
-        '🗑️ Removed voice type: $normalizedType',
-      );
+      debugPrint('🗑️ Removed voice type: $normalizedType');
 
       return true;
     }
 
-    if (voiceTypes.length >=
-        maxVoiceTypesSelections) {
+    if (voiceTypes.length >= maxVoiceTypesSelections) {
       return false;
     }
 
     voiceTypes.add(normalizedType);
     persistAiAssistantPreferences();
 
-    debugPrint(
-      '✅ Added voice type: $normalizedType',
-    );
+    debugPrint('✅ Added voice type: $normalizedType');
 
     return true;
   }
@@ -150,14 +149,12 @@ class ProfileController extends GetxController {
   void persistAiAssistantPreferences() {
     final storage = Get.find<StorageService>();
 
-    final selectedGender =
-        _normalizeValue(gender.value);
+    final selectedGender = _normalizeValue(gender.value);
 
-    final selectedVoice =
-        _normalizeValue(voice.value);
+    final selectedVoice = _normalizeValue(voice.value);
 
     final normalizedVoiceTypes = voiceTypes
-        .map((item) => item.trim().toLowerCase())
+        .map(_normalizeVoiceTypeForApi)
         .where((item) => item.isNotEmpty)
         .toSet()
         .toList();
@@ -165,9 +162,7 @@ class ProfileController extends GetxController {
     gender.value = selectedGender;
     voice.value = selectedVoice;
 
-    voiceTypes.assignAll(
-      normalizedVoiceTypes,
-    );
+    voiceTypes.assignAll(normalizedVoiceTypes);
 
     if (selectedGender == null) {
       storage.removeAiGender();
@@ -184,18 +179,12 @@ class ProfileController extends GetxController {
     if (normalizedVoiceTypes.isEmpty) {
       storage.removeAiVoiceTypes();
     } else {
-      storage.saveAiVoiceTypes(
-        normalizedVoiceTypes,
-      );
+      storage.saveAiVoiceTypes(normalizedVoiceTypes);
     }
 
     debugPrint('====================================');
-    debugPrint(
-      '💾 Persisted AI gender: $selectedGender',
-    );
-    debugPrint(
-      '💾 Persisted AI voice: $selectedVoice',
-    );
+    debugPrint('💾 Persisted AI gender: $selectedGender');
+    debugPrint('💾 Persisted AI voice: $selectedVoice');
     debugPrint(
       '💾 Persisted voice types: '
       '$normalizedVoiceTypes',
@@ -214,39 +203,150 @@ class ProfileController extends GetxController {
     storage.removeAiVoice();
     storage.removeAiVoiceTypes();
 
-    debugPrint(
-      '✅ All AI assistant preferences reset',
-    );
+    debugPrint('✅ All AI assistant preferences reset');
   }
 
   /// Selected AI preferences backend-এ update করবে।
+  // Future<bool> updateAiPreferences() async {
+  //   final storage = Get.find<StorageService>();
+  //   final token = storage.getAccessToken();
+
+  //   if (token == null ||
+  //       token.trim().isEmpty) {
+  //     EasyLoading.showError(
+  //       'Authentication required',
+  //     );
+  //     return false;
+  //   }
+
+  //   final selectedGender =
+  //       _normalizeValue(gender.value);
+
+  //   final selectedVoice =
+  //       _normalizeValue(voice.value);
+
+  //   final selectedType =
+  //       _normalizeValue(selectedVoiceType);
+
+  //   if (selectedGender == null ||
+  //       selectedVoice == null ||
+  //       selectedType == null) {
+  //     EasyLoading.showError(
+  //       'Please complete all selections',
+  //     );
+  //     return false;
+  //   }
+
+  //   final body = <String, dynamic>{
+  //     'gender': selectedGender,
+  //     'ai_voice': selectedVoice,
+  //     'ai_voice_type': selectedType,
+  //   };
+
+  //   debugPrint('====================================');
+  //   debugPrint(
+  //     '📤 Updating profile preferences: '
+  //     '${jsonEncode(body)}',
+  //   );
+  //   debugPrint('====================================');
+
+  //   try {
+  //     EasyLoading.show(
+  //       status: 'Updating AI preferences...',
+  //     );
+
+  //     final response = await http.post(
+  //       Uri.parse(Url.profilecreation),
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer ${token.trim()}',
+  //       },
+  //       body: jsonEncode(body),
+  //     );
+
+  //     EasyLoading.dismiss();
+
+  //     debugPrint(
+  //       'Profile update status: '
+  //       '${response.statusCode}',
+  //     );
+
+  //     debugPrint(
+  //       'Profile update response: '
+  //       '${response.body}',
+  //     );
+
+  //     if (response.statusCode == 200 ||
+  //         response.statusCode == 201) {
+  //       gender.value = selectedGender;
+  //       voice.value = selectedVoice;
+
+  //       persistAiAssistantPreferences();
+
+  //       EasyLoading.showSuccess(
+  //         'AI preferences updated',
+  //       );
+
+  //       return true;
+  //     }
+
+  //     String errorMessage =
+  //         'Failed to update preferences';
+
+  //     try {
+  //       final decodedResponse =
+  //           jsonDecode(response.body);
+
+  //       if (decodedResponse is Map) {
+  //         errorMessage =
+  //             decodedResponse['message']
+  //                     ?.toString() ??
+  //                 decodedResponse['detail']
+  //                     ?.toString() ??
+  //                 errorMessage;
+  //       }
+  //     } catch (_) {
+  //       // Default error message ব্যবহার হবে।
+  //     }
+
+  //     EasyLoading.showError(errorMessage);
+
+  //     return false;
+  //   } catch (error, stackTrace) {
+  //     EasyLoading.dismiss();
+
+  //     debugPrint(
+  //       'AI preference update error: $error',
+  //     );
+
+  //     debugPrint(
+  //       'Stack trace: $stackTrace',
+  //     );
+
+  //     EasyLoading.showError(
+  //       'Something went wrong',
+  //     );
+
+  //     return false;
+  //   }
+  // }
   Future<bool> updateAiPreferences() async {
     final storage = Get.find<StorageService>();
     final token = storage.getAccessToken();
 
-    if (token == null ||
-        token.trim().isEmpty) {
-      EasyLoading.showError(
-        'Authentication required',
-      );
+    if (token == null || token.trim().isEmpty) {
+      EasyLoading.showError('Authentication required');
       return false;
     }
 
-    final selectedGender =
-        _normalizeValue(gender.value);
-
-    final selectedVoice =
-        _normalizeValue(voice.value);
-
-    final selectedType =
-        _normalizeValue(selectedVoiceType);
+    final selectedGender = _normalizeValue(gender.value);
+    final selectedVoice = _normalizeValue(voice.value);
+    final selectedType = _normalizeVoiceTypeForApi(selectedVoiceType);
 
     if (selectedGender == null ||
         selectedVoice == null ||
-        selectedType == null) {
-      EasyLoading.showError(
-        'Please complete all selections',
-      );
+        selectedType.isEmpty) {
+      EasyLoading.showError('Please complete all selections');
       return false;
     }
 
@@ -257,18 +357,14 @@ class ProfileController extends GetxController {
     };
 
     debugPrint('====================================');
-    debugPrint(
-      '📤 Updating profile preferences: '
-      '${jsonEncode(body)}',
-    );
+    debugPrint('📤 Updating profile preferences: ${jsonEncode(body)}');
     debugPrint('====================================');
 
     try {
-      EasyLoading.show(
-        status: 'Updating AI preferences...',
-      );
+      EasyLoading.show(status: 'Updating AI preferences...');
 
-      final response = await http.post(
+      // ✅ PATCH instead of POST
+      final response = await http.patch(
         Uri.parse(Url.profilecreation),
         headers: {
           'Content-Type': 'application/json',
@@ -279,48 +375,33 @@ class ProfileController extends GetxController {
 
       EasyLoading.dismiss();
 
-      debugPrint(
-        'Profile update status: '
-        '${response.statusCode}',
-      );
+      debugPrint('Profile update status: ${response.statusCode}');
 
-      debugPrint(
-        'Profile update response: '
-        '${response.body}',
-      );
+      debugPrint('Profile update response: ${response.body}');
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         gender.value = selectedGender;
         voice.value = selectedVoice;
 
         persistAiAssistantPreferences();
 
-        EasyLoading.showSuccess(
-          'AI preferences updated',
-        );
+        EasyLoading.showSuccess('AI preferences updated');
 
         return true;
       }
 
-      String errorMessage =
-          'Failed to update preferences';
+      String errorMessage = 'Failed to update preferences';
 
       try {
-        final decodedResponse =
-            jsonDecode(response.body);
+        final decodedResponse = jsonDecode(response.body);
 
         if (decodedResponse is Map) {
           errorMessage =
-              decodedResponse['message']
-                      ?.toString() ??
-                  decodedResponse['detail']
-                      ?.toString() ??
-                  errorMessage;
+              decodedResponse['message']?.toString() ??
+              decodedResponse['detail']?.toString() ??
+              errorMessage;
         }
-      } catch (_) {
-        // Default error message ব্যবহার হবে।
-      }
+      } catch (_) {}
 
       EasyLoading.showError(errorMessage);
 
@@ -328,17 +409,11 @@ class ProfileController extends GetxController {
     } catch (error, stackTrace) {
       EasyLoading.dismiss();
 
-      debugPrint(
-        'AI preference update error: $error',
-      );
+      debugPrint('AI preference update error: $error');
 
-      debugPrint(
-        'Stack trace: $stackTrace',
-      );
+      debugPrint('Stack trace: $stackTrace');
 
-      EasyLoading.showError(
-        'Something went wrong',
-      );
+      EasyLoading.showError('Something went wrong');
 
       return false;
     }
@@ -349,14 +424,12 @@ class ProfileController extends GetxController {
   var selectedSubject = RxnString();
 
   bool get canStartQuiz {
-    return selectedQuantity.value != null &&
-        selectedSubject.value != null;
+    return selectedQuantity.value != null && selectedSubject.value != null;
   }
 
   // Profile image
   Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(
+    final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
     );
 
@@ -364,95 +437,68 @@ class ProfileController extends GetxController {
       return;
     }
 
-    final bytes =
-        await pickedFile.readAsBytes();
+    final bytes = await pickedFile.readAsBytes();
 
     profileImageBytes.value = bytes;
-    profileImageFileName.value =
-        pickedFile.name;
+    profileImageFileName.value = pickedFile.name;
 
     if (!kIsWeb) {
-      profileImage.value =
-          File(pickedFile.path);
+      profileImage.value = File(pickedFile.path);
     }
 
     try {
-      final base64Image =
-          base64Encode(bytes);
+      final base64Image = base64Encode(bytes);
 
-      Get.find<StorageService>()
-          .saveProfileImageBase64(
-        base64Image,
-      );
+      Get.find<StorageService>().saveProfileImageBase64(base64Image);
     } catch (error) {
-      debugPrint(
-        'Error saving profile image: $error',
-      );
+      debugPrint('Error saving profile image: $error');
     }
   }
 
   Future<void> uploadProfileImage() async {
     try {
-      if (profileImage.value == null &&
-          profileImageBytes.value == null) {
-        EasyLoading.showError(
-          'Please select an image first',
-        );
+      if (profileImage.value == null && profileImageBytes.value == null) {
+        EasyLoading.showError('Please select an image first');
 
         debugPrint('❌ No image selected');
 
         return;
       }
 
-      EasyLoading.show(
-        status: 'Uploading image...',
-      );
+      EasyLoading.show(status: 'Uploading image...');
 
-      final token =
-          Get.find<StorageService>()
-              .getAccessToken();
+      final token = Get.find<StorageService>().getAccessToken();
 
-      if (token == null ||
-          token.isEmpty) {
+      if (token == null || token.isEmpty) {
         EasyLoading.dismiss();
 
-        EasyLoading.showError(
-          'Authentication required',
-        );
+        EasyLoading.showError('Authentication required');
 
-        debugPrint(
-          '❌ No access token found',
-        );
+        debugPrint('❌ No access token found');
 
         return;
       }
 
-      debugPrint(
-        'API URL: ${Url.profileImage}',
-      );
+      debugPrint('API URL: ${Url.profileImage}');
 
       debugPrint(
         'Image Path/Bytes: '
         '${profileImage.value?.path ?? 'bytes'}',
       );
 
-      final request =
-          http.MultipartRequest(
+      final request = http.MultipartRequest(
         'POST',
         Uri.parse(Url.profileImage),
       );
 
-      request.headers.addAll({
-        'Authorization': 'Bearer $token',
-      });
+      request.headers.addAll({'Authorization': 'Bearer $token'});
 
       if (profileImage.value != null) {
         request.files.add(
           await http.MultipartFile.fromPath(
             'image',
             profileImage.value!.path,
-            filename:
-                profileImageFileName.value,
+            filename: profileImageFileName.value,
           ),
         );
       } else {
@@ -460,41 +506,28 @@ class ProfileController extends GetxController {
           http.MultipartFile.fromBytes(
             'image',
             profileImageBytes.value!,
-            filename:
-                profileImageFileName.value ??
-                'profile_image.png',
+            filename: profileImageFileName.value ?? 'profile_image.png',
           ),
         );
       }
 
-      debugPrint(
-        'Sending profile image request...',
-      );
+      debugPrint('Sending profile image request...');
 
-      final streamedResponse =
-          await request.send();
+      final streamedResponse = await request.send();
 
-      final response =
-          await http.Response.fromStream(
-        streamedResponse,
-      );
+      final response = await http.Response.fromStream(streamedResponse);
 
       debugPrint(
         'Response status: '
         '${response.statusCode}',
       );
 
-      debugPrint(
-        'Response body: ${response.body}',
-      );
+      debugPrint('Response body: ${response.body}');
 
       EasyLoading.dismiss();
 
-      if (response.statusCode == 200 ||
-          response.statusCode == 201) {
-        EasyLoading.showSuccess(
-          'Profile image uploaded successfully!',
-        );
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        EasyLoading.showSuccess('Profile image uploaded successfully!');
       } else {
         EasyLoading.showError(
           'Upload failed: '
@@ -504,9 +537,7 @@ class ProfileController extends GetxController {
     } catch (error) {
       EasyLoading.dismiss();
 
-      EasyLoading.showError(
-        'Error uploading image',
-      );
+      EasyLoading.showError('Error uploading image');
 
       debugPrint(
         '❌ Profile image upload error: '
@@ -516,9 +547,7 @@ class ProfileController extends GetxController {
   }
 
   // Subscription
-  void selectSubscriptionPlan(
-    String plan,
-  ) {
+  void selectSubscriptionPlan(String plan) {
     if (selectedPlan.value == plan) {
       selectedPlan.value = null;
     } else {
@@ -537,22 +566,18 @@ class ProfileController extends GetxController {
 
   // Quiz selection methods
   void selectQuantity(int quantity) {
-    if (selectedQuantity.value ==
-        quantity) {
+    if (selectedQuantity.value == quantity) {
       selectedQuantity.value = null;
     } else {
-      selectedQuantity.value =
-          quantity;
+      selectedQuantity.value = quantity;
     }
   }
 
   void selectSubject(String subject) {
-    if (selectedSubject.value ==
-        subject) {
+    if (selectedSubject.value == subject) {
       selectedSubject.value = null;
     } else {
-      selectedSubject.value =
-          subject;
+      selectedSubject.value = subject;
     }
   }
 
@@ -562,26 +587,21 @@ class ProfileController extends GetxController {
   }
 
   // Q&A
-  var qaAnswers =
-      <int, String>{}.obs;
+  var qaAnswers = <int, String>{}.obs;
 
-  final List<Map<String, dynamic>>
-      qaQuestions = [
+  final List<Map<String, dynamic>> qaQuestions = [
     {
-      'question':
-          'Q1: Which ancient wonder was located in Babylon?',
+      'question': 'Q1: Which ancient wonder was located in Babylon?',
       'options': [
         'A) The Great Pyramid of Giza',
         'B) Hanging Gardens',
         'C) Temple of Artemis',
         'D) Colossus of Rhodes',
       ],
-      'correctAnswer':
-          'B) Hanging Gardens',
+      'correctAnswer': 'B) Hanging Gardens',
     },
     {
-      'question':
-          'Q1: Who was the first emperor of Rome?',
+      'question': 'Q1: Who was the first emperor of Rome?',
       'options': [
         'A) Julius Caesar',
         'B) Augustus',
@@ -591,38 +611,27 @@ class ProfileController extends GetxController {
       'correctAnswer': 'B) Augustus',
     },
     {
-      'question':
-          'Q1: Which ancient wonder was located in Babylon?',
+      'question': 'Q1: Which ancient wonder was located in Babylon?',
       'options': [
         'A) The Great Pyramid of Giza',
         'B) Hanging Gardens',
         'C) Temple of Artemis',
         'D) Colossus of Rhodes',
       ],
-      'correctAnswer':
-          'C) Temple of Artemis',
+      'correctAnswer': 'C) Temple of Artemis',
     },
   ];
 
-  void selectAnswer(
-    int questionIndex,
-    String answer,
-  ) {
-    qaAnswers[questionIndex] =
-        answer;
+  void selectAnswer(int questionIndex, String answer) {
+    qaAnswers[questionIndex] = answer;
   }
 
-  bool isAnswerSelected(
-    int questionIndex,
-    String answer,
-  ) {
-    return qaAnswers[questionIndex] ==
-        answer;
+  bool isAnswerSelected(int questionIndex, String answer) {
+    return qaAnswers[questionIndex] == answer;
   }
 
   bool get canSubmitQA {
-    return qaAnswers.length ==
-        qaQuestions.length;
+    return qaAnswers.length == qaQuestions.length;
   }
 
   void submitQA() {
@@ -632,14 +641,8 @@ class ProfileController extends GetxController {
 
     int correctCount = 0;
 
-    for (
-      int index = 0;
-      index < qaQuestions.length;
-      index++
-    ) {
-      if (qaAnswers[index] ==
-          qaQuestions[index]
-              ['correctAnswer']) {
+    for (int index = 0; index < qaQuestions.length; index++) {
+      if (qaAnswers[index] == qaQuestions[index]['correctAnswer']) {
         correctCount++;
       }
     }
@@ -648,8 +651,7 @@ class ProfileController extends GetxController {
       'Quiz Completed',
       'You got $correctCount out of '
           '${qaQuestions.length} correct!',
-      snackPosition:
-          SnackPosition.BOTTOM,
+      snackPosition: SnackPosition.BOTTOM,
     );
   }
 
@@ -658,8 +660,7 @@ class ProfileController extends GetxController {
   }
 
   // Saved places
-  var savedPlaces =
-      <Map<String, dynamic>>[
+  var savedPlaces = <Map<String, dynamic>>[
     {
       'name': 'Great Wall of China',
       'description':
@@ -710,8 +711,7 @@ class ProfileController extends GetxController {
     },
   ].obs;
 
-  final RxBool hasLoadedSavedPlaces =
-      false.obs;
+  final RxBool hasLoadedSavedPlaces = false.obs;
 
   Future<void> fetchSavedPlaces() async {
     if (hasLoadedSavedPlaces.value) {
@@ -719,22 +719,14 @@ class ProfileController extends GetxController {
     }
 
     try {
-      EasyLoading.show(
-        status: 'Loading saved places...',
-      );
+      EasyLoading.show(status: 'Loading saved places...');
 
-      final token =
-          Get.find<StorageService>()
-              .getAccessToken();
+      final token = Get.find<StorageService>().getAccessToken();
 
-      if (token == null ||
-          token.isEmpty) {
-        debugPrint(
-          'No access token found',
-        );
+      if (token == null || token.isEmpty) {
+        debugPrint('No access token found');
 
-        hasLoadedSavedPlaces.value =
-            true;
+        hasLoadedSavedPlaces.value = true;
 
         return;
       }
@@ -743,8 +735,7 @@ class ProfileController extends GetxController {
         Uri.parse(Url.getSavePlace),
         headers: {
           'Accept': 'application/json',
-          'Authorization':
-              'Bearer $token',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -767,19 +758,15 @@ class ProfileController extends GetxController {
         return;
       }
 
-      final decodedBody =
-          jsonDecode(response.body);
+      final decodedBody = jsonDecode(response.body);
 
       if (decodedBody is! Map) {
-        debugPrint(
-          'Invalid saved places response',
-        );
+        debugPrint('Invalid saved places response');
 
         return;
       }
 
-      final data =
-          decodedBody['data'];
+      final data = decodedBody['data'];
 
       if (data is! List) {
         savedPlaces.clear();
@@ -787,40 +774,24 @@ class ProfileController extends GetxController {
       }
 
       final places = data.map((item) {
-        final map =
-            Map<String, dynamic>.from(
-          item,
-        );
+        final map = Map<String, dynamic>.from(item);
 
-        final latitude =
-            _parseCoordinate(
-          map['latitude'],
-        );
+        final latitude = _parseCoordinate(map['latitude']);
 
-        final longitude =
-            _parseCoordinate(
-          map['longitude'],
-        );
+        final longitude = _parseCoordinate(map['longitude']);
 
         return <String, dynamic>{
-          'name':
-              map['place_name'] ?? '',
-          'description':
-              map['place_description'] ??
-              '',
-          'rating': double.tryParse(
-                (map['place_rating'] ?? '')
-                    .toString(),
-              ) ??
-              0.0,
+          'name': map['place_name'] ?? '',
+          'description': map['place_description'] ?? '',
+          'rating':
+              double.tryParse((map['place_rating'] ?? '').toString()) ?? 0.0,
           'distance': _formatDistance(
             initialLat,
             initialLng,
             latitude,
             longitude,
           ),
-          'image':
-              map['place_image'] ?? '',
+          'image': map['place_image'] ?? '',
           'latitude': latitude,
           'longitude': longitude,
           'id': map['id'],
@@ -835,55 +806,36 @@ class ProfileController extends GetxController {
       );
     } finally {
       EasyLoading.dismiss();
-      hasLoadedSavedPlaces.value =
-          true;
+      hasLoadedSavedPlaces.value = true;
     }
   }
 
-  double _parseCoordinate(
-    dynamic value,
-  ) {
+  double _parseCoordinate(dynamic value) {
     if (value is num) {
       return value.toDouble();
     }
 
-    return double.tryParse(
-          value?.toString() ?? '',
-        ) ??
-        0.0;
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
   }
 
-  String _formatDistance(
-    double lat1,
-    double lon1,
-    double lat2,
-    double lon2,
-  ) {
+  String _formatDistance(double lat1, double lon1, double lat2, double lon2) {
     try {
       const earthRadius = 6371.0;
 
-      final dLat =
-          _deg2rad(lat2 - lat1);
+      final dLat = _deg2rad(lat2 - lat1);
 
-      final dLon =
-          _deg2rad(lon2 - lon1);
+      final dLon = _deg2rad(lon2 - lon1);
 
       final a =
-          sin(dLat / 2) *
-                  sin(dLat / 2) +
-              cos(_deg2rad(lat1)) *
-                  cos(_deg2rad(lat2)) *
-                  sin(dLon / 2) *
-                  sin(dLon / 2);
+          sin(dLat / 2) * sin(dLat / 2) +
+          cos(_deg2rad(lat1)) *
+              cos(_deg2rad(lat2)) *
+              sin(dLon / 2) *
+              sin(dLon / 2);
 
-      final c = 2 *
-          atan2(
-            sqrt(a),
-            sqrt(1 - a),
-          );
+      final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
-      final distance =
-          earthRadius * c;
+      final distance = earthRadius * c;
 
       if (distance >= 1) {
         return '${distance.toStringAsFixed(1)}km';
@@ -900,13 +852,11 @@ class ProfileController extends GetxController {
   }
 
   void unsavePlace(int index) {
-    if (index < 0 ||
-        index >= savedPlaces.length) {
+    if (index < 0 || index >= savedPlaces.length) {
       return;
     }
 
-    final placeName =
-        savedPlaces[index]['name'];
+    final placeName = savedPlaces[index]['name'];
 
     savedPlaces.removeAt(index);
 
@@ -914,26 +864,18 @@ class ProfileController extends GetxController {
       'Removed',
       '$placeName has been removed '
           'from saved places',
-      snackPosition:
-          SnackPosition.BOTTOM,
-      backgroundColor:
-          Get.theme.colorScheme.error,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.theme.colorScheme.error,
       colorText: Colors.white,
-      duration:
-          const Duration(seconds: 2),
-      margin:
-          const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
   }
 
-  void savePlace(
-    Map<String, dynamic> place,
-  ) {
-    final alreadySaved =
-        savedPlaces.any(
-      (item) =>
-          item['name'] == place['name'],
+  void savePlace(Map<String, dynamic> place) {
+    final alreadySaved = savedPlaces.any(
+      (item) => item['name'] == place['name'],
     );
 
     if (alreadySaved) {
@@ -945,66 +887,42 @@ class ProfileController extends GetxController {
     Get.snackbar(
       'Saved',
       '${place['name']} has been saved',
-      snackPosition:
-          SnackPosition.BOTTOM,
-      backgroundColor:
-          Get.theme.primaryColor,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.theme.primaryColor,
       colorText: Colors.white,
-      duration:
-          const Duration(seconds: 2),
-      margin:
-          const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
   }
 
-  bool isPlaceSaved(
-    String placeName,
-  ) {
-    return savedPlaces.any(
-      (place) =>
-          place['name'] == placeName,
-    );
+  bool isPlaceSaved(String placeName) {
+    return savedPlaces.any((place) => place['name'] == placeName);
   }
 
   // Downloaded maps
-  var downloadedMaps =
-      <Map<String, dynamic>>[].obs;
+  var downloadedMaps = <Map<String, dynamic>>[].obs;
 
-  void showRenameDialog(
-    BuildContext context,
-    int index,
-  ) {
-    final nameController =
-        TextEditingController(
-      text:
-          downloadedMaps[index]['name'],
+  void showRenameDialog(BuildContext context, int index) {
+    final nameController = TextEditingController(
+      text: downloadedMaps[index]['name'],
     );
 
     Get.dialog(
       AlertDialog(
-        title:
-            const Text('Rename Map'),
+        title: const Text('Rename Map'),
         content: TextField(
           controller: nameController,
-          decoration:
-              const InputDecoration(
+          decoration: const InputDecoration(
             labelText: 'Name',
-            border:
-                OutlineInputBorder(),
+            border: OutlineInputBorder(),
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: Get.back,
-            child:
-                const Text('Cancel'),
-          ),
+          TextButton(onPressed: Get.back, child: const Text('Cancel')),
           TextButton(
             onPressed: () {
-              final newName =
-                  nameController.text
-                      .trim();
+              final newName = nameController.text.trim();
 
               if (newName.isEmpty) {
                 return;
@@ -1012,127 +930,85 @@ class ProfileController extends GetxController {
 
               Get.back();
 
-              renameMap(
-                index,
-                newName,
-              );
+              renameMap(index, newName);
             },
-            child:
-                const Text('Save'),
+            child: const Text('Save'),
           ),
         ],
       ),
     );
   }
 
-  void renameMap(
-    int index,
-    String newName,
-  ) {
-    if (index < 0 ||
-        index >=
-            downloadedMaps.length) {
+  void renameMap(int index, String newName) {
+    if (index < 0 || index >= downloadedMaps.length) {
       return;
     }
 
-    final updatedMap =
-        Map<String, dynamic>.from(
-      downloadedMaps[index],
-    );
+    final updatedMap = Map<String, dynamic>.from(downloadedMaps[index]);
 
     updatedMap['name'] = newName;
 
-    downloadedMaps[index] =
-        updatedMap;
+    downloadedMaps[index] = updatedMap;
 
     downloadedMaps.refresh();
   }
 
   void deleteMap(int index) {
-    if (index < 0 ||
-        index >=
-            downloadedMaps.length) {
+    if (index < 0 || index >= downloadedMaps.length) {
       return;
     }
 
-    final mapName =
-        downloadedMaps[index]['name'];
+    final mapName = downloadedMaps[index]['name'];
 
     downloadedMaps.removeAt(index);
 
     Get.snackbar(
       'Deleted',
       '$mapName has been deleted',
-      snackPosition:
-          SnackPosition.BOTTOM,
-      backgroundColor:
-          Get.theme.colorScheme.error,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.theme.colorScheme.error,
       colorText: Colors.white,
-      duration:
-          const Duration(seconds: 2),
-      margin:
-          const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
   }
 
   void selectMap(int index) {
-    if (index < 0 ||
-        index >=
-            downloadedMaps.length) {
+    if (index < 0 || index >= downloadedMaps.length) {
       return;
     }
 
-    final map =
-        downloadedMaps[index];
+    final map = downloadedMaps[index];
 
     final mapName = map['name'];
 
-    final latitude =
-        (map['latitude'] as num?)
-                ?.toDouble() ??
-            initialLat;
+    final latitude = (map['latitude'] as num?)?.toDouble() ?? initialLat;
 
-    final longitude =
-        (map['longitude'] as num?)
-                ?.toDouble() ??
-            initialLng;
+    final longitude = (map['longitude'] as num?)?.toDouble() ?? initialLng;
 
-    final zoom =
-        (map['zoom'] as num?)
-                ?.toDouble() ??
-            15.0;
+    final zoom = (map['zoom'] as num?)?.toDouble() ?? 15.0;
 
-    moveCamera(
-      latitude,
-      longitude,
-      zoom: zoom,
-    );
+    moveCamera(latitude, longitude, zoom: zoom);
 
     Get.back();
 
     Get.snackbar(
       'Map Loaded',
       '$mapName has been loaded',
-      snackPosition:
-          SnackPosition.BOTTOM,
-      backgroundColor:
-          Get.theme.primaryColor,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Get.theme.primaryColor,
       colorText: Colors.white,
-      duration:
-          const Duration(seconds: 2),
-      margin:
-          const EdgeInsets.all(16),
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(16),
       borderRadius: 12,
     );
   }
 
   String downloadCurrentMap() {
-    final currentPosition =
-        cameraPosition.value;
+    final currentPosition = cameraPosition.value;
 
-    final mapNumber =
-        downloadedMaps.length + 1;
+    final mapNumber = downloadedMaps.length + 1;
 
     final now = DateTime.now();
 
@@ -1141,21 +1017,13 @@ class ProfileController extends GetxController {
         '${now.month.toString().padLeft(2, '0')}/'
         '${now.year}';
 
-    final newMap =
-        <String, dynamic>{
+    final newMap = <String, dynamic>{
       'id': mapNumber.toString(),
-      'name':
-          'Map ${mapNumber.toString().padLeft(2, '0')}',
-      'lastDownloaded':
-          formattedDate,
-      'latitude':
-          currentPosition
-              .target.latitude,
-      'longitude':
-          currentPosition
-              .target.longitude,
-      'zoom':
-          currentPosition.zoom,
+      'name': 'Map ${mapNumber.toString().padLeft(2, '0')}',
+      'lastDownloaded': formattedDate,
+      'latitude': currentPosition.target.latitude,
+      'longitude': currentPosition.target.longitude,
+      'zoom': currentPosition.zoom,
     };
 
     downloadedMaps.add(newMap);
@@ -1164,27 +1032,18 @@ class ProfileController extends GetxController {
   }
 
   // Offline map
-  final double initialLat =
-      23.7808875;
+  final double initialLat = 23.7808875;
 
-  final double initialLng =
-      90.2792371;
+  final double initialLng = 90.2792371;
 
-  final Rx<CameraPosition>
-      cameraPosition =
-      const CameraPosition(
-    target: LatLng(
-      23.7808875,
-      90.2792371,
-    ),
+  final Rx<CameraPosition> cameraPosition = const CameraPosition(
+    target: LatLng(23.7808875, 90.2792371),
     zoom: 15,
   ).obs;
 
-  final RxSet<Marker> markers =
-      <Marker>{}.obs;
+  final RxSet<Marker> markers = <Marker>{}.obs;
 
-  GoogleMapController?
-      gMapController;
+  GoogleMapController? gMapController;
 
   @override
   void onInit() {
@@ -1193,15 +1052,9 @@ class ProfileController extends GetxController {
     _loadAiAssistantPreferences();
 
     const initialMarker = Marker(
-      markerId:
-          MarkerId('initial_marker'),
-      position: LatLng(
-        23.7808875,
-        90.2792371,
-      ),
-      infoWindow: InfoWindow(
-        title: 'You are here',
-      ),
+      markerId: MarkerId('initial_marker'),
+      position: LatLng(23.7808875, 90.2792371),
+      infoWindow: InfoWindow(title: 'You are here'),
     );
 
     markers.add(initialMarker);
@@ -1212,36 +1065,24 @@ class ProfileController extends GetxController {
     super.onReady();
 
     try {
-      final storage =
-          Get.find<StorageService>();
+      final storage = Get.find<StorageService>();
 
-      final storedName =
-          storage.getUserName();
+      final storedName = storage.getUserName();
 
-      final storedEmail =
-          storage.getUserEmail();
+      final storedEmail = storage.getUserEmail();
 
-      if (storedName != null &&
-          storedName.isNotEmpty) {
+      if (storedName != null && storedName.isNotEmpty) {
         userName.value = storedName;
       }
 
-      if (storedEmail != null &&
-          storedEmail.isNotEmpty) {
-        userEmail.value =
-            storedEmail;
+      if (storedEmail != null && storedEmail.isNotEmpty) {
+        userEmail.value = storedEmail;
       }
 
-      final savedBase64 =
-          storage
-              .getProfileImageBase64();
+      final savedBase64 = storage.getProfileImageBase64();
 
-      if (savedBase64 != null &&
-          savedBase64.isNotEmpty) {
-        profileImageBytes.value =
-            base64Decode(
-          savedBase64,
-        );
+      if (savedBase64 != null && savedBase64.isNotEmpty) {
+        profileImageBytes.value = base64Decode(savedBase64);
       }
     } catch (error) {
       debugPrint(
@@ -1255,8 +1096,7 @@ class ProfileController extends GetxController {
     userName.value = name;
 
     try {
-      Get.find<StorageService>()
-          .saveUserName(name);
+      Get.find<StorageService>().saveUserName(name);
     } catch (error) {
       debugPrint(
         'Error saving user name: '
@@ -1269,8 +1109,7 @@ class ProfileController extends GetxController {
     userEmail.value = email;
 
     try {
-      Get.find<StorageService>()
-          .saveUserEmail(email);
+      Get.find<StorageService>().saveUserEmail(email);
     } catch (error) {
       debugPrint(
         'Error saving user email: '
@@ -1279,9 +1118,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  void onMapCreated(
-    GoogleMapController controller,
-  ) {
+  void onMapCreated(GoogleMapController controller) {
     gMapController = controller;
   }
 
@@ -1290,24 +1127,16 @@ class ProfileController extends GetxController {
     double longitude, {
     double zoom = 15,
   }) async {
-    final newPosition =
-        CameraPosition(
-      target: LatLng(
-        latitude,
-        longitude,
-      ),
+    final newPosition = CameraPosition(
+      target: LatLng(latitude, longitude),
       zoom: zoom,
     );
 
-    cameraPosition.value =
-        newPosition;
+    cameraPosition.value = newPosition;
 
     if (gMapController != null) {
-      await gMapController!
-          .animateCamera(
-        CameraUpdate.newCameraPosition(
-          newPosition,
-        ),
+      await gMapController!.animateCamera(
+        CameraUpdate.newCameraPosition(newPosition),
       );
     }
 
@@ -1315,18 +1144,9 @@ class ProfileController extends GetxController {
 
     markers.add(
       Marker(
-        markerId: MarkerId(
-          'marker_${latitude}_$longitude',
-        ),
-        position: LatLng(
-          latitude,
-          longitude,
-        ),
-        infoWindow:
-            const InfoWindow(
-          title:
-              'Selected location',
-        ),
+        markerId: MarkerId('marker_${latitude}_$longitude'),
+        position: LatLng(latitude, longitude),
+        infoWindow: const InfoWindow(title: 'Selected location'),
       ),
     );
   }
@@ -1334,44 +1154,23 @@ class ProfileController extends GetxController {
   // Logout
   Future<void> logout() async {
     try {
-      debugPrint(
-        '🚪 Logout button clicked',
-      );
+      debugPrint('🚪 Logout button clicked');
 
-      EasyLoading.show(
-        status: 'Logging out...',
-      );
+      EasyLoading.show(status: 'Logging out...');
 
-      Get.find<StorageService>()
-          .logout();
+      Get.find<StorageService>().logout();
 
-      await Future.delayed(
-        const Duration(
-          milliseconds: 500,
-        ),
-      );
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      EasyLoading.showSuccess(
-        'Logged out successfully',
-      );
+      EasyLoading.showSuccess('Logged out successfully');
 
-      await Future.delayed(
-        const Duration(
-          milliseconds: 500,
-        ),
-      );
+      await Future.delayed(const Duration(milliseconds: 500));
 
-      Get.offAll(
-        () => SplashScreen(),
-      );
+      Get.offAll(() => SplashScreen());
     } catch (error) {
-      debugPrint(
-        '❌ Logout error: $error',
-      );
+      debugPrint('❌ Logout error: $error');
 
-      EasyLoading.showError(
-        'Something went wrong',
-      );
+      EasyLoading.showError('Something went wrong');
     }
   }
 
@@ -1379,8 +1178,7 @@ class ProfileController extends GetxController {
   void onClose() {
     profileImage.value = null;
     profileImageBytes.value = null;
-    profileImageFileName.value =
-        null;
+    profileImageFileName.value = null;
 
     savedPlaces.clear();
     qaAnswers.clear();
