@@ -267,11 +267,11 @@ class AiAssistantController extends GetxController {
   }
 
   void selectVoiceType(String? selectedVoiceType) {
-    final normalizedVoiceType = selectedVoiceType?.trim().toLowerCase();
+    final normalizedVoiceType = _normalizeVoiceTypeForApi(selectedVoiceType);
 
     voiceType.value = normalizedVoiceType;
 
-    if (normalizedVoiceType == null || normalizedVoiceType.isEmpty) {
+    if (normalizedVoiceType.isEmpty) {
       _storage.removeAiVoiceTypes();
     } else {
       _storage.saveAiVoiceTypes([normalizedVoiceType]);
@@ -280,6 +280,29 @@ class AiAssistantController extends GetxController {
     _syncToProfileController();
 
     debugPrint('🔵 Voice type selected: ${voiceType.value}');
+  }
+
+  String _normalizeVoiceTypeForApi(String? value) {
+    final normalizedValue = value?.trim().toLowerCase();
+
+    if (normalizedValue == null || normalizedValue.isEmpty) {
+      return '';
+    }
+
+    switch (normalizedValue) {
+      case 'historical_focus':
+      case 'historical':
+        return 'historical';
+      case 'artistic_focus':
+      case 'artistic':
+        return 'artistic';
+      case 'fun_facts':
+      case 'fun facts':
+      case 'funfacts':
+        return 'fun_facts';
+      default:
+        return normalizedValue;
+    }
   }
 
   Future<void> createProfile() async {
@@ -350,9 +373,7 @@ class AiAssistantController extends GetxController {
     }
   }
 
-  Future<void> _handleProfileCreationSuccess(
-    http.Response response,
-  ) async {
+  Future<void> _handleProfileCreationSuccess(http.Response response) async {
     try {
       if (response.body.isNotEmpty) {
         final decodedResponse = jsonDecode(response.body);
@@ -366,17 +387,13 @@ class AiAssistantController extends GetxController {
             if (identifier != null && identifier.isNotEmpty) {
               _storage.saveUserIdentifier(identifier);
 
-              debugPrint(
-                '✅ User identifier saved: $identifier',
-              );
+              debugPrint('✅ User identifier saved: $identifier');
             }
           }
         }
       }
     } catch (error) {
-      debugPrint(
-        'Could not extract user identifier from response: $error',
-      );
+      debugPrint('Could not extract user identifier from response: $error');
     }
 
     // Selections are already saved locally.

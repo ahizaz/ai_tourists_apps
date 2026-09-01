@@ -1,4 +1,3 @@
-
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/profile_last_ai_assistant.dart';
@@ -20,9 +19,7 @@ class ProfileThirdAiAssistant extends StatelessWidget {
             height: 4.h,
             margin: EdgeInsets.symmetric(horizontal: 6.w),
             decoration: BoxDecoration(
-              color: active
-                  ? const Color(0xFF9ED12E)
-                  : const Color(0xFFE6E6E6),
+              color: active ? const Color(0xFF9ED12E) : const Color(0xFFE6E6E6),
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),
@@ -31,16 +28,31 @@ class ProfileThirdAiAssistant extends StatelessWidget {
     );
   }
 
+  String _canonicalVoiceType(String value) {
+    final normalized = value.trim().toLowerCase();
+
+    switch (normalized) {
+      case 'historical_focus':
+      case 'historical':
+        return 'historical';
+      case 'artistic_focus':
+      case 'artistic':
+        return 'artistic';
+      case 'fun_facts':
+      case 'fun facts':
+      case 'funfacts':
+        return 'fun_facts';
+      default:
+        return normalized;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ProfileController controller = Get.find<ProfileController>();
 
     // Localization keys
-    final types = <String>[
-      'historical_focus',
-      'artistic_focus',
-      'fun_facts',
-    ];
+    final types = <String>['historical_focus', 'artistic_focus', 'fun_facts'];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -130,13 +142,11 @@ class ProfileThirdAiAssistant extends StatelessWidget {
                           selected: controller.voiceTypes.any(
                             (selectedItem) =>
                                 selectedItem.toLowerCase() ==
-                                item.toLowerCase(),
+                                _canonicalVoiceType(item),
                           ),
                           isCheckbox: true,
                           onTap: () {
-                            final success = controller.toggleVoiceType(
-                              item.toLowerCase(),
-                            );
+                            final success = controller.toggleVoiceType(item);
 
                             if (!success) {
                               Get.snackbar(
@@ -164,9 +174,7 @@ class ProfileThirdAiAssistant extends StatelessWidget {
                   final success = await controller.updateAiPreferences();
 
                   if (success) {
-                    Get.to(
-                      () => const ProfileLastAiAssistant(),
-                    );
+                    Get.to(() => const ProfileLastAiAssistant());
                   }
                 },
                 child: Container(
@@ -175,10 +183,7 @@ class ProfileThirdAiAssistant extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFF05A1B),
-                        Color(0xFFF7C64A),
-                      ],
+                      colors: [Color(0xFFF05A1B), Color(0xFFF7C64A)],
                     ),
                   ),
                   alignment: Alignment.center,
