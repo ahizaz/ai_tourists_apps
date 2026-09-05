@@ -1,4 +1,3 @@
-
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
 import 'package:ai_powered_tourists_app/utils/constants/colors.dart';
@@ -33,97 +32,97 @@ class ProfileLastAiAssistant extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(height: 90.h),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 90.h),
 
-              Center(
-                child: Image(
-                  image: const AssetImage(ImagePath.dalilPic),
-                  width: 200.w,
-                  height: 224.h,
-                  fit: BoxFit.cover,
-                ),
-              ),
-
-              SizedBox(height: 12.h),
-
-              Text(
-                'discover_next_adventure'.tr,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 20.sp,
-                  color: const Color(0xFF252525),
-                ),
-              ),
-
-              SizedBox(height: 65.h),
-
-              Text(
-                'your_intelligent_companion'.tr,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.sp,
-                  color: const Color(0xFF505050),
-                ),
-              ),
-
-              SizedBox(height: 8.h),
-
-              Text(
-                'explore_manage_points'.tr,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14.sp,
-                  color: const Color(0xFF505050),
-                ),
-              ),
-
-              SizedBox(height: 20.h),
-
-              InkWell(
-                borderRadius: BorderRadius.circular(12.r),
-                onTap: () {
-                  _finishCustomization(controller);
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 48.h,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    image: const DecorationImage(
-                      image: AssetImage(ImagePath.button),
+                  Center(
+                    child: Image(
+                      image: const AssetImage(ImagePath.dalilPic),
+                      width: 200.w,
+                      height: 224.h,
                       fit: BoxFit.cover,
                     ),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'next'.tr,
+
+                  SizedBox(height: 12.h),
+
+                  Text(
+                    'discover_next_adventure'.tr,
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.inter(
+                      fontWeight: FontWeight.w400,
                       fontSize: 20.sp,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      shadows: const [
-                        Shadow(
-                          offset: Offset(0, 1),
-                          blurRadius: 4,
-                          color: Colors.black54,
-                        ),
-                      ],
+                      color: const Color(0xFF252525),
                     ),
+                  ),
+
+                  SizedBox(height: 40.h),
+
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12.r),
+                    onTap: () {
+                      _finishCustomization(controller);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      height: 48.h,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        image: const DecorationImage(
+                          image: AssetImage(ImagePath.button),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        'next'.tr,
+                        style: GoogleFonts.inter(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          shadows: const [
+                            Shadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 4,
+                              color: Colors.black54,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 40.h),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              child: GestureDetector(
+                onTap: Get.back,
+                child: Container(
+                  width: 40.w,
+                  height: 40.h,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(
+                    Icons.arrow_back_ios_new,
+                    size: 18.sp,
+                    color: const Color(0xFF333333),
                   ),
                 ),
               ),
-
-              SizedBox(height: 40.h),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
