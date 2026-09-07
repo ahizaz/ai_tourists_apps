@@ -193,7 +193,9 @@ class ThirdAiAssistant extends StatelessWidget {
                           label: type.replaceAll('_', ' '),
 
                           // Original value দিয়েই selection check করবে
-                          selected: ctrl.voiceType.value == type,
+                          selected:
+                              ctrl.voiceType.value?.toLowerCase() ==
+                              type.toLowerCase(),
                           isCheckbox: false,
 
                           // Original value controller/API-তে পাঠাবে

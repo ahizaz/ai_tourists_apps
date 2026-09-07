@@ -12,7 +12,7 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     // ensure single controller instance for whole flow
-  
+
 //     return Scaffold(
 //       body: Padding(
 //         padding: EdgeInsets.symmetric(horizontal: 12.w),
@@ -108,7 +108,7 @@
 //       ),
 //     );
 //   }
-// } 
+// }
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/controller/ai_assistant_controller.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/first_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/utils/constants/image_path.dart';
@@ -186,11 +186,14 @@ class AiAssistant extends StatelessWidget {
 
             InkWell(
               onTap: () {
+                if (Get.isRegistered<AiAssistantController>()) {
+                  Get.find<AiAssistantController>().resetAll();
+                  Get.delete<AiAssistantController>();
+                }
+
                 Get.put(AiAssistantController());
 
-                Get.to(
-                  () => FirstAiAssistant(),
-                );
+                Get.to(() => FirstAiAssistant());
               },
               child: Container(
                 width: double.infinity,

@@ -1,4 +1,3 @@
-
 // // import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/controller/ai_assistant_controller.dart';
 // // import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/second_ai_assistant.dart';
 // // import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
@@ -95,7 +94,7 @@
 // //                   ),
 // //                 ),
 // //               ),
-              
+
 // //             ],
 // //           ),
 // //         ),
@@ -323,9 +322,7 @@ class FirstAiAssistant extends StatelessWidget {
             height: 4.h,
             margin: EdgeInsets.symmetric(horizontal: 6.w),
             decoration: BoxDecoration(
-              color: active
-                  ? const Color(0xFF9ED12E)
-                  : const Color(0xFFE6E6E6),
+              color: active ? const Color(0xFF9ED12E) : const Color(0xFFE6E6E6),
               borderRadius: BorderRadius.circular(4.r),
             ),
           ),
@@ -336,19 +333,13 @@ class FirstAiAssistant extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AiAssistantController controller =
-        Get.find<AiAssistantController>();
+    final AiAssistantController controller = Get.find<AiAssistantController>();
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            16.w,
-            20.h,
-            16.w,
-            18.h,
-          ),
+          padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 18.h),
           child: Column(
             children: [
               _topProgress(1),
@@ -396,23 +387,22 @@ class FirstAiAssistant extends StatelessWidget {
                         OptionTile(
                           label: 'male'.tr,
                           selected:
-                              controller.gender.value
-                                  ?.toLowerCase() ==
-                              'male',
+                              controller.gender.value?.toLowerCase() == 'male',
                           isCheckbox: false,
                           onTap: () {
                             controller.selectGender('male');
+                            controller.selectVoice('male');
                           },
                         ),
                         OptionTile(
                           label: 'female'.tr,
                           selected:
-                              controller.gender.value
-                                  ?.toLowerCase() ==
+                              controller.gender.value?.toLowerCase() ==
                               'female',
                           isCheckbox: false,
                           onTap: () {
                             controller.selectGender('female');
+                            controller.selectVoice('female');
                           },
                         ),
                         SizedBox(height: 120.h),
@@ -423,32 +413,22 @@ class FirstAiAssistant extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  final selectedGender =
-                      controller.gender.value;
+                  final selectedGender = controller.gender.value;
 
-                  if (selectedGender == null ||
-                      selectedGender.isEmpty) {
-                    EasyLoading.showError(
-                      'Please select an AI gender',
-                    );
+                  if (selectedGender == null || selectedGender.isEmpty) {
+                    EasyLoading.showError('Please select an AI gender');
                     return;
                   }
 
-                  Get.to(
-                    () => const SecondAiAssistant(),
-                  );
+                  Get.to(() => const SecondAiAssistant());
                 },
                 child: Container(
                   height: 52.h,
                   margin: EdgeInsets.only(top: 8.h),
                   decoration: BoxDecoration(
-                    borderRadius:
-                        BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(12.r),
                     gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFFF05A1B),
-                        Color(0xFFF7C64A),
-                      ],
+                      colors: [Color(0xFFF05A1B), Color(0xFFF7C64A)],
                     ),
                   ),
                   alignment: Alignment.center,

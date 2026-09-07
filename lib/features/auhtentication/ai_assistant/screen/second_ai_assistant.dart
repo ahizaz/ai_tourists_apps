@@ -1,4 +1,3 @@
-
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/controller/ai_assistant_controller.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/screen/third_ai_assistant.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/widget/options_tile.dart';
@@ -46,13 +45,37 @@ class SecondAiAssistant extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text('AI Preferences Voice', style: GoogleFonts.inter(fontSize: 18.sp, color: const Color(0xFF6B6B6B))),
+                    child: Text(
+                      'AI Preferences Voice',
+                      style: GoogleFonts.inter(
+                        fontSize: 18.sp,
+                        color: const Color(0xFF6B6B6B),
+                      ),
+                    ),
                   ),
                 ],
               ),
-              Align(alignment: Alignment.centerRight, child: Text('2/3', style: TextStyle(color: const Color(0xFF9B9B9B), fontSize: 12.sp))),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  '2/3',
+                  style: TextStyle(
+                    color: const Color(0xFF9B9B9B),
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
               SizedBox(height: 18.h),
-              Align(alignment: Alignment.centerLeft, child: Text('Ai Speech Type', style: GoogleFonts.inter(fontSize: 16.sp, fontWeight: FontWeight.w600))),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Ai Speech Type',
+                  style: GoogleFonts.inter(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
               SizedBox(height: 12.h),
               Expanded(
                 child: SingleChildScrollView(
@@ -61,7 +84,9 @@ class SecondAiAssistant extends StatelessWidget {
                       children: voices.map((v) {
                         return OptionTile(
                           label: v,
-                          selected: ctrl.voice.value == v,
+                          selected:
+                              ctrl.voice.value?.toLowerCase() ==
+                              v.toLowerCase(),
                           isCheckbox: false,
                           onTap: () => ctrl.selectVoice(v),
                         );
@@ -72,7 +97,7 @@ class SecondAiAssistant extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Get.to(() =>  ThirdAiAssistant());
+                  Get.to(() => ThirdAiAssistant());
                 },
                 child: Container(
                   height: 52.h,
@@ -84,7 +109,14 @@ class SecondAiAssistant extends StatelessWidget {
                     ),
                   ),
                   child: Center(
-                    child: Text('Next', style: GoogleFonts.inter(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16.sp)),
+                    child: Text(
+                      'Next',
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16.sp,
+                      ),
+                    ),
                   ),
                 ),
               ),
