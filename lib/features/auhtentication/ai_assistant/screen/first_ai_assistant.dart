@@ -342,6 +342,15 @@ class FirstAiAssistant extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(16.w, 20.h, 16.w, 18.h),
           child: Column(
             children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: Get.back,
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+              ),
               _topProgress(1),
               SizedBox(height: 18.h),
               Row(
@@ -391,7 +400,6 @@ class FirstAiAssistant extends StatelessWidget {
                           isCheckbox: false,
                           onTap: () {
                             controller.selectGender('male');
-                            controller.selectVoice('male');
                           },
                         ),
                         OptionTile(
@@ -402,7 +410,6 @@ class FirstAiAssistant extends StatelessWidget {
                           isCheckbox: false,
                           onTap: () {
                             controller.selectGender('female');
-                            controller.selectVoice('female');
                           },
                         ),
                         SizedBox(height: 120.h),

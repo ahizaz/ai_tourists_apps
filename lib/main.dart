@@ -14,18 +14,21 @@ import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load environment variables
-  await dotenv.load(fileName: ".env");
-  
+
+  // Environment configuration is optional; the app must still start without it.
+  try {
+    await dotenv.load(fileName: ".env", isOptional: true);
+  } catch (error) {
+    debugPrint('Environment file could not be loaded: $error');
+  }
+
   await GetStorage.init();
   await Get.putAsync(() => StorageService().init());
-   Get.lazyPut(() => BottomNavcontroller(), fenix: true);
+  Get.lazyPut(() => BottomNavcontroller(), fenix: true);
   Get.lazyPut(() => HomeController(), fenix: true);
   Get.lazyPut(() => MapController(), fenix: true);
   Get.lazyPut(() => AiController(), fenix: true);
   Get.lazyPut(() => BookingController(), fenix: true);
   Get.lazyPut(() => ProfileController(), fenix: true);
-runApp(const AITourists());
+  runApp(const AITourists());
 }
-

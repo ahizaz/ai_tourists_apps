@@ -187,11 +187,11 @@ class AiAssistant extends StatelessWidget {
             InkWell(
               onTap: () {
                 if (Get.isRegistered<AiAssistantController>()) {
-                  Get.find<AiAssistantController>().resetAll();
                   Get.delete<AiAssistantController>();
                 }
 
-                Get.put(AiAssistantController());
+                final controller = Get.put(AiAssistantController());
+                controller.resetAll();
 
                 Get.to(() => FirstAiAssistant());
               },
