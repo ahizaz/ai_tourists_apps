@@ -102,27 +102,23 @@ class BottomNavbar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: List.generate(5, (index) {
                     final isSelected = controller.selectedIndex.value == index;
-                    final bool isMapIcon = index == 1;
+                    final icon = SvgPicture.asset(
+                      isSelected ? activeIcons[index] : inactiveIcons[index],
+                      width: 64.w,
+                      height: 64.h,
+                      fit: BoxFit.contain,
+                    );
+                    final renderedIcon = index == 3 && !isSelected
+                        ? Transform.translate(
+                            offset: Offset(0, -5.h),
+                            child: Transform.scale(scale: 1.12, child: icon),
+                          )
+                        : icon;
 
                     return Expanded(
                       child: InkWell(
                         onTap: () => controller.changeIndex(index),
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: Transform.translate(
-                            offset: isMapIcon
-                                ? Offset(0, isSelected ? -2.h : 5.h)
-                                : Offset.zero,
-                            child: SvgPicture.asset(
-                              isSelected
-                                  ? activeIcons[index]
-                                  : inactiveIcons[index],
-                              width: 64.w,
-                              height: 64.h,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
+                        child: Center(child: renderedIcon),
                       ),
                     );
                   }),
