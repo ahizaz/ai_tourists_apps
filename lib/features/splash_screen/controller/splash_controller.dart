@@ -20,7 +20,6 @@ class SplashController extends GetxController {
 
       if (token != null && token.isNotEmpty) {
         debugPrint(" Auto-Login: Token found in SharedPreferences");
-        debugPrint(" Token: $token");
         debugPrint(" Auto-Login: Navigating to home");
 
         // User is already logged in, go to home

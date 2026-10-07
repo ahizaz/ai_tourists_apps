@@ -31,9 +31,8 @@ class SignUpController extends GetxController{
   final password = passwordController.text.trim();
   final name = nameController.text.trim();
    debugPrint("Signup Input:");
-    debugPrint("Name: $name");
-    debugPrint("Email: $email");
-    debugPrint("Password: $password");
+   debugPrint("Name: $name");
+   debugPrint("Email: $email");
   if (name.isEmpty){
     EasyLoading.showError("Enter name");
     return;
@@ -64,7 +63,7 @@ class SignUpController extends GetxController{
     ),
     );
         debugPrint(" Status Code: ${response.statusCode}");
-      debugPrint("Raw Response Body: ${response.body}");
+      debugPrint("Signup response received");
     final data = jsonDecode(response.body);
     if(response.statusCode ==200 || response.statusCode==201){
         EasyLoading.showSuccess("Signup Successful");

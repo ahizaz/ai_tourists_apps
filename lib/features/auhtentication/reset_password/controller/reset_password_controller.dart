@@ -60,8 +60,7 @@ class ResetPasswordController extends GetxController {
       EasyLoading.show(status: "Resetting Password...");
 
       debugPrint("🌐 API URL: ${Url.resetPassword}");
-      debugPrint("🔑 Using Token: $token");
-      debugPrint("📤 Request Body: { new_password: ${newPassword.text} }");
+      debugPrint("📤 Reset password request prepared");
 
       final response = await http.post(
         Uri.parse(Url.resetPassword),
@@ -75,7 +74,7 @@ class ResetPasswordController extends GetxController {
       );
 
       debugPrint("✅ Status Code: ${response.statusCode}");
-      debugPrint("📥 Response Body: ${response.body}");
+      debugPrint("📥 Reset password response received");
 
       final data = jsonDecode(response.body);
 

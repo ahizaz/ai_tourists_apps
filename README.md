@@ -1,5 +1,10 @@
 # AI Tourists
 
+[![Flutter CI](https://github.com/ahizaz/ai_tourists_apps/actions/workflows/flutter.yml/badge.svg?branch=izaz)](https://github.com/ahizaz/ai_tourists_apps/actions/workflows/flutter.yml)
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.9%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![License](https://img.shields.io/badge/license-not%20specified-lightgrey)](#license)
+
 > An AI-powered travel companion built with Flutter.
 
 AI Tourists helps travelers discover nearby places, explore locations on a map, get AI-assisted travel guidance, save favorite places, and plan bookings from one mobile app.
@@ -15,6 +20,14 @@ AI Tourists helps travelers discover nearby places, explore locations on a map, 
 - Sign up, sign in, verification, password reset, and profile management
 - Localized UI with English and Bengali support
 - Light theme, audio guidance, image caching, and share support
+
+## Product flow
+
+1. Complete onboarding and create an account.
+2. Explore nearby places from the home screen.
+3. Open a place on the map to view details and location context.
+4. Ask the AI assistant for travel guidance or take the interactive quiz.
+5. Save places, share recommendations, and continue to booking when ready.
 
 ## Built with
 
@@ -122,6 +135,15 @@ flutter build apk --release
 flutter build appbundle --release
 ```
 
+## Quality gates
+
+The project uses the following checks before changes are merged:
+
+- `flutter analyze` for static analysis
+- `flutter test` for automated tests
+- Secret-safe local configuration through ignored template copies
+- GitHub Actions on every push and pull request
+
 ## Project structure
 
 ```text
@@ -154,7 +176,7 @@ Every push and pull request runs the Flutter checks in [`.github/workflows/flutt
 
 1. Run `flutter analyze`.
 2. Run `flutter test`.
-3. Run `dart format --set-exit-if-changed lib test`.
+3. Run `dart format lib test`.
 4. Confirm that no secret or generated build file is staged with `git status`.
 
 To publish changes to the configured GitHub repository:
@@ -169,7 +191,11 @@ For a public release, create a GitHub Release and attach the signed `.aab` or `.
 
 ## Security
 
-If a credential is ever committed, revoke it immediately, create a replacement, and remove it from the repository history. The repository ignores the local credential files listed above, but always verify staged files before pushing.
+This project intentionally keeps credentials outside version control. Copy the committed templates locally and never edit the templates with real values. If a credential is ever committed, revoke it immediately, create a replacement, and remove it from the repository history. See [SECURITY.md](SECURITY.md) for reporting guidance.
+
+## Contributing
+
+Bug reports, feature ideas, and pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before contributing.
 
 ## License
 
