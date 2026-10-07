@@ -89,7 +89,7 @@ class SelectQa extends StatelessWidget {
             controller,
             questionIndex,
             option,
-          )).toList(),
+          )),
         ],
       ),
     );

@@ -15,7 +15,9 @@ class ShareHelper {
         ? '$headline\nTry this quiz on AI Tourist App!'
         : '$headline\nTry this quiz on AI Tourist App: $appLink';
 
-    await Share.share(body, subject: 'My Quiz Result');
+    await SharePlus.instance.share(
+      ShareParams(text: body, subject: 'My Quiz Result'),
+    );
   }
 
   /// Open Twitter compose with pre-filled text (in browser or app if available).

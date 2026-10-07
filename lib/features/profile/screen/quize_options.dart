@@ -493,7 +493,9 @@ class QuizeOptions extends StatelessWidget {
 
                           final position =
                               await Geolocator.getCurrentPosition(
-                            desiredAccuracy: LocationAccuracy.high,
+                            locationSettings: const LocationSettings(
+                              accuracy: LocationAccuracy.high,
+                            ),
                           );
 
                           final lat = position.latitude;

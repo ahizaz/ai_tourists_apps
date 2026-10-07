@@ -63,11 +63,6 @@ class InteractiveQuizController extends GetxController {
     },
   ];
 
-  @override
-  void onInit() {
-    super.onInit();
-   
-  }
 
   // Getters
   int get totalQuestions => questions.length;

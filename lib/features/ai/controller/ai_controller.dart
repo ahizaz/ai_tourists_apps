@@ -19,10 +19,6 @@ class AiController extends GetxController {
   RxBool isLoading = false.obs;
   final ImagePicker _picker = ImagePicker();
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
 
   Future<void> pickImageFromGallery() async {
     try {
@@ -100,36 +96,6 @@ class AiController extends GetxController {
     _callAiApi(text);
   }
 
-  Future<void> _generateAIResponse(String userMessage) async {
-    EasyLoading.show(status: 'Thinking...');
-    await Future.delayed(const Duration(seconds: 2));
-    
-    String response;
-    
-    // Simple keyword-based responses (replace with actual AI API)
-    if (userMessage.toLowerCase().contains('great wall') || 
-        userMessage.toLowerCase().contains('china')) {
-      response = _getGreatWallResponse();
-    } else if (userMessage.toLowerCase().contains('taj mahal') || 
-               userMessage.toLowerCase().contains('india')) {
-      response = _getTajMahalResponse();
-    } else if (userMessage.toLowerCase().contains('pyramid') || 
-               userMessage.toLowerCase().contains('egypt')) {
-      response = _getPyramidResponse();
-    } else {
-      response = _getGenericResponse();
-    }
-    
-    messages.add(ChatMessage(
-      text: response,
-      isUser: false,
-      timestamp: DateTime.now(),
-    ));
-    
-    EasyLoading.dismiss();
-    _scrollToBottom();
-  }
-
   Future<void> _callAiApi(String userMessage) async {
     try {
       // Get token
@@ -144,7 +110,11 @@ class AiController extends GetxController {
       try {
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
         if (serviceEnabled) {
-          Position pos = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+          Position pos = await Geolocator.getCurrentPosition(
+            locationSettings: const LocationSettings(
+              accuracy: LocationAccuracy.high,
+            ),
+          );
           List<Placemark> placemarks = await placemarkFromCoordinates(pos.latitude, pos.longitude);
           if (placemarks.isNotEmpty) {
             final place = placemarks.first;
@@ -229,6 +199,8 @@ class AiController extends GetxController {
     return 'Selected Location';
   }
 
+  // Kept for the local response catalogue used by future offline fallback.
+  // ignore: unused_element
   String _getGreatWallResponse() {
     String userName = "friend"; // Default name
     try {
@@ -241,6 +213,7 @@ class AiController extends GetxController {
     return "Excellent choice, $userName! \n\nThe Great Wall of China is one of the most iconic structures in human history. Built over centuries, with construction beginning as early as the 7th century BC, it stretches over 13,000 miles (21,000 km) across northern China!\n\n📜 Historical Context:\nOriginally built by various states for defense, it was unified and extended during the Ming Dynasty (1368-1644). The wall served to protect Chinese states from invasions and raids by nomadic groups from the Eurasian Steppe.\n\n🎯 Fun Fact:\nContrary to popular belief, the Great Wall is NOT visible from space with the naked eye! This is a common myth.\n\n✨ Today, it stands as a UNESCO World Heritage Site and receives millions of visitors each year.\n\nWould you like to know more about any other landmark?";
   }
 
+  // ignore: unused_element
   String _getTajMahalResponse() {
     String userName = "friend"; // Default name
     try {
@@ -253,6 +226,7 @@ class AiController extends GetxController {
     return "Wonderful, $userName! \n\nThe Taj Mahal is a magnificent ivory-white marble mausoleum located in Agra, India. It's truly one of the world's most romantic monuments!\n\n💕 Love Story:\nIt was commissioned in 1631 by Mughal emperor Shah Jahan to house the tomb of his beloved wife, Mumtaz Mahal, who died during childbirth.\n\n🏗️ Construction:\nIt took approximately 22 years and 20,000 artisans to complete this architectural masterpiece, which combines elements from Islamic, Persian, Ottoman Turkish, and Indian architectural styles.\n\n🌟 Recognition:\nThe Taj Mahal is considered one of the greatest examples of Mughal architecture and was designated as a UNESCO World Heritage Site in 1983. It's also one of the New Seven Wonders of the World!\n\nWhat else would you like to explore?";
   }
 
+  // ignore: unused_element
   String _getPyramidResponse() {
     String userName = "friend"; // Default name
     try {
@@ -277,6 +251,7 @@ class AiController extends GetxController {
     return "Thanks for sharing this photo, $userName! 📸\n\nI can see this appears to be a historical landmark with fascinating architectural elements that suggest significant cultural and historical importance.\n\nTo give you the most accurate and detailed story, could you help me with:\n• 📍 Where is this located?\n• 🏛️ Do you know the name of this place?\n\nOr feel free to ask me about any famous historical sites like:\n🇨🇳 Great Wall of China\n🇮🇳 Taj Mahal\n🇪🇬 Egyptian Pyramids\n🇫🇷 Eiffel Tower\n🇮🇹 Colosseum\n\nI'm here to make your journey more enriching! ✨";
   }
 
+  // ignore: unused_element
   String _getGenericResponse() {
     String userName = "friend"; // Default name
     try {

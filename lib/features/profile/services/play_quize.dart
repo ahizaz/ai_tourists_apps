@@ -27,11 +27,13 @@ class PlayQuizeService {
           final p = placemarks.first;
           final parts = <String>[];
           if ((p.locality ?? '').isNotEmpty) parts.add(p.locality!);
-          if ((p.subAdministrativeArea ?? '').isNotEmpty)
+          if ((p.subAdministrativeArea ?? '').isNotEmpty) {
             parts.add(p.subAdministrativeArea!);
+          }
           if ((p.administrativeArea ?? '').isNotEmpty &&
-              !parts.contains(p.administrativeArea))
+              !parts.contains(p.administrativeArea)) {
             parts.add(p.administrativeArea!);
+          }
           if (parts.isNotEmpty) {
             resolvedPlace = parts.join(', ');
           } else if ((p.name ?? '').isNotEmpty) {

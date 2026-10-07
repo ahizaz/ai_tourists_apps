@@ -1591,6 +1591,8 @@ class MapController extends GetxController {
   Future<void> onMapCreated(GoogleMapController controller) async {
     gMapController = controller;
 
+    // GoogleMap.style is not available on all supported plugin versions yet.
+    // ignore: deprecated_member_use
     await controller.setMapStyle(_interactivePoiMapStyle);
 
     // Show attractions initially.
@@ -2566,7 +2568,9 @@ class MapController extends GetxController {
       }
 
       final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       _applyUserLocation(position.latitude, position.longitude);
@@ -2616,7 +2620,9 @@ class MapController extends GetxController {
       }
 
       final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       _applyUserLocation(position.latitude, position.longitude);

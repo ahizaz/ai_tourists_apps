@@ -223,7 +223,9 @@ class HomeController extends GetxController {
       // Get current position
       EasyLoading.show(status: 'Fetching location...');
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
       );
 
       // Update coordinates
@@ -749,7 +751,7 @@ class HomeController extends GetxController {
             final temp = data['current_condition']?[0]?['temp_C'];
             final tempStr = temp?.toString();
             if (tempStr != null && tempStr.isNotEmpty && tempStr != 'null') {
-              currentWeather.value = "${tempStr}°C";
+              currentWeather.value = "$tempStr°C";
               return;
             }
           } catch (e) {

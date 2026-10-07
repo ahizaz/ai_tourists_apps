@@ -71,7 +71,7 @@ class TermsConditionScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xffFF6B35).withOpacity(0.3),
+                          color: const Color(0xffFF6B35).withValues(alpha: 0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -116,9 +116,9 @@ class TermsConditionScreen extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xffFF6B35).withOpacity(0.08),
+                      color: const Color(0xffFF6B35).withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xffFF6B35).withOpacity(0.2)),
+                      border: Border.all(color: const Color(0xffFF6B35).withValues(alpha: 0.2)),
                     ),
                     child: const Text(
                       'This document combines the Terms & Conditions ("Terms") and the Privacy Policy ("Policy") governing the use of the Dalil mobile application. By using Dalil, you accept all provisions herein.',
@@ -212,7 +212,7 @@ class TermsConditionScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -224,7 +224,7 @@ class TermsConditionScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.07),
+              color: accentColor.withValues(alpha: 0.07),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(14),
                 topRight: Radius.circular(14),

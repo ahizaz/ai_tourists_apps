@@ -65,10 +65,11 @@ class _AnswerFeedbackOverlayState extends State<AnswerFeedbackOverlay>
       animation: _controller,
       builder: (context, child) {
         return Container(
-          color: (widget.isCorrect
-                  ? const Color(0xff28A745)
-                  : const Color(0xffDC3545))
-              .withOpacity(_opacityAnimation.value * 0.1),
+          color:
+              (widget.isCorrect
+                      ? const Color(0xff28A745)
+                      : const Color(0xffDC3545))
+                  .withValues(alpha: _opacityAnimation.value * 0.1),
           child: Center(
             child: Transform.scale(
               scale: _scaleAnimation.value,
@@ -100,11 +101,7 @@ class _AnswerFeedbackOverlayState extends State<AnswerFeedbackOverlay>
               ),
             ],
           ),
-          child: const Icon(
-            Icons.check_rounded,
-            color: Colors.white,
-            size: 60,
-          ),
+          child: const Icon(Icons.check_rounded, color: Colors.white, size: 60),
         ),
         SizedBox(height: 24.h),
         Text(

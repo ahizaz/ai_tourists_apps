@@ -202,10 +202,6 @@ class AiScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeScreen() {
-    return const SizedBox.shrink();
-  }
-
   Widget _buildMessageBubble(ChatMessage message) {
     return Padding(
       padding: EdgeInsets.only(bottom: 12.h),

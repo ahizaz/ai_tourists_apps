@@ -1,7 +1,6 @@
 import 'package:ai_powered_tourists_app/features/home/controller/home_controller.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/current_location_card.dart';
 import 'package:ai_powered_tourists_app/features/home/widget/most_nearby.dart';
-import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
