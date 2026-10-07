@@ -8,7 +8,6 @@ Follow this guide to securely configure Google Maps API Key.
 ## ⚠️ Important Note
 
 **Never commit API keys to GitHub or any public repository!**
-**Never commit API keys to GitHub or any public repository!**
 
 ---
 
@@ -28,10 +27,10 @@ copy api_keys.dart.example api_keys.dart
 #### b) Add your API key:
 Open `lib/core/config/api_keys.dart` file and find this line:
 ```dart
-static const String googleMapsApiKey = 'YOUR_GOOGLE_MYOUR_GOOGLE_MAPS_API_KEY_HEREPI_KEY_HERE';
+static const String googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
 ```
 
-Replace `YOUR_GOOGLE_MYOUR_GOOGLE_MAPS_API_KEY_HEREPI_KEY_HERE` with your actual API key:
+Replace `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your restricted local API key:
 ```dart
 static const String googleMapsApiKey = 'YOUR_GOOGLE_MAPS_API_KEY_HERE';
 ```
@@ -57,7 +56,7 @@ sdk.dir=C:\\Users\\YOUR_USERNAME\\AppData\\Local\\Android\\sdk
 flutter.sdk=C:\\src\\flutter
 
 # Your Google Maps API Key
-GOOGLE_MYOUR_GOOGLE_MAPS_API_KEY_HEREPI_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
+GOOGLE_MAPS_API_KEY=YOUR_GOOGLE_MAPS_API_KEY_HERE
 ```
 
 **Note:** Correct the `sdk.dir` and `flutter.sdk` paths according to your system.
@@ -78,10 +77,10 @@ copy GoogleMapsConfig.swift.example GoogleMapsConfig.swift
 #### b) Edit the GoogleMapsConfig.swift file:
 Open `ios/Runner/GoogleMapsConfig.swift` file and find this line:
 ```swift
-static let apiKey = "YOUR_GOOGLE_MYOUR_GOOGLE_MAPS_API_KEY_HEREPI_KEY_HERE"
+static let apiKey = "YOUR_GOOGLE_MAPS_API_KEY_HERE"
 ```
 
-Replace `YOUR_GOOGLE_MYOUR_GOOGLE_MAPS_API_KEY_HEREPI_KEY_HERE` with your actual API key:
+Replace `YOUR_GOOGLE_MAPS_API_KEY_HERE` with your restricted local API key:
 ```swift
 static let apiKey = "YOUR_GOOGLE_MAPS_API_KEY_HERE"
 ```
