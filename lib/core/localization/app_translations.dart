@@ -1474,6 +1474,18 @@ class AppTranslations extends Translations {
     'loading': 'Loading...',
     'error': 'Error',
     'retry': 'Retry',
+    'location_services_disabled': 'Location services are disabled.',
+    'please_enable_location_services': 'Please enable location services to continue.',
+    'permission_denied': 'Location Permission Denied',
+    'please_allow_location_access': 'Please allow location access to continue.',
+    'permission_permanently_denied': 'Location Permission Permanently Denied',
+    'open_app_settings_to_enable_location':
+        'Please open app settings and enable location access to continue.',
+    'location_permission_required': 'Location permission is required.',
+    'open_settings': 'Open Settings',
+    'exit_app': 'Exit App',
+    'tap_back_again_to_exit': 'Press back again to exit the app.',
+    'exit': 'Exit',
 
     // Categories
     'all': 'All',

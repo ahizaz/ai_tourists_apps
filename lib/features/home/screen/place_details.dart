@@ -333,116 +333,120 @@ class PlaceDetails extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        height: 74.h,
-        padding: EdgeInsets.symmetric(
-          horizontal: 16.w,
-          vertical: 12.h,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 10.r,
-              offset: Offset(0, -4.r),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 10.w,
-                vertical: 8.h,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: Container(
+          height: 74.h,
+          padding: EdgeInsets.only(
+            left: 16.w,
+            right: 16.w,
+            top: 12.h,
+            bottom: MediaQuery.paddingOf(context).bottom + 12.h,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.06),
+                blurRadius: 10.r,
+                offset: Offset(0, -4.r),
               ),
-              decoration: BoxDecoration(
-                color: Colors.orange[50],
-                borderRadius: BorderRadius.circular(12.r),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: Colors.orange,
-                    size: 16.w,
-                  ),
-                  SizedBox(width: 8.w),
-                  Text(
-                    place.rating.toStringAsFixed(1),
-                    style: GoogleFonts.dmSans(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 13.sp,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(width: 12.w),
-
-            Flexible(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 16.w,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(width: 6.w),
-                  Flexible(
-                    child: Text(
-                      '${place.distanceKm}km',
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 13.sp,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const Spacer(),
-
-            GestureDetector(
-              onTap: () {
-                final HomeController controller =
-                    Get.find<HomeController>();
-
-                controller.openAIGuideSheet();
-
-                HomeSelectPlaceMap.showAIGuideBottomSheet(
-                  context,
-                  place,
-                  controller,
-                );
-
-                // Map screen-এ না গিয়ে সরাসরি guide loading/audio শুরু হবে।
-                controller.startAITouristGuide(place: place);
-              },
-              child: Container(
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 20.w,
-                  vertical: 10.h,
+                  horizontal: 10.w,
+                  vertical: 8.h,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF9ED12E),
+                  color: Colors.orange[50],
                   borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: Text(
-                  'Start the Visit',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.orange,
+                      size: 16.w,
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      place.rating.toStringAsFixed(1),
+                      style: GoogleFonts.dmSans(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(width: 12.w),
+
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 16.w,
+                      color: Colors.grey,
+                    ),
+                    SizedBox(width: 6.w),
+                    Flexible(
+                      child: Text(
+                        '${place.distanceKm}km',
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13.sp,
+                          color: Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const Spacer(),
+
+              GestureDetector(
+                onTap: () {
+                  final HomeController controller =
+                      Get.find<HomeController>();
+
+                  controller.openAIGuideSheet();
+
+                  HomeSelectPlaceMap.showAIGuideBottomSheet(
+                    context,
+                    place,
+                    controller,
+                  );
+
+                  controller.startAITouristGuide(place: place);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 10.h,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF9ED12E),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Text(
+                    'Start the Visit',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

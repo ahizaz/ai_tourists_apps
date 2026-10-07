@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:ai_powered_tourists_app/core/localization/app_translations.dart';
 import 'package:ai_powered_tourists_app/core/services/storage_service.dart';
 import 'package:ai_powered_tourists_app/features/auhtentication/ai_assistant/controller/ai_assistant_controller.dart';
 import 'package:ai_powered_tourists_app/features/profile/controller/profile_controller.dart';
@@ -67,5 +68,16 @@ void main() {
       'fun_facts',
     ]);
     expect(profileController.selectedVoiceType, 'fun_facts');
+  });
+
+  test('location permission keys resolve to user-friendly english copy', () {
+    expect(AppTranslations.enUS['location_services_disabled'],
+        'Location services are disabled.');
+    expect(AppTranslations.enUS['permission_denied'],
+        'Location Permission Denied');
+    expect(AppTranslations.enUS['permission_permanently_denied'],
+        'Location Permission Permanently Denied');
+    expect(AppTranslations.enUS['open_app_settings_to_enable_location'],
+        'Please open app settings and enable location access to continue.');
   });
 }

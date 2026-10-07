@@ -6,6 +6,7 @@ import 'package:ai_powered_tourists_app/features/map/screen/map.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/profile_screen.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -40,52 +41,93 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Obx(() => screens[controller.selectedIndex.value]),
-      backgroundColor: const Color(0xffF5F5F5),
-      bottomNavigationBar: Obx(
-        () => Container(
-          height: 96.h,
-          decoration: BoxDecoration(
-            color: const Color(0xffF5F5F5),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .1),
-                blurRadius: 10,
-                offset: const Offset(0, -2),
-              ),
-            ],
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) {
+          return;
+        }
+
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+          return;
+        }
+
+        if (controller.tabHistory.length > 1) {
+          controller.handleBack();
+          return;
+        }
+
+        final confirmed = await Get.defaultDialog<bool>(
+          title: 'exit_app'.tr,
+          middleText: 'tap_back_again_to_exit'.tr,
+          onConfirm: () => Get.back(result: true),
+          onCancel: () => Get.back(result: false),
+          textConfirm: 'exit'.tr,
+          textCancel: 'cancel'.tr,
+        );
+
+        if (confirmed == true) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        body: Obx(
+          () => IndexedStack(
+            index: controller.selectedIndex.value,
+            children: screens,
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(5, (index) {
-              final isSelected = controller.selectedIndex.value == index;
-              // Special handling for map icon (index 1) to fix alignment
-              final bool isMapIcon = index == 1;
-              
-              return Expanded(
-                child: InkWell(
-                  onTap: () => controller.changeIndex(index),
-                  child: Container(
-                    alignment: Alignment.center,
-                    // Use Transform to move the map icon visually without
-                    // changing the layout size so other icons remain aligned.
-                    child: Transform.translate(
-                      offset: isMapIcon
-                          ? Offset(0, isSelected ? -2.h : 5.h)
-                          : Offset.zero,
-                      child: SvgPicture.asset(
-                        isSelected ? activeIcons[index] : inactiveIcons[index],
-                        width: 64.w,
-                        height: 64.h,
-                        fit: BoxFit.contain,
+        ),
+        backgroundColor: const Color(0xffF5F5F5),
+        bottomNavigationBar: Obx(
+          () => SafeArea(
+            top: false,
+            bottom: true,
+            child: Container(
+              height: 96.h + bottomInset,
+              padding: EdgeInsets.only(bottom: bottomInset > 0 ? bottomInset : 0),
+              decoration: BoxDecoration(
+                color: const Color(0xffF5F5F5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: .1),
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  final isSelected = controller.selectedIndex.value == index;
+                  final bool isMapIcon = index == 1;
+
+                  return Expanded(
+                    child: InkWell(
+                      onTap: () => controller.changeIndex(index),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Transform.translate(
+                          offset: isMapIcon
+                              ? Offset(0, isSelected ? -2.h : 5.h)
+                              : Offset.zero,
+                          child: SvgPicture.asset(
+                            isSelected ? activeIcons[index] : inactiveIcons[index],
+                            width: 64.w,
+                            height: 64.h,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }),
+                  );
+                }),
+              ),
+            ),
           ),
         ),
       ),
