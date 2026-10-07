@@ -17,7 +17,7 @@ dependencies:
   get_storage: ^2.1.1
   google_fonts: ^6.3.2
   google_maps_flutter: ^2.13.1
-  geocoding: ^3.0.0
+  geocoding: ^5.0.0
   geolocator: ^13.0.1
   http: ^1.6.0
   image_picker: ^1.2.0
