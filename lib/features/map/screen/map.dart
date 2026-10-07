@@ -587,7 +587,7 @@ class MapScreen extends StatelessWidget {
                   onMapCreated: controller.onMapCreated,
                   onCameraMove: controller.onCameraMove,
                   onTap: controller.onMapTap,
-                  myLocationEnabled: false,
+                  myLocationEnabled: true,
                   myLocationButtonEnabled: false,
                   zoomControlsEnabled: false,
                   markers: controller.markers.toSet(),

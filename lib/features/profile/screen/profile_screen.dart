@@ -22,7 +22,12 @@ class ProfileScreen extends StatelessWidget {
       backgroundColor: const Color(0xffF9F9F9),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 40.h),
+          padding: EdgeInsets.only(
+            left: 12.w,
+            right: 12.w,
+            top: 40.h,
+            bottom: 120.h,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,

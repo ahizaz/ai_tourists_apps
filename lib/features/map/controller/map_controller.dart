@@ -1432,8 +1432,9 @@ import 'package:http/http.dart' as http;
 class MapController extends GetxController {
   final String apiKey = ApiKeys.googleMapsApiKey;
 
-  final double initialLat = 3.139003;
-  final double initialLng = 101.686855;
+  // Used only while the device location is being resolved.
+  final double initialLat = 23.8103;
+  final double initialLng = 90.4125;
 
   // =====================================================
   // Google Map Style
@@ -1456,12 +1457,12 @@ class MapController extends GetxController {
   // Camera
   // =====================================================
   final Rx<CameraPosition> cameraPosition = CameraPosition(
-    target: LatLng(3.139003, 101.686855),
+    target: LatLng(23.8103, 90.4125),
     zoom: 15,
   ).obs;
 
   CameraPosition visibleCameraPosition = CameraPosition(
-    target: LatLng(3.139003, 101.686855),
+    target: LatLng(23.8103, 90.4125),
     zoom: 15,
   );
 
@@ -1531,24 +1532,57 @@ class MapController extends GetxController {
 
       if (homeController.currentLat.value != 0.0 &&
           homeController.currentLng.value != 0.0) {
-        userLat.value = homeController.currentLat.value;
-        userLng.value = homeController.currentLng.value;
-        hasUserLocation.value = true;
-
-        cameraPosition.value = CameraPosition(
-          target: LatLng(userLat.value, userLng.value),
-          zoom: 16.0,
+        _applyUserLocation(
+          homeController.currentLat.value,
+          homeController.currentLng.value,
+          moveCamera: false,
         );
-
-        visibleCameraPosition = cameraPosition.value;
-
-        return;
       }
+
+      everAll(
+        [homeController.currentLat, homeController.currentLng],
+        (_) {
+          final lat = homeController.currentLat.value;
+          final lng = homeController.currentLng.value;
+          if (lat != 0.0 && lng != 0.0) {
+            _applyUserLocation(lat, lng);
+          }
+        },
+      );
     } catch (e) {
       debugPrint('HomeController not found, getting location: $e');
     }
 
-    getUserLocation();
+    if (!hasUserLocation.value) {
+      getUserLocation();
+    }
+  }
+
+  void _applyUserLocation(
+    double latitude,
+    double longitude, {
+    bool moveCamera = true,
+  }) {
+    userLat.value = latitude;
+    userLng.value = longitude;
+    hasUserLocation.value = true;
+
+    final position = CameraPosition(
+      target: LatLng(latitude, longitude),
+      zoom: 16,
+    );
+    cameraPosition.value = position;
+    visibleCameraPosition = position;
+
+    if (moveCamera && gMapController != null) {
+      gMapController!.animateCamera(
+        CameraUpdate.newCameraPosition(position),
+      );
+      searchByCategory(
+        selectedMapCategory.value,
+        showResultMessage: false,
+      );
+    }
   }
 
   // =====================================================
@@ -2535,18 +2569,7 @@ class MapController extends GetxController {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      userLat.value = position.latitude;
-
-      userLng.value = position.longitude;
-
-      hasUserLocation.value = true;
-
-      cameraPosition.value = CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
-        zoom: 16,
-      );
-
-      visibleCameraPosition = cameraPosition.value;
+      _applyUserLocation(position.latitude, position.longitude);
 
       debugPrint(
         'User location: '
@@ -2596,11 +2619,7 @@ class MapController extends GetxController {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      userLat.value = position.latitude;
-
-      userLng.value = position.longitude;
-
-      hasUserLocation.value = true;
+      _applyUserLocation(position.latitude, position.longitude);
 
       routePolylines.clear();
 
