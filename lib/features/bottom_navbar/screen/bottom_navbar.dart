@@ -41,8 +41,6 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bottomInset = MediaQuery.paddingOf(context).bottom;
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -86,46 +84,49 @@ class BottomNavbar extends StatelessWidget {
           () => SafeArea(
             top: false,
             bottom: true,
-            child: Container(
-              height: 96.h + bottomInset,
-              padding: EdgeInsets.only(bottom: bottomInset > 0 ? bottomInset : 0),
-              decoration: BoxDecoration(
-                color: const Color(0xffF5F5F5),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .1),
-                    blurRadius: 10,
-                    offset: const Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  final isSelected = controller.selectedIndex.value == index;
-                  final bool isMapIcon = index == 1;
+            child: SizedBox(
+              height: 96.h,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xffF5F5F5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .1),
+                      blurRadius: 10,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: List.generate(5, (index) {
+                    final isSelected = controller.selectedIndex.value == index;
+                    final bool isMapIcon = index == 1;
 
-                  return Expanded(
-                    child: InkWell(
-                      onTap: () => controller.changeIndex(index),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Transform.translate(
-                          offset: isMapIcon
-                              ? Offset(0, isSelected ? -2.h : 5.h)
-                              : Offset.zero,
-                          child: SvgPicture.asset(
-                            isSelected ? activeIcons[index] : inactiveIcons[index],
-                            width: 64.w,
-                            height: 64.h,
-                            fit: BoxFit.contain,
+                    return Expanded(
+                      child: InkWell(
+                        onTap: () => controller.changeIndex(index),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Transform.translate(
+                            offset: isMapIcon
+                                ? Offset(0, isSelected ? -2.h : 5.h)
+                                : Offset.zero,
+                            child: SvgPicture.asset(
+                              isSelected
+                                  ? activeIcons[index]
+                                  : inactiveIcons[index],
+                              width: 64.w,
+                              height: 64.h,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  }),
+                ),
               ),
             ),
           ),

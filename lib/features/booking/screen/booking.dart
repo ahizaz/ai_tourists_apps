@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
 import '../controller/booking_controller.dart';
 
 class Booking extends StatelessWidget {
@@ -8,15 +9,15 @@ class Booking extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
- final controller = Get.find<BookingController>();
-    
+    final controller = Get.find<BookingController>();
+
     return Scaffold(
       backgroundColor: const Color(0xffF9F9F9),
       appBar: AppBar(
         backgroundColor: const Color(0xffF9F9F9),
         elevation: 0,
         title: Image.asset(
-          'assets/images/logo.png',
+          IconPath.applogo,
           height: 40,
           errorBuilder: (context, error, stackTrace) {
             return Text(
@@ -47,7 +48,7 @@ class Booking extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Subtitle
                 // Text(
                 //   'search_hotels_subtitle'.tr,
@@ -57,7 +58,7 @@ class Booking extends StatelessWidget {
                 //   ),
                 // ),
                 const SizedBox(height: 30),
-                
+
                 // Destination name field
                 Text(
                   'destination_name'.tr,
@@ -90,7 +91,7 @@ class Booking extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Check-in date
                 Text(
                   'check_in_date'.tr,
@@ -101,38 +102,40 @@ class Booking extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Obx(() => InkWell(
-                  onTap: () => controller.selectCheckInDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          controller.formatDate(controller.checkInDate.value),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
+                Obx(
+                  () => InkWell(
+                    onTap: () => controller.selectCheckInDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            controller.formatDate(controller.checkInDate.value),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
                           ),
-                        ),
-                        const Icon(
-                          Icons.calendar_today,
-                          color: Color(0xFF0071C2),
-                          size: 20,
-                        ),
-                      ],
+                          const Icon(
+                            Icons.calendar_today,
+                            color: Color(0xFF0071C2),
+                            size: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                )),
+                ),
                 const SizedBox(height: 24),
-                
+
                 // Check-out date
                 Text(
                   'check_out_date'.tr,
@@ -143,79 +146,86 @@ class Booking extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Obx(() => InkWell(
-                  onTap: () => controller.selectCheckOutDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          controller.formatDate(controller.checkOutDate.value),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const Icon(
-                          Icons.calendar_today,
-                          color: Color(0xFF0071C2),
-                          size: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                )),
-                const SizedBox(height: 30),
-                
-                // Search button
-                Obx(() => SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: controller.isLoading.value 
-                        ? null 
-                        : controller.searchHotels,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0071C2),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
+                Obx(
+                  () => InkWell(
+                    onTap: () => controller.selectCheckOutDate(context),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      elevation: 0,
-                    ),
-                    child: controller.isLoading.value
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            controller.formatDate(
+                              controller.checkOutDate.value,
                             ),
-                          )
-                        : Text(
-                            'search'.tr,
                             style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Colors.black87,
                             ),
                           ),
+                          const Icon(
+                            Icons.calendar_today,
+                            color: Color(0xFF0071C2),
+                            size: 20,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                )),
+                ),
+                const SizedBox(height: 30),
+
+                // Search button
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: controller.isLoading.value
+                          ? null
+                          : controller.searchHotels,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0071C2),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: controller.isLoading.value
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'search'.tr,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 // Explore Attractions button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () async {
-                      const url = 'https://www.getyourguide.com?partner_id=JEKMPEG&cmp=share_to_earn';
+                      const url =
+                          'https://www.getyourguide.com?partner_id=JEKMPEG&cmp=share_to_earn';
                       final launched = await launchUrlString(url);
                       if (!launched) {
                         Get.snackbar('Error', 'Could not open URL');

@@ -22,7 +22,7 @@
 //           icon: Icon(Icons.arrow_back, color: Colors.black),
 //           onPressed: () => Get.back(),
 //         ),
-      
+
 //       ),
 //       body: Padding(
 //         padding: EdgeInsets.symmetric(horizontal: 10.w),
@@ -219,10 +219,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class PlaceDetails extends StatelessWidget {
   final Place place;
 
-  const PlaceDetails({
-    super.key,
-    required this.place,
-  });
+  const PlaceDetails({super.key, required this.place});
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +229,7 @@ class PlaceDetails extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Get.back(),
         ),
       ),
@@ -259,18 +253,12 @@ class PlaceDetails extends StatelessWidget {
                   placeholder: (context, url) => Container(
                     height: 220.h,
                     color: Colors.grey[200],
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: const Center(child: CircularProgressIndicator()),
                   ),
                   errorWidget: (context, url, error) => Container(
                     height: 220.h,
                     color: Colors.grey[200],
-                    child: Icon(
-                      Icons.photo,
-                      size: 40.w,
-                      color: Colors.grey,
-                    ),
+                    child: Icon(Icons.photo, size: 40.w, color: Colors.grey),
                   ),
                 ),
               ),
@@ -297,11 +285,7 @@ class PlaceDetails extends StatelessWidget {
                         SizedBox(width: 8.w),
                         Row(
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.amber,
-                              size: 18.w,
-                            ),
+                            Icon(Icons.star, color: Colors.amber, size: 18.w),
                             SizedBox(width: 4.w),
                             Text(
                               place.rating.toStringAsFixed(1),
@@ -341,7 +325,7 @@ class PlaceDetails extends StatelessWidget {
             left: 16.w,
             right: 16.w,
             top: 12.h,
-            bottom: MediaQuery.paddingOf(context).bottom + 12.h,
+            bottom: 12.h,
           ),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -356,21 +340,14 @@ class PlaceDetails extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10.w,
-                  vertical: 8.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                 decoration: BoxDecoration(
                   color: Colors.orange[50],
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.star,
-                      color: Colors.orange,
-                      size: 16.w,
-                    ),
+                    Icon(Icons.star, color: Colors.orange, size: 16.w),
                     SizedBox(width: 8.w),
                     Text(
                       place.rating.toStringAsFixed(1),
@@ -413,8 +390,7 @@ class PlaceDetails extends StatelessWidget {
 
               GestureDetector(
                 onTap: () {
-                  final HomeController controller =
-                      Get.find<HomeController>();
+                  final HomeController controller = Get.find<HomeController>();
 
                   controller.openAIGuideSheet();
 

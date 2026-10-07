@@ -644,9 +644,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
                       color: Colors.grey[300],
-                      child: const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      child: const Center(child: CircularProgressIndicator()),
                     ),
                     errorWidget: (context, url, error) => Container(
                       color: Colors.grey[300],
@@ -685,10 +683,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.arrow_back,
-                    color: Colors.black87,
-                  ),
+                  child: const Icon(Icons.arrow_back, color: Colors.black87),
                 ),
               ),
             ),
@@ -699,10 +694,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
               right: 16.w,
               top: 70.h,
               child: Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 12.w,
-                  vertical: 14.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(12.r),
@@ -716,11 +708,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.red[400],
-                      size: 20.w,
-                    ),
+                    Icon(Icons.location_on, color: Colors.red[400], size: 20.w),
                     SizedBox(width: 12.w),
                     Expanded(
                       child: Text(
@@ -764,118 +752,80 @@ class HomeSelectPlaceMap extends StatelessWidget {
                 onPressed: () {
                   controller.moveToCurrentLocation();
                 },
-                child: const Icon(
-                  Icons.my_location,
-                  color: Colors.blue,
-                ),
+                child: const Icon(Icons.my_location, color: Colors.blue),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: place != null
-          ? Container(
-              height: 74.h,
-              padding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 12.h,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
-                    blurRadius: 10.r,
-                    offset: Offset(0, -4.r),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  // Rating
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 10.w,
-                      vertical: 8.h,
+          ? SafeArea(
+              top: false,
+              child: Container(
+                height: 74.h,
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 10.r,
+                      offset: Offset(0, -4.r),
                     ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange[50],
-                      borderRadius: BorderRadius.circular(12.r),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    // Rating
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10.w,
+                        vertical: 8.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange[50],
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.star, color: Colors.orange, size: 16.w),
+                          SizedBox(width: 8.w),
+                          Text(
+                            place.rating.toStringAsFixed(1),
+                            style: GoogleFonts.dmSans(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 13.sp,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
+
+                    SizedBox(width: 12.w),
+
+                    // Distance
+                    Row(
                       children: [
                         Icon(
-                          Icons.star,
-                          color: Colors.orange,
+                          Icons.location_on_outlined,
                           size: 16.w,
+                          color: Colors.grey,
                         ),
-                        SizedBox(width: 8.w),
+                        SizedBox(width: 6.w),
                         Text(
-                          place.rating.toStringAsFixed(1),
+                          '${place.distanceKm}km',
                           style: GoogleFonts.dmSans(
-                            fontWeight: FontWeight.w700,
                             fontSize: 13.sp,
+                            color: Colors.grey[700],
                           ),
                         ),
                       ],
                     ),
-                  ),
 
-                  SizedBox(width: 12.w),
+                    const Spacer(),
 
-                  // Distance
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        size: 16.w,
-                        color: Colors.grey,
-                      ),
-                      SizedBox(width: 6.w),
-                      Text(
-                        '${place.distanceKm}km',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 13.sp,
-                          color: Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  const Spacer(),
-
-                  // Map button
-                  Container(
-                    width: 44.w,
-                    height: 44.w,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(12.r),
-                    ),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        IconPath.mapactive,
-                        height: 22.h,
-                        width: 22.w,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(width: 8.w),
-
-                  // AI guide button
-                  InkWell(
-                    onTap: () {
-                      controller.openAIGuideSheet();
-
-                      showAIGuideBottomSheet(
-                        context,
-                        place,
-                        controller,
-                      );
-                    },
-                    child: Container(
+                    // Map button
+                    Container(
                       width: 44.w,
                       height: 44.w,
                       decoration: BoxDecoration(
@@ -884,15 +834,42 @@ class HomeSelectPlaceMap extends StatelessWidget {
                       ),
                       child: Center(
                         child: SvgPicture.asset(
-                          IconPath.aiactive,
+                          IconPath.mapactive,
                           height: 22.h,
                           width: 22.w,
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                  ),
-                ],
+
+                    SizedBox(width: 8.w),
+
+                    // AI guide button
+                    InkWell(
+                      onTap: () {
+                        controller.openAIGuideSheet();
+
+                        showAIGuideBottomSheet(context, place, controller);
+                      },
+                      child: Container(
+                        width: 44.w,
+                        height: 44.w,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(12.r),
+                        ),
+                        child: Center(
+                          child: SvgPicture.asset(
+                            IconPath.aiactive,
+                            height: 22.h,
+                            width: 22.w,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             )
           : null,
@@ -922,15 +899,8 @@ class HomeSelectPlaceMap extends StatelessWidget {
               ),
             ),
             child: controller.isAIGuideStarted.value
-                ? _buildAudioPlayerView(
-                    controller,
-                    place,
-                  )
-                : _buildInitialGuideView(
-                    bottomSheetContext,
-                    place,
-                    controller,
-                  ),
+                ? _buildAudioPlayerView(controller, place)
+                : _buildInitialGuideView(bottomSheetContext, place, controller),
           );
         });
       },
@@ -1012,10 +982,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
 
         // Start AI tourist guide button
         Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 16.h,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           child: InkWell(
             onTap: () {
               controller.startAITouristGuide(place: place);
@@ -1025,10 +992,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
               height: 50.h,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [
-                    Colors.orange,
-                    Colors.deepOrange,
-                  ],
+                  colors: [Colors.orange, Colors.deepOrange],
                 ),
                 borderRadius: BorderRadius.circular(12.r),
               ),
@@ -1049,10 +1013,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
     );
   }
 
-  static Widget _buildAudioPlayerView(
-    HomeController controller,
-    Place place,
-  ) {
+  static Widget _buildAudioPlayerView(HomeController controller, Place place) {
     return Stack(
       children: [
         // Background image
@@ -1071,17 +1032,11 @@ class HomeSelectPlaceMap extends StatelessWidget {
               memCacheWidth: 800,
               placeholder: (context, url) => Container(
                 color: Colors.grey[300],
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: const Center(child: CircularProgressIndicator()),
               ),
               errorWidget: (context, url, error) => Container(
                 color: Colors.grey[300],
-                child: Icon(
-                  Icons.image,
-                  size: 50.w,
-                  color: Colors.grey,
-                ),
+                child: Icon(Icons.image, size: 50.w, color: Colors.grey),
               ),
             ),
           ),
@@ -1130,11 +1085,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.graphic_eq,
-                    size: 24.w,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.graphic_eq, size: 24.w, color: Colors.white),
                   SizedBox(width: 12.w),
                   Text(
                     'AI Tourist Guide Playing...',
@@ -1157,20 +1108,19 @@ class HomeSelectPlaceMap extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: List.generate(25, (index) {
                     return Obx(() {
-                      final bool isPlaying =
-                          controller.isAudioPlaying.value;
+                      final bool isPlaying = controller.isAudioPlaying.value;
 
                       final double baseHeight = 8.h;
                       final double maxHeight = 40.h;
 
                       final double animatedHeight = isPlaying
                           ? baseHeight +
-                              (maxHeight - baseHeight) *
-                                  (index % 3 == 0
-                                      ? 0.7
-                                      : index % 3 == 1
-                                          ? 0.9
-                                          : 0.5)
+                                (maxHeight - baseHeight) *
+                                    (index % 3 == 0
+                                        ? 0.7
+                                        : index % 3 == 1
+                                        ? 0.9
+                                        : 0.5)
                           : baseHeight;
 
                       return Container(
@@ -1180,8 +1130,8 @@ class HomeSelectPlaceMap extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isPlaying
                               ? index % 2 == 0
-                                  ? Colors.orange
-                                  : Colors.deepOrange
+                                    ? Colors.orange
+                                    : Colors.deepOrange
                               : Colors.white.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(2.r),
                         ),
@@ -1196,9 +1146,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
               // Elapsed time
               Obx(() {
                 return Text(
-                  controller.formatDuration(
-                    controller.audioPosition.value,
-                  ),
+                  controller.formatDuration(controller.audioPosition.value),
                   style: GoogleFonts.dmSans(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
@@ -1220,10 +1168,7 @@ class HomeSelectPlaceMap extends StatelessWidget {
                     height: 60.w,
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          Colors.orange,
-                          Colors.deepOrange,
-                        ],
+                        colors: [Colors.orange, Colors.deepOrange],
                       ),
                       shape: BoxShape.circle,
                     ),
