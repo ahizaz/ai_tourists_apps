@@ -4,7 +4,7 @@ import 'package:ai_powered_tourists_app/features/profile/screen/profile_ai_assis
 import 'package:ai_powered_tourists_app/features/profile/screen/select_map.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/play_ai_quize.dart';
 import 'package:ai_powered_tourists_app/features/profile/screen/save_place.dart';
-import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
+// import 'package:ai_powered_tourists_app/features/profile/screen/subscription_screen.dart';
 import 'package:ai_powered_tourists_app/features/profile/widget/profile_option.dart';
 import 'package:ai_powered_tourists_app/features/settings/screen/terms_condition.dart';
 import 'package:ai_powered_tourists_app/utils/constants/icon_path.dart';
@@ -122,14 +122,14 @@ class ProfileScreen extends StatelessWidget {
                   Get.to(() => AccountScreen());
                 },
               ),
-              SizedBox(height: 32.h),
-              ProfileOptionItem(
-                iconPath: IconPath.subscription,
-                title: "subscription".tr,
-                onTap: () {
-                  Get.to(() => SubscriptionScreen());
-                },
-              ),
+              // SizedBox(height: 32.h),
+              // ProfileOptionItem(
+              //   iconPath: IconPath.subscription,
+              //   title: "subscription".tr,
+              //   onTap: () {
+              //     Get.to(() => SubscriptionScreen());
+              //   },
+              // ),
               SizedBox(height: 32.h),
               ProfileOptionItem(
                 iconPath: IconPath.playquize,
